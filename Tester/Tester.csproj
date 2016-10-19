@@ -1,0 +1,166 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3B6C9753-A855-4BF9-8642-8E0B2C4C523C}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tester</RootNamespace>
+    <AssemblyName>LibraryTester</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Debug\Tester.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <CodeAnalysisLogFile>bin\Release\Tester.exe.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FActivePorts.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FActivePorts.Designer.cs">
+      <DependentUpon>FActivePorts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FAsyncClient.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FAsyncClient.Designer.cs">
+      <DependentUpon>FAsyncClient.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FAsyncServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FAsyncServer.Designer.cs">
+      <DependentUpon>FAsyncServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FTelnetServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FTelnetServer.Designer.cs">
+      <DependentUpon>FTelnetServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FThreadSafeList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FThreadSafeList.Designer.cs">
+      <DependentUpon>FThreadSafeList.cs</DependentUpon>
+    </Compile>
+    <Compile Include="MainEntry.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MainEntry.Designer.cs">
+      <DependentUpon>MainEntry.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="FAsyncUdpServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FAsyncUdpServer.Designer.cs">
+      <DependentUpon>FAsyncUdpServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FMulticast.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FMulticast.Designer.cs">
+      <DependentUpon>FMulticast.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FPing.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FPing.Designer.cs">
+      <DependentUpon>FPing.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FActivePorts.resx">
+      <DependentUpon>FActivePorts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FAsyncClient.resx">
+      <DependentUpon>FAsyncClient.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FAsyncServer.resx">
+      <DependentUpon>FAsyncServer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FTelnetServer.resx">
+      <DependentUpon>FTelnetServer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FThreadSafeList.resx">
+      <DependentUpon>FThreadSafeList.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MainEntry.resx">
+      <DependentUpon>MainEntry.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FAsyncUdpServer.resx">
+      <DependentUpon>FAsyncUdpServer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FMulticast.resx">
+      <DependentUpon>FMulticast.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FPing.resx">
+      <DependentUpon>FPing.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="app.manifest" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Net\Net.csproj">
+      <Project>{44AE83EF-4C5A-4EFF-9B41-1060DB88FA63}</Project>
+      <Name>Net</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Utility\Utility.csproj">
+      <Project>{C57DD321-BD35-4BE4-B038-2B0672B6A32C}</Project>
+      <Name>Utility</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
