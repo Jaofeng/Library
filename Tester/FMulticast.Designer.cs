@@ -126,7 +126,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.rtbConsole.AutoWordSelection = true;
 			this.rtbConsole.BackColor = System.Drawing.SystemColors.Window;
-			this.rtbConsole.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.rtbConsole.Font = new System.Drawing.Font("細明體", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
 			this.rtbConsole.Location = new System.Drawing.Point(12, 42);
 			this.rtbConsole.Name = "rtbConsole";
 			this.rtbConsole.ReadOnly = true;

@@ -670,6 +670,25 @@ namespace CJF.Net.Multicast
 			m_IsDisposed = true;
 		}
 		#endregion
+
+		#region Public Static Method : IPAddress[] GetHostIP()
+		/// <summary>取得本機IP</summary>
+		/// <returns></returns>
+		public static IPAddress[] GetHostIP()
+		{
+			IPHostEntry ipEntry = Dns.GetHostEntry(Dns.GetHostName());
+			IPAddress[] addrs = ipEntry.AddressList;
+			List<IPAddress> ipAddr = new List<IPAddress>();
+			foreach (IPAddress ipa in addrs)
+			{
+				if (ipa.IsIPv6LinkLocal || ipa.AddressFamily.HasFlag(System.Net.Sockets.AddressFamily.InterNetworkV6))
+					continue;
+				ipAddr.Add(ipa);
+			}
+			return ipAddr.ToArray();
+		}
+		#endregion
+
 	}
 	#endregion
 

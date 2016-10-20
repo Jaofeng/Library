@@ -46,7 +46,7 @@
 			// 
 			this.btnStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnStop.Enabled = false;
-			this.btnStop.Location = new System.Drawing.Point(695, 13);
+			this.btnStop.Location = new System.Drawing.Point(719, 13);
 			this.btnStop.Name = "btnStop";
 			this.btnStop.Size = new System.Drawing.Size(75, 23);
 			this.btnStop.TabIndex = 7;
@@ -57,7 +57,7 @@
 			// btnStart
 			// 
 			this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnStart.Location = new System.Drawing.Point(614, 13);
+			this.btnStart.Location = new System.Drawing.Point(638, 13);
 			this.btnStart.Name = "btnStart";
 			this.btnStart.Size = new System.Drawing.Size(75, 23);
 			this.btnStart.TabIndex = 6;
@@ -122,11 +122,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.rtbConsole.AutoWordSelection = true;
 			this.rtbConsole.BackColor = System.Drawing.SystemColors.Window;
-			this.rtbConsole.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.rtbConsole.Font = new System.Drawing.Font("細明體", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
 			this.rtbConsole.Location = new System.Drawing.Point(12, 52);
 			this.rtbConsole.Name = "rtbConsole";
 			this.rtbConsole.ReadOnly = true;
-			this.rtbConsole.Size = new System.Drawing.Size(758, 238);
+			this.rtbConsole.Size = new System.Drawing.Size(782, 313);
 			this.rtbConsole.TabIndex = 8;
 			this.rtbConsole.Text = "";
 			// 
@@ -134,9 +134,9 @@
 			// 
 			this.txtSendMsg.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtSendMsg.Location = new System.Drawing.Point(69, 305);
+			this.txtSendMsg.Location = new System.Drawing.Point(69, 380);
 			this.txtSendMsg.Name = "txtSendMsg";
-			this.txtSendMsg.Size = new System.Drawing.Size(611, 22);
+			this.txtSendMsg.Size = new System.Drawing.Size(635, 22);
 			this.txtSendMsg.TabIndex = 11;
 			this.txtSendMsg.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSendMsg_KeyDown);
 			// 
@@ -144,7 +144,7 @@
 			// 
 			this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(10, 310);
+			this.label5.Location = new System.Drawing.Point(10, 385);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(53, 12);
 			this.label5.TabIndex = 10;
@@ -154,7 +154,7 @@
 			// 
 			this.chkHexString.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.chkHexString.AutoSize = true;
-			this.chkHexString.Location = new System.Drawing.Point(686, 307);
+			this.chkHexString.Location = new System.Drawing.Point(710, 382);
 			this.chkHexString.Name = "chkHexString";
 			this.chkHexString.Size = new System.Drawing.Size(84, 16);
 			this.chkHexString.TabIndex = 9;
@@ -165,7 +165,7 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(783, 340);
+			this.ClientSize = new System.Drawing.Size(807, 415);
 			this.Controls.Add(this.chkHexString);
 			this.Controls.Add(this.rtbConsole);
 			this.Controls.Add(this.txtSendMsg);

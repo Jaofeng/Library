@@ -51,12 +51,12 @@ namespace Tester
 		#region Server Actions
 		void Server_OnShutdown(object sender, AsyncUdpEventArgs e)
 		{
-			WriteLog("M:伺服器已關閉");
+			WriteLog("伺服器已關閉");
 		}
 
 		void Server_OnStarted(object sender, AsyncUdpEventArgs e)
 		{
-			WriteLog("M:伺服器已於 {0} 啟動", _Receiver.Socket.LocalEndPoint);
+			WriteLog("伺服器已於 {0} 啟動", _Receiver.Socket.LocalEndPoint);
 		}
 		#endregion
 
@@ -114,6 +114,7 @@ namespace Tester
 				buf = Encoding.Default.GetBytes(txtSendMsg.Text);
 			_Sender.SendData(buf);
 			txtSendMsg.SelectAll();
+			e.SuppressKeyPress = true;
 		}
 
 		void Client_OnDataSended(object sender, AsyncUdpEventArgs e)
