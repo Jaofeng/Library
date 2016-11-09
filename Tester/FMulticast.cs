@@ -16,6 +16,7 @@ namespace Tester
 		public FMulticast()
 		{
 			InitializeComponent();
+			cbIP.Items.AddRange(TcpManager.GetHostIP());
 			string[] ip = txtSendIP.Text.Split(':');
 			IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip[0]), int.Parse(ip[1]));
 			_Sender = new CastSender(ep, int.Parse(ip[2]));
@@ -70,7 +71,8 @@ namespace Tester
 		#region Button Events
 		private void btnStart_Click(object sender, EventArgs e)
 		{
-			_Receiver = new CastReceiver(int.Parse(txtPort.Text));
+			if (string.IsNullOrEmpty(cbIP.Text)) return;
+			_Receiver = new CastReceiver(new IPEndPoint(IPAddress.Parse(cbIP.Text), Convert.ToInt32(txtPort.Text)));
 			_Receiver.OnDataReceived += new EventHandler<AsyncUdpEventArgs>(Server_OnDataReceived);
 			_Receiver.OnStarted += new EventHandler<AsyncUdpEventArgs>(Server_OnStarted);
 			_Receiver.OnShutdown += new EventHandler<AsyncUdpEventArgs>(Server_OnShutdown);
@@ -135,6 +137,7 @@ namespace Tester
 		{
 			if (e.KeyCode != Keys.Enter)
 				return;
+			e.SuppressKeyPress = true;
 			txtSendMsg.Focus();
 		}
 	}

@@ -39,47 +39,52 @@
 			this.rtbConsole = new System.Windows.Forms.RichTextBox();
 			this.txtSendIP = new System.Windows.Forms.TextBox();
 			this.chkHexString = new System.Windows.Forms.CheckBox();
+			this.cbIP = new System.Windows.Forms.ComboBox();
 			this.SuspendLayout();
 			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(24, 17);
+			this.label1.Location = new System.Drawing.Point(13, 17);
 			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(42, 12);
+			this.label1.Size = new System.Drawing.Size(50, 12);
 			this.label1.TabIndex = 0;
-			this.label1.Text = "群組 IP";
+			this.label1.Text = "Listen IPs";
 			// 
 			// txtIP
 			// 
+			this.txtIP.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtIP.BackColor = System.Drawing.SystemColors.Window;
 			this.txtIP.Location = new System.Drawing.Point(69, 12);
 			this.txtIP.Name = "txtIP";
-			this.txtIP.Size = new System.Drawing.Size(387, 22);
+			this.txtIP.Size = new System.Drawing.Size(329, 22);
 			this.txtIP.TabIndex = 1;
 			this.txtIP.Text = "224.100.0.1,224.100.0.2";
 			// 
 			// label2
 			// 
+			this.label2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(473, 19);
+			this.label2.Location = new System.Drawing.Point(419, 17);
 			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(53, 12);
+			this.label2.Size = new System.Drawing.Size(50, 12);
 			this.label2.TabIndex = 2;
-			this.label2.Text = "通訊埠號";
+			this.label2.Text = "LocalPort";
 			// 
 			// txtPort
 			// 
-			this.txtPort.Location = new System.Drawing.Point(532, 14);
+			this.txtPort.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtPort.Location = new System.Drawing.Point(602, 13);
 			this.txtPort.Name = "txtPort";
-			this.txtPort.Size = new System.Drawing.Size(60, 22);
+			this.txtPort.Size = new System.Drawing.Size(45, 22);
 			this.txtPort.TabIndex = 3;
 			this.txtPort.Text = "9900";
 			// 
 			// btnStart
 			// 
 			this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnStart.Location = new System.Drawing.Point(614, 12);
+			this.btnStart.Location = new System.Drawing.Point(653, 12);
 			this.btnStart.Name = "btnStart";
 			this.btnStart.Size = new System.Drawing.Size(75, 23);
 			this.btnStart.TabIndex = 4;
@@ -91,7 +96,7 @@
 			// 
 			this.btnStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnStop.Enabled = false;
-			this.btnStop.Location = new System.Drawing.Point(695, 12);
+			this.btnStop.Location = new System.Drawing.Point(734, 12);
 			this.btnStop.Name = "btnStop";
 			this.btnStop.Size = new System.Drawing.Size(75, 23);
 			this.btnStop.TabIndex = 5;
@@ -115,7 +120,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtSendMsg.Location = new System.Drawing.Point(189, 318);
 			this.txtSendMsg.Name = "txtSendMsg";
-			this.txtSendMsg.Size = new System.Drawing.Size(491, 22);
+			this.txtSendMsg.Size = new System.Drawing.Size(530, 22);
 			this.txtSendMsg.TabIndex = 9;
 			this.txtSendMsg.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSendMsg_KeyDown);
 			// 
@@ -130,7 +135,7 @@
 			this.rtbConsole.Location = new System.Drawing.Point(12, 42);
 			this.rtbConsole.Name = "rtbConsole";
 			this.rtbConsole.ReadOnly = true;
-			this.rtbConsole.Size = new System.Drawing.Size(758, 270);
+			this.rtbConsole.Size = new System.Drawing.Size(797, 270);
 			this.rtbConsole.TabIndex = 10;
 			this.rtbConsole.TabStop = false;
 			this.rtbConsole.Text = "";
@@ -149,18 +154,28 @@
 			// 
 			this.chkHexString.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.chkHexString.AutoSize = true;
-			this.chkHexString.Location = new System.Drawing.Point(686, 321);
+			this.chkHexString.Location = new System.Drawing.Point(725, 321);
 			this.chkHexString.Name = "chkHexString";
 			this.chkHexString.Size = new System.Drawing.Size(84, 16);
 			this.chkHexString.TabIndex = 8;
 			this.chkHexString.Text = "16進位字串";
 			this.chkHexString.UseVisualStyleBackColor = true;
 			// 
+			// cbIP
+			// 
+			this.cbIP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.cbIP.FormattingEnabled = true;
+			this.cbIP.Location = new System.Drawing.Point(476, 13);
+			this.cbIP.Name = "cbIP";
+			this.cbIP.Size = new System.Drawing.Size(121, 20);
+			this.cbIP.TabIndex = 11;
+			// 
 			// FMulticast
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(782, 352);
+			this.ClientSize = new System.Drawing.Size(821, 352);
+			this.Controls.Add(this.cbIP);
 			this.Controls.Add(this.chkHexString);
 			this.Controls.Add(this.rtbConsole);
 			this.Controls.Add(this.btnStop);
@@ -193,5 +208,6 @@
 		private System.Windows.Forms.RichTextBox rtbConsole;
 		private System.Windows.Forms.TextBox txtSendIP;
 		private System.Windows.Forms.CheckBox chkHexString;
+		private System.Windows.Forms.ComboBox cbIP;
 	}
 }

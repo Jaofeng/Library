@@ -48,21 +48,28 @@ namespace CJF.Net.Multicast
 		#region Construct Method : CastReceiver(int listenPort)
 		/// <summary>建立新的 CastReceiver 類別，並初始化相關屬性值</summary>
 		/// <param name="listenPort">傾聽的通訊埠號</param>
-		public CastReceiver(int listenPort)
+		public CastReceiver(int listenPort) : this(new IPEndPoint(IPAddress.Any, listenPort)) { }
+		#endregion
+
+		#region Construct Method : CastReceiver(int localPort)
+		/// <summary>建立新的 CastReceiver 類別，並初始化相關屬性值</summary>
+		/// <param name="localIp">指定的本地IP</param>
+		/// <param name="localPort">傾聽的通訊埠號</param>
+		public CastReceiver(IPEndPoint localPort)
 		{
 			m_IsExit = false;
 			m_Counters = new Dictionary<ServerCounterType, PerformanceCounter>();
 			m_ServerStarted = false;
 			CommonSettings();
 			SetCounterDictionary();
-			m_ListenPort = listenPort;
+			m_ListenPort = localPort.Port;
 			m_JoinedGroups = new List<MulticastOption>();
 			m_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 			m_Handle = m_Socket.Handle;
 			m_Socket.ReceiveBufferSize = m_BufferSize;
 			m_Socket.SendBufferSize = m_BufferSize;
 			//m_Socket.ExclusiveAddressUse = true;
-			m_LocalEndPoint = new IPEndPoint(IPAddress.Any, listenPort);
+			m_LocalEndPoint = localPort;
 			m_ReceiveBuffer = new byte[m_BufferSize];
 			m_ReadEventArgs = new SocketAsyncEventArgs();
 			m_ReadEventArgs.UserToken = new AsyncUserToken(m_Socket, m_BufferSize);
@@ -114,7 +121,7 @@ namespace CJF.Net.Multicast
 		#region Private Method : void CommonSettings()
 		private void CommonSettings()
 		{
-			this.UseAsyncCallback = EventCallbackMode.Thread;
+			this.UseAsyncCallback = EventCallbackMode.BeginInvoke;
 			_SecondCounter = new Timer(SecondCounterCallback, null, 1000, 1000);
 		}
 		#endregion
@@ -134,7 +141,7 @@ namespace CJF.Net.Multicast
 		public void JoinMulticastGroup(IPAddress ipAddr)
 		{
 			if (!m_JoinedGroups.Exists(mo => mo.Group.Equals(ipAddr)))
-				m_JoinedGroups.Add(new MulticastOption(ipAddr, IPAddress.Any));
+				m_JoinedGroups.Add(new MulticastOption(ipAddr, m_LocalEndPoint.Address));
 		}
 		#endregion
 
