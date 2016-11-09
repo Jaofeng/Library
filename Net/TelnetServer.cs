@@ -16,6 +16,8 @@ namespace CJF.Net
 	[Serializable]
 	public class TelnetServer : IDisposable
 	{
+		private readonly byte[] CLIENT_CONNECTED_COMMANDS = new byte[] { 0xFF, 0xFD, 0x25, 0xFF, 0xFD, 0x01, 0xFF, 0xFD, 0x03, 0xFF, 0xFD, 0x27, 0xFF, 0xFD, 0x1F, 0xFF, 0xFD, 0x00, 0xFF, 0xFB, 0x00 };
+
 		#region Public Enum : CommandEndCharType
 		/// <summary>接收資料後，後續產生事件的方式</summary>
 		public enum CommandEndCharType
@@ -231,7 +233,7 @@ namespace CJF.Net
 		/// <summary>設定或取得是否使用登入帳號/密碼。空值為不使用；不為空值時，則使用帳密功能，且格式需為：帳號1,密碼1,帳號2,密碼2,...</summary>
 		/// <exception cref="FormatException">格式錯誤</exception>
 		/// <exception cref="ArgumentNullException">帳號或密碼不得為空值</exception>
-		public string AccountPassword
+		public string Authentication
 		{
 			get
 			{
@@ -560,9 +562,10 @@ namespace CJF.Net
 			{
 				System.Threading.Tasks.Task.Factory.StartNew(() =>
 				{
-					Thread.Sleep(1000);
+					//e.Client.SendData(CLIENT_CONNECTED_COMMANDS);
+					Thread.Sleep(500);
 					SetCommandEndChar(e.RemoteEndPoint, TelnetServer.CommandEndCharType.CrLf);
-					e.Client.SendData("\x1B[2J\x1B[1;1HLogin:");
+					e.Client.SendData("\x1B[2J\x1B[1;1Hlogin:");
 				});
 			}
 			else
@@ -751,6 +754,7 @@ namespace CJF.Net
 										idx += 5;
 										break;
 									case 0x18:	// Terminal Type(24)
+										#region Terminal Type(24)
 										{
 											idx++;
 											int len = 0;
@@ -761,7 +765,9 @@ namespace CJF.Net
 											idx += len + 2;
 											break;
 										}
+										#endregion
 									case 0x20:	// Terminal Speen(32)
+										#region Terminal Speen(32)
 										{
 											idx++;
 											int len = 0;
@@ -778,6 +784,7 @@ namespace CJF.Net
 											idx += len + 2;
 											break;
 										}
+										#endregion
 									case 0x27:	// New Environment(39)
 									default:
 										{
@@ -800,6 +807,9 @@ namespace CJF.Net
 									back.AddRange(new byte[] { 0xFF, 0xFD, data[idx] });
 									switch (data[idx])
 									{
+										case 0x00:	// Binary Transmission
+											sec.AddRange(new byte[] { 0xFF, 0xFD, 0x00 });
+											break;
 										case 0x01:	// ECHO(1)
 										case 0x03:	// Will Suppress Go Ahead(3)
 										case 0x12:	// LOGOUT(18)
@@ -812,6 +822,9 @@ namespace CJF.Net
 										case 0x20:	// Terminal Speed(32)
 											// Return -> DO NOT Terminal Speed
 											sec.AddRange(new byte[] { 0xFF, 0xFA, 0x20, 0x01, 0xFF, 0xF0 });
+											break;
+										case 0x25:	// Authentication Option
+											sec.AddRange(new byte[] { 0xFF, 0xFA, 0x25, 0x01, 0x0F, 0x00, 0xFF, 0xF0 });
 											break;
 										case 0x27:	// New Environment Option(39)
 											// Return -> DO New Environment Option
@@ -831,6 +844,10 @@ namespace CJF.Net
 								{
 									switch (data[idx])
 									{
+										case 0x00:	// Binary Transmission
+											tcs.BinaryTransmission = false;
+											sec.AddRange(new byte[] { 0xFF, 0xFE, 0x00 });
+											break;
 										case 0x01:	// ECHO(1)
 											tcs.Echo = false;
 											// WILL NOT(0xFC) -> Return DO NOT(0xFE)
@@ -853,6 +870,10 @@ namespace CJF.Net
 									back.AddRange(new byte[] { 0xFF, 0xFB, data[idx] });
 									switch (data[idx])
 									{
+										case 0x00:	// Binary Transmission
+											tcs.BinaryTransmission = true;
+											sec.AddRange(new byte[] { 0xFF, 0xFB, 0x00 });
+											break;
 										case 0x01:	// ECHO(1)
 											tcs.Echo = true;
 											// DO(0xFD) -> Return WILL(0xFB)
@@ -872,6 +893,10 @@ namespace CJF.Net
 								{
 									switch (data[idx])
 									{
+										case 0x00:	// Binary Transmission
+											tcs.BinaryTransmission = false;
+											sec.AddRange(new byte[] { 0xFF, 0xFC, 0x00 });
+											break;
 										case 0x01:	// ECHO(1)
 											tcs.Echo = false;
 											// DO NOT(0xFD) -> Return WILL NOT(0xFB)
@@ -993,6 +1018,8 @@ namespace CJF.Net
 		public WindowSize WindowSize;
 		/// <summary>新行字符</summary>
 		public string NewLine;
+		/// <summary>是否使用二進制傳輸</summary>
+		public bool BinaryTransmission;
 		/// <summary>定義預設的Telnet參數狀態</summary>
 		public static TelnetClientSetting Default
 		{
@@ -1006,6 +1033,7 @@ namespace CJF.Net
 					TerminalType = string.Empty,
 					TerminalSpeed = 0,
 					NewLine = Environment.NewLine,
+					BinaryTransmission = true,
 					WindowSize = new WindowSize(80, 24)
 				};
 			}

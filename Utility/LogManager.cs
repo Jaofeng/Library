@@ -33,6 +33,7 @@ namespace CJF.Utility
 
 		#region LogManager Static Methods
 		private static ILog _GlobalLogger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		#region Public Static Methods : void WriteLog(...)
 		/// <summary>記錄事件，使用LogLevel.Info級別記錄訊息</summary>
 		/// <param name="msg">訊息</param>
 		public static void WriteLog(string msg)
@@ -172,6 +173,7 @@ namespace CJF.Utility
 		{
 			WriteLog(LogLevel.Info, format, args);
 		}
+		#endregion
 
 		#region Private Static Method : void LogException(ILog logger, string sessionKey, Exception ex, bool sendMail)
 		/// <summary>記錄錯誤事件</summary>
@@ -362,6 +364,25 @@ namespace CJF.Utility
 			{
 				LogException("Mail", ex, false);
 			}
+		}
+		#endregion
+
+		#region Public Static Method : string GetFolder()
+		/// <summary>取得記錄檔的存放目錄</summary>
+		/// <returns></returns>
+		public static string GetFolder()
+		{
+			log4net.Appender.IAppender[] ias = _GlobalLogger.Logger.Repository.GetAppenders();
+			if (ias == null || ias.Length == 0)
+				return null;
+			foreach (log4net.Appender.IAppender ia in ias)
+			{
+				if (!ia.GetType().Equals(typeof(log4net.Appender.RollingFileAppender)))
+					continue;
+				log4net.Appender.FileAppender fa = (log4net.Appender.FileAppender)(log4net.Appender.RollingFileAppender)ia;
+				return System.IO.Path.GetDirectoryName(fa.File);
+			}
+			return null;
 		}
 		#endregion
 

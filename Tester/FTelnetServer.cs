@@ -26,14 +26,10 @@ namespace Tester
 
 		readonly string[] AllowAccount = new string[] { "root", "1234" };
 
-		//ConcurrentDictionary<EndPoint, LoginStep> _UserLogin = null;
-		//ConcurrentDictionary<EndPoint, string> _UserAccount = null;
 		TelnetServer _Server = null;
 		public FTelnetServer()
 		{
 			InitializeComponent();
-			//_UserAccount = new ConcurrentDictionary<EndPoint, string>();
-			//_UserLogin = new ConcurrentDictionary<EndPoint, LoginStep>();
 			WriteLog("===== New Session =====");
 		}
 
@@ -72,8 +68,6 @@ namespace Tester
 		{
 			WriteLog("M:伺服器已關閉");
 			ClearListBoxItem(lbRemotes);
-			//_UserLogin.Clear();
-			//_UserAccount.Clear();
 		}
 
 		void Server_OnStarted(object sender, SocketServerEventArgs e)
@@ -90,24 +84,10 @@ namespace Tester
 			WriteLog("M:接線池剩餘：{0}", svr.MaxConnections - svr.Connections);
 			RemoveListBoxItem(lbRemotes, e.RemoteEndPoint);
 			SetConteolText(gbClients, string.Format("Clients : {0}", svr.Connections));
-			//if (e.RemoteEndPoint != null)
-			//{
-			//    LoginStep ls;
-			//    _UserLogin.TryRemove(e.RemoteEndPoint, out ls);
-			//    string s;
-			//    _UserAccount.TryRemove(e.RemoteEndPoint, out s);
-			//}
 		}
 		void Server_OnClientClosing(object sender, SocketServerEventArgs e)
 		{
 			WriteLog("M:用戶端 {0} 正停止連線", e.RemoteEndPoint);
-			//if (e.RemoteEndPoint != null)
-			//{
-			//    LoginStep ls;
-			//    _UserLogin.TryRemove(e.RemoteEndPoint, out ls);
-			//    string s;
-			//    _UserAccount.TryRemove(e.RemoteEndPoint, out s);
-			//}
 		}
 
 		void Server_OnClientConnected(object sender, SocketServerEventArgs e)
@@ -117,15 +97,6 @@ namespace Tester
 			WriteLog("M:接線池剩餘：{0}", svr.MaxConnections - svr.Connections);
 			SetConteolText(gbClients, string.Format("Clients : {0}", svr.Connections));
 			AppendListBoxItem(lbRemotes, e.RemoteEndPoint);
-			//_UserAccount.AddOrUpdate(e.RemoteEndPoint, string.Empty, (k, v) => v = string.Empty);
-			//_UserLogin.AddOrUpdate(e.RemoteEndPoint, LoginStep.Commands, (k, v) => v = LoginStep.Commands);
-			//System.Threading.Tasks.Task.Factory.StartNew(() =>
-			//{
-			//    Thread.Sleep(1000);
-			//    svr.SetCommandEndChar(e.RemoteEndPoint, TelnetServer.CommandEndCharType.CrLf);
-			//    _UserLogin.AddOrUpdate(e.RemoteEndPoint, LoginStep.Account, (k, v) => v = LoginStep.Account);
-			//    e.Client.SendData("\x1B[2J\x1B[1;1HLogin:");
-			//});
 			StringBuilder sb = new StringBuilder();
 			sb.AppendFormat("\x1B[2J\x1B[1;1H{0} v{1}", Application.ProductName, Application.ProductVersion);
 			sb.AppendLine();
@@ -143,75 +114,7 @@ namespace Tester
 			WriteLog("[{0}] > ({2:D3}){1}", e.RemoteEndPoint, ConvUtils.Byte2HexString(e.Data), e.Data.Length);
 			if (data.Equals("close", StringComparison.OrdinalIgnoreCase))
 				e.Client.Close();
-			
-			LoginStep ls;
-			//_UserLogin.TryGetValue(e.RemoteEndPoint, out ls);
-			//TelnetClientSetting? tcs = svr.GetTelnetClientSetting(e.RemoteEndPoint);
-			//if (!tcs.HasValue)
-			//    tcs = TelnetClientSetting.Default;
-			//switch (ls)
-			//{
-			//    case LoginStep.Account:
-			//        for (int i = 0; i < AllowAccount.Length; i += 2)
-			//        {
-			//            if (data.Equals(AllowAccount[i]))
-			//            {
-			//                _UserAccount.AddOrUpdate(e.RemoteEndPoint, data, (k, v) => v = data);
-			//                _UserLogin.AddOrUpdate(e.RemoteEndPoint, LoginStep.Passowrd, (k, v) => v = LoginStep.Passowrd);
-			//                //e.Client.SendData(tcs.Value.NewLine + "Password:");
-			//                e.Client.SendData("Password:");
-			//            }
-			//            else
-			//            {
-			//                //e.Client.SendData(tcs.Value.NewLine + "\x1B[31;1mUnknow account!!!\x1B[0m");
-			//                //e.Client.SendData(tcs.Value.NewLine + "Login:");
-			//                e.Client.SendData(tcs.Value.NewLine + "\x1B[31;1mUnknow account!!!\x1B[0m" + tcs.Value.NewLine + "Login:");
-			//            }
-			//        }
-			//        break;
-			//    case LoginStep.Passowrd:
-			//        string uid = string.Empty;
-			//        _UserAccount.TryGetValue(e.RemoteEndPoint, out uid);
-			//        bool success = false;
-			//        for (int i = 0; i < AllowAccount.Length; i += 2)
-			//        {
-			//            if (uid.Equals(AllowAccount[i]))
-			//            {
-			//                if (data.Equals(AllowAccount[i + 1]))
-			//                {
-			//                    success = true;
-			//                    break;
-			//                }
-			//            }
-			//        }
-			//        if (success)
-			//        {
-			//            e.Client.SendData(tcs.Value.NewLine + "\x1B[32;1mSuccess!!!\x1B[0m");
-			//            _UserLogin.AddOrUpdate(e.RemoteEndPoint, LoginStep.Success, (k, v) => v = LoginStep.Success);
-			//            svr.SetCommandEndChar(e.RemoteEndPoint, TelnetServer.CommandEndCharType.None);
-			//            System.Threading.Tasks.Task.Factory.StartNew(() =>
-			//            {
-			//                Thread.Sleep(1000);
-			//                StringBuilder sb = new StringBuilder();
-			//                sb.AppendFormat("\x1B[2J\x1B[1;1H{0} v{1}", Application.ProductName, Application.ProductVersion);
-			//                sb.AppendLine();
-			//                sb.AppendLine("=".PadLeft(80, '='));
-			//                sb.AppendLine("[1] Menu 1");
-			//                e.Client.SendData(sb.ToString());
-			//            });
-			//        }
-			//        else
-			//        {
-			//            e.Client.SendData(tcs.Value.NewLine + "\x1B[31;1mAccess denied!!!\x1B[0m" + tcs.Value.NewLine);
-			//            System.Threading.Tasks.Task.Factory.StartNew(() =>
-			//            {
-			//                Thread.Sleep(2000);
-			//                e.Client.Close();
-			//            });
-			//        }
-			//        break;
-			//}
-		}
+					}
 
 		void Server_OnDataSended(object sender, SocketServerEventArgs e)
 		{
@@ -224,7 +127,7 @@ namespace Tester
 			if (_Server == null)
 			{
 				_Server = new TelnetServer(10, Encoding.UTF8);
-				//_Server.AccountPawwsord = "root,1234,admin,P@ssW0rd";
+				_Server.Authentication = "root,1234,admin,P@ssW0rd";
 				_Server.OnClientConnected += new EventHandler<SocketServerEventArgs>(Server_OnClientConnected);
 				_Server.OnClientClosing += new EventHandler<SocketServerEventArgs>(Server_OnClientClosing);
 				_Server.OnClientClosed += new EventHandler<SocketServerEventArgs>(Server_OnClientClosed);

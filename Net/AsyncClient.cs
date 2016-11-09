@@ -112,12 +112,13 @@ namespace CJF.Net
 
 		#region Properties
 		/// <summary>取得目前是否連線中</summary>
+		/// <exception cref="ObjectDisposedException"></exception>
 		public bool Connected
 		{
 			get
 			{
 				if (_IsDisposed)
-					throw new ObjectDisposedException(this.GetType().Name);
+					throw new ObjectDisposedException(this.GetType().ToString(), "物件已被 Dispose");
 				if (m_Socket != null && !m_Socket.Connected)
 					m_Connected = IsSocketConnected();
 				return m_Connected;
@@ -158,6 +159,7 @@ namespace CJF.Net
 		/// <summary>取得或設定額外專屬的自訂值</summary>
 		public object TagInfo { get; set; }
 		/// <summary>設定或取得接收緩衝區大小，單位:位元組，預設值:2048</summary>
+		/// <exception cref="ArgumentOutOfRangeException">值必須大於512Bytes</exception>
 		public int ReceiveBufferSize
 		{
 			get { return m_ReceiveBufferSize; }
@@ -171,6 +173,7 @@ namespace CJF.Net
 			}
 		}
 		/// <summary>設定或取得發送緩衝區大小，單位:位元組，預設值:2048</summary>
+		/// <exception cref="ArgumentOutOfRangeException">值必須大於512Bytes</exception>
 		public int SendBufferSize
 		{
 			get { return m_SendBufferSize; }
