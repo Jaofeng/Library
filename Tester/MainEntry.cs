@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using CJF.Utility;
+using CJF.Utility.CRC;
 
 namespace Tester
 {
@@ -14,6 +15,7 @@ namespace Tester
 		public MainEntry()
 		{
 			InitializeComponent();
+			cbDateType.SelectedIndex = 0;
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -44,7 +46,7 @@ namespace Tester
 		{
 			FPing fp = new FPing();
 			fp.Show();
-			
+
 		}
 
 		private void button6_Click(object sender, EventArgs e)
@@ -55,7 +57,7 @@ namespace Tester
 
 		private void btnUnitConv_Click(object sender, EventArgs e)
 		{
-			MessageBox.Show(ConvUtils.ConvertUnit(Convert.ToInt64(txtConvUnit.Text)));
+			labConvResult.Text = ConvUtils.ConvertUnit(Convert.ToInt64(txtConvUnit.Text));
 		}
 
 		private void btnGetBytes_Click(object sender, EventArgs e)
@@ -100,6 +102,31 @@ namespace Tester
 		{
 			FTelnetServer fp = new FTelnetServer();
 			fp.Show();
+		}
+
+		private void btnCRC16_Click(object sender, EventArgs e)
+		{
+			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			Encoding enc = Encoding.GetEncoding(950);
+			byte[] source = enc.GetBytes(txtCrcSource.Text);
+			watch.Start();
+			Crc16 normal = new Crc16();
+			labCrc16ResN.Text = normal.ComputeChecksum(source).ToString("X");
+			labCrc16ByteN.Text = ConvUtils.Byte2HexString(normal.ComputeChecksumBytes(source));
+			watch.Stop();
+			labCrc16TimeN.Text = watch.ElapsedTicks.ToString() + " Ticks";
+			watch.Restart();
+			Crc16Ccitt ccitt = new Crc16Ccitt(InitialCrcValue.Zeros);
+			labCrc16ResC.Text = ccitt.ComputeChecksum(source).ToString("X");
+			labCrc16ByteC.Text = ConvUtils.Byte2HexString(ccitt.ComputeChecksumBytes(source));
+			watch.Stop();
+			labCrc16TimeC.Text = watch.ElapsedTicks.ToString() + " Ticks";
+			watch.Restart();
+			Crc16Table table = new Crc16Table(InitialCrcValue.Zeros);
+			labCrc16ResT.Text = table.ComputeChecksum(source).ToString("X");
+			labCrc16ByteT.Text = ConvUtils.Byte2HexString(table.ComputeChecksumBytes(source));
+			watch.Stop();
+			labCrc16TimeT.Text = watch.ElapsedTicks.ToString() + " Ticks";
 		}
 	}
 }

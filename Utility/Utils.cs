@@ -577,9 +577,7 @@ namespace CJF.Utility
 		#endregion
 
 		#region Public Static Method : string ConvertToNCR(string rawString)
-		/// <summary>
-		/// 將中文難字變成NCR，如字串中包含中文難字，則傳回編碼字串
-		/// </summary>
+		/// <summary>將中文難字變成NCR，如字串中包含中文難字，則傳回編碼字串</summary>
 		/// <param name="rawString">原始字串</param>
 		/// <returns>NCR編碼字串</returns>
 		public static string ConvertToNCR(string rawString)
@@ -1003,6 +1001,5 @@ namespace CJF.Utility
 				return defVal;
 		}
 		#endregion
-
 	}
 }

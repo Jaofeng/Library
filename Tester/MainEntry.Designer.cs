@@ -35,9 +35,7 @@
 			this.button5 = new System.Windows.Forms.Button();
 			this.button6 = new System.Windows.Forms.Button();
 			this.txtConvUnit = new System.Windows.Forms.TextBox();
-			this.label1 = new System.Windows.Forms.Label();
 			this.btnUnitConv = new System.Windows.Forms.Button();
-			this.label2 = new System.Windows.Forms.Label();
 			this.txtGetBytes = new System.Windows.Forms.TextBox();
 			this.txtGetBytesResult = new System.Windows.Forms.TextBox();
 			this.btnGetBytes = new System.Windows.Forms.Button();
@@ -47,6 +45,27 @@
 			this.listBox1 = new System.Windows.Forms.ListBox();
 			this.button8 = new System.Windows.Forms.Button();
 			this.button9 = new System.Windows.Forms.Button();
+			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.labConvResult = new System.Windows.Forms.Label();
+			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.txtCrcSource = new System.Windows.Forms.TextBox();
+			this.btnCRC16 = new System.Windows.Forms.Button();
+			this.label1 = new System.Windows.Forms.Label();
+			this.label2 = new System.Windows.Forms.Label();
+			this.label3 = new System.Windows.Forms.Label();
+			this.labCrc16ResN = new System.Windows.Forms.Label();
+			this.labCrc16TimeN = new System.Windows.Forms.Label();
+			this.labCrc16TimeC = new System.Windows.Forms.Label();
+			this.labCrc16ResC = new System.Windows.Forms.Label();
+			this.labCrc16TimeT = new System.Windows.Forms.Label();
+			this.labCrc16ResT = new System.Windows.Forms.Label();
+			this.labCrc16ByteN = new System.Windows.Forms.Label();
+			this.labCrc16ByteC = new System.Windows.Forms.Label();
+			this.labCrc16ByteT = new System.Windows.Forms.Label();
+			this.groupBox1.SuspendLayout();
+			this.groupBox2.SuspendLayout();
+			this.groupBox3.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -111,57 +130,40 @@
 			// 
 			// txtConvUnit
 			// 
-			this.txtConvUnit.Location = new System.Drawing.Point(135, 147);
+			this.txtConvUnit.Location = new System.Drawing.Point(9, 21);
 			this.txtConvUnit.Name = "txtConvUnit";
-			this.txtConvUnit.Size = new System.Drawing.Size(107, 22);
+			this.txtConvUnit.Size = new System.Drawing.Size(92, 22);
 			this.txtConvUnit.TabIndex = 7;
-			// 
-			// label1
-			// 
-			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(35, 146);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(80, 24);
-			this.label1.TabIndex = 6;
-			this.label1.Text = "單位轉換\r\n(UnitConverter)";
+			this.txtConvUnit.Text = "1000";
 			// 
 			// btnUnitConv
 			// 
-			this.btnUnitConv.Location = new System.Drawing.Point(248, 147);
+			this.btnUnitConv.Location = new System.Drawing.Point(107, 21);
 			this.btnUnitConv.Name = "btnUnitConv";
-			this.btnUnitConv.Size = new System.Drawing.Size(75, 23);
+			this.btnUnitConv.Size = new System.Drawing.Size(75, 22);
 			this.btnUnitConv.TabIndex = 8;
 			this.btnUnitConv.Text = "Convert";
 			this.btnUnitConv.UseVisualStyleBackColor = true;
 			this.btnUnitConv.Click += new System.EventHandler(this.btnUnitConv_Click);
 			// 
-			// label2
-			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(35, 193);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(43, 12);
-			this.label2.TabIndex = 9;
-			this.label2.Text = "GetByte";
-			// 
 			// txtGetBytes
 			// 
-			this.txtGetBytes.Location = new System.Drawing.Point(135, 190);
+			this.txtGetBytes.Location = new System.Drawing.Point(9, 21);
 			this.txtGetBytes.Name = "txtGetBytes";
-			this.txtGetBytes.Size = new System.Drawing.Size(107, 22);
+			this.txtGetBytes.Size = new System.Drawing.Size(92, 22);
 			this.txtGetBytes.TabIndex = 10;
 			this.txtGetBytes.Text = "1";
 			// 
 			// txtGetBytesResult
 			// 
-			this.txtGetBytesResult.Location = new System.Drawing.Point(37, 303);
+			this.txtGetBytesResult.Location = new System.Drawing.Point(9, 49);
 			this.txtGetBytesResult.Name = "txtGetBytesResult";
-			this.txtGetBytesResult.Size = new System.Drawing.Size(286, 22);
+			this.txtGetBytesResult.Size = new System.Drawing.Size(237, 22);
 			this.txtGetBytesResult.TabIndex = 14;
 			// 
 			// btnGetBytes
 			// 
-			this.btnGetBytes.Location = new System.Drawing.Point(248, 190);
+			this.btnGetBytes.Location = new System.Drawing.Point(252, 49);
 			this.btnGetBytes.Name = "btnGetBytes";
 			this.btnGetBytes.Size = new System.Drawing.Size(75, 23);
 			this.btnGetBytes.TabIndex = 11;
@@ -174,7 +176,7 @@
 			this.chkBigEndian.AutoSize = true;
 			this.chkBigEndian.Checked = true;
 			this.chkBigEndian.CheckState = System.Windows.Forms.CheckState.Checked;
-			this.chkBigEndian.Location = new System.Drawing.Point(135, 278);
+			this.chkBigEndian.Location = new System.Drawing.Point(188, 21);
 			this.chkBigEndian.Name = "chkBigEndian";
 			this.chkBigEndian.Size = new System.Drawing.Size(77, 16);
 			this.chkBigEndian.TabIndex = 13;
@@ -183,6 +185,7 @@
 			// 
 			// cbDateType
 			// 
+			this.cbDateType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cbDateType.FormattingEnabled = true;
 			this.cbDateType.Items.AddRange(new object[] {
             "Int",
@@ -190,11 +193,10 @@
             "Long",
             "Double",
             "Float"});
-			this.cbDateType.Location = new System.Drawing.Point(37, 276);
+			this.cbDateType.Location = new System.Drawing.Point(107, 21);
 			this.cbDateType.Name = "cbDateType";
-			this.cbDateType.Size = new System.Drawing.Size(92, 20);
+			this.cbDateType.Size = new System.Drawing.Size(75, 20);
 			this.cbDateType.TabIndex = 12;
-			this.cbDateType.Text = "Int";
 			// 
 			// button7
 			// 
@@ -212,7 +214,7 @@
 			this.listBox1.ItemHeight = 12;
 			this.listBox1.Location = new System.Drawing.Point(361, 189);
 			this.listBox1.Name = "listBox1";
-			this.listBox1.Size = new System.Drawing.Size(107, 136);
+			this.listBox1.Size = new System.Drawing.Size(107, 172);
 			this.listBox1.TabIndex = 16;
 			// 
 			// button8
@@ -235,22 +237,219 @@
 			this.button9.UseVisualStyleBackColor = true;
 			this.button9.Click += new System.EventHandler(this.button9_Click);
 			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.labConvResult);
+			this.groupBox1.Controls.Add(this.txtConvUnit);
+			this.groupBox1.Controls.Add(this.btnUnitConv);
+			this.groupBox1.Location = new System.Drawing.Point(22, 133);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(333, 50);
+			this.groupBox1.TabIndex = 17;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "計量單位轉換";
+			// 
+			// labConvResult
+			// 
+			this.labConvResult.BackColor = System.Drawing.SystemColors.Window;
+			this.labConvResult.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labConvResult.Location = new System.Drawing.Point(188, 21);
+			this.labConvResult.Name = "labConvResult";
+			this.labConvResult.Size = new System.Drawing.Size(139, 22);
+			this.labConvResult.TabIndex = 9;
+			this.labConvResult.Text = "0";
+			this.labConvResult.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// groupBox2
+			// 
+			this.groupBox2.Controls.Add(this.txtGetBytes);
+			this.groupBox2.Controls.Add(this.btnGetBytes);
+			this.groupBox2.Controls.Add(this.cbDateType);
+			this.groupBox2.Controls.Add(this.chkBigEndian);
+			this.groupBox2.Controls.Add(this.txtGetBytesResult);
+			this.groupBox2.Location = new System.Drawing.Point(22, 189);
+			this.groupBox2.Name = "groupBox2";
+			this.groupBox2.Size = new System.Drawing.Size(333, 81);
+			this.groupBox2.TabIndex = 18;
+			this.groupBox2.TabStop = false;
+			this.groupBox2.Text = "Number GetByte Array";
+			// 
+			// groupBox3
+			// 
+			this.groupBox3.Controls.Add(this.labCrc16TimeT);
+			this.groupBox3.Controls.Add(this.labCrc16ResT);
+			this.groupBox3.Controls.Add(this.labCrc16TimeC);
+			this.groupBox3.Controls.Add(this.labCrc16ResC);
+			this.groupBox3.Controls.Add(this.labCrc16TimeN);
+			this.groupBox3.Controls.Add(this.labCrc16ByteT);
+			this.groupBox3.Controls.Add(this.labCrc16ByteC);
+			this.groupBox3.Controls.Add(this.labCrc16ByteN);
+			this.groupBox3.Controls.Add(this.labCrc16ResN);
+			this.groupBox3.Controls.Add(this.label3);
+			this.groupBox3.Controls.Add(this.label2);
+			this.groupBox3.Controls.Add(this.label1);
+			this.groupBox3.Controls.Add(this.txtCrcSource);
+			this.groupBox3.Controls.Add(this.btnCRC16);
+			this.groupBox3.Location = new System.Drawing.Point(22, 277);
+			this.groupBox3.Name = "groupBox3";
+			this.groupBox3.Size = new System.Drawing.Size(333, 129);
+			this.groupBox3.TabIndex = 19;
+			this.groupBox3.TabStop = false;
+			this.groupBox3.Text = "CRC16 calculate";
+			// 
+			// txtCrcSource
+			// 
+			this.txtCrcSource.Location = new System.Drawing.Point(9, 21);
+			this.txtCrcSource.Name = "txtCrcSource";
+			this.txtCrcSource.Size = new System.Drawing.Size(240, 22);
+			this.txtCrcSource.TabIndex = 15;
+			// 
+			// btnCRC16
+			// 
+			this.btnCRC16.Location = new System.Drawing.Point(252, 21);
+			this.btnCRC16.Name = "btnCRC16";
+			this.btnCRC16.Size = new System.Drawing.Size(75, 23);
+			this.btnCRC16.TabIndex = 11;
+			this.btnCRC16.Text = "Convert";
+			this.btnCRC16.UseVisualStyleBackColor = true;
+			this.btnCRC16.Click += new System.EventHandler(this.btnCRC16_Click);
+			// 
+			// label1
+			// 
+			this.label1.AutoSize = true;
+			this.label1.Location = new System.Drawing.Point(6, 51);
+			this.label1.Name = "label1";
+			this.label1.Size = new System.Drawing.Size(40, 12);
+			this.label1.TabIndex = 16;
+			this.label1.Text = "Normal";
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(7, 77);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(39, 12);
+			this.label2.TabIndex = 16;
+			this.label2.Text = "CCITT";
+			// 
+			// label3
+			// 
+			this.label3.AutoSize = true;
+			this.label3.Location = new System.Drawing.Point(7, 103);
+			this.label3.Name = "label3";
+			this.label3.Size = new System.Drawing.Size(31, 12);
+			this.label3.TabIndex = 16;
+			this.label3.Text = "Table";
+			// 
+			// labCrc16ResN
+			// 
+			this.labCrc16ResN.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16ResN.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labCrc16ResN.Location = new System.Drawing.Point(67, 46);
+			this.labCrc16ResN.Name = "labCrc16ResN";
+			this.labCrc16ResN.Size = new System.Drawing.Size(90, 22);
+			this.labCrc16ResN.TabIndex = 17;
+			this.labCrc16ResN.Text = "0";
+			this.labCrc16ResN.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// labCrc16TimeN
+			// 
+			this.labCrc16TimeN.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16TimeN.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labCrc16TimeN.Location = new System.Drawing.Point(252, 46);
+			this.labCrc16TimeN.Name = "labCrc16TimeN";
+			this.labCrc16TimeN.Size = new System.Drawing.Size(75, 22);
+			this.labCrc16TimeN.TabIndex = 17;
+			this.labCrc16TimeN.Text = "0 ms";
+			this.labCrc16TimeN.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// labCrc16TimeC
+			// 
+			this.labCrc16TimeC.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16TimeC.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labCrc16TimeC.Location = new System.Drawing.Point(252, 72);
+			this.labCrc16TimeC.Name = "labCrc16TimeC";
+			this.labCrc16TimeC.Size = new System.Drawing.Size(75, 22);
+			this.labCrc16TimeC.TabIndex = 19;
+			this.labCrc16TimeC.Text = "0 ms";
+			this.labCrc16TimeC.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// labCrc16ResC
+			// 
+			this.labCrc16ResC.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16ResC.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labCrc16ResC.Location = new System.Drawing.Point(67, 72);
+			this.labCrc16ResC.Name = "labCrc16ResC";
+			this.labCrc16ResC.Size = new System.Drawing.Size(90, 22);
+			this.labCrc16ResC.TabIndex = 18;
+			this.labCrc16ResC.Text = "0";
+			this.labCrc16ResC.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// labCrc16TimeT
+			// 
+			this.labCrc16TimeT.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16TimeT.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labCrc16TimeT.Location = new System.Drawing.Point(252, 98);
+			this.labCrc16TimeT.Name = "labCrc16TimeT";
+			this.labCrc16TimeT.Size = new System.Drawing.Size(75, 22);
+			this.labCrc16TimeT.TabIndex = 21;
+			this.labCrc16TimeT.Text = "0 ms";
+			this.labCrc16TimeT.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// labCrc16ResT
+			// 
+			this.labCrc16ResT.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16ResT.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labCrc16ResT.Location = new System.Drawing.Point(67, 98);
+			this.labCrc16ResT.Name = "labCrc16ResT";
+			this.labCrc16ResT.Size = new System.Drawing.Size(90, 22);
+			this.labCrc16ResT.TabIndex = 20;
+			this.labCrc16ResT.Text = "0";
+			this.labCrc16ResT.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// labCrc16ByteN
+			// 
+			this.labCrc16ByteN.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16ByteN.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labCrc16ByteN.Location = new System.Drawing.Point(159, 46);
+			this.labCrc16ByteN.Name = "labCrc16ByteN";
+			this.labCrc16ByteN.Size = new System.Drawing.Size(90, 22);
+			this.labCrc16ByteN.TabIndex = 17;
+			this.labCrc16ByteN.Text = "0";
+			this.labCrc16ByteN.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// labCrc16ByteC
+			// 
+			this.labCrc16ByteC.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16ByteC.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labCrc16ByteC.Location = new System.Drawing.Point(159, 72);
+			this.labCrc16ByteC.Name = "labCrc16ByteC";
+			this.labCrc16ByteC.Size = new System.Drawing.Size(90, 22);
+			this.labCrc16ByteC.TabIndex = 17;
+			this.labCrc16ByteC.Text = "0";
+			this.labCrc16ByteC.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// labCrc16ByteT
+			// 
+			this.labCrc16ByteT.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16ByteT.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labCrc16ByteT.Location = new System.Drawing.Point(159, 98);
+			this.labCrc16ByteT.Name = "labCrc16ByteT";
+			this.labCrc16ByteT.Size = new System.Drawing.Size(90, 22);
+			this.labCrc16ByteT.TabIndex = 17;
+			this.labCrc16ByteT.Text = "0";
+			this.labCrc16ByteT.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
 			// MainEntry
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(491, 353);
+			this.ClientSize = new System.Drawing.Size(491, 420);
+			this.Controls.Add(this.groupBox3);
+			this.Controls.Add(this.groupBox2);
+			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.listBox1);
 			this.Controls.Add(this.button7);
-			this.Controls.Add(this.cbDateType);
-			this.Controls.Add(this.chkBigEndian);
-			this.Controls.Add(this.btnGetBytes);
-			this.Controls.Add(this.txtGetBytesResult);
-			this.Controls.Add(this.txtGetBytes);
-			this.Controls.Add(this.label2);
-			this.Controls.Add(this.btnUnitConv);
-			this.Controls.Add(this.label1);
-			this.Controls.Add(this.txtConvUnit);
 			this.Controls.Add(this.button6);
 			this.Controls.Add(this.button9);
 			this.Controls.Add(this.button8);
@@ -264,8 +463,13 @@
 			this.MinimizeBox = false;
 			this.Name = "MainEntry";
 			this.Text = "Main Form";
+			this.groupBox1.ResumeLayout(false);
+			this.groupBox1.PerformLayout();
+			this.groupBox2.ResumeLayout(false);
+			this.groupBox2.PerformLayout();
+			this.groupBox3.ResumeLayout(false);
+			this.groupBox3.PerformLayout();
 			this.ResumeLayout(false);
-			this.PerformLayout();
 
 		}
 
@@ -278,9 +482,7 @@
 		private System.Windows.Forms.Button button5;
 		private System.Windows.Forms.Button button6;
 		private System.Windows.Forms.TextBox txtConvUnit;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button btnUnitConv;
-		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox txtGetBytes;
 		private System.Windows.Forms.TextBox txtGetBytesResult;
 		private System.Windows.Forms.Button btnGetBytes;
@@ -290,5 +492,23 @@
 		private System.Windows.Forms.ListBox listBox1;
 		private System.Windows.Forms.Button button8;
 		private System.Windows.Forms.Button button9;
+		private System.Windows.Forms.GroupBox groupBox1;
+		private System.Windows.Forms.Label labConvResult;
+		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.GroupBox groupBox3;
+		private System.Windows.Forms.TextBox txtCrcSource;
+		private System.Windows.Forms.Label labCrc16TimeT;
+		private System.Windows.Forms.Label labCrc16ResT;
+		private System.Windows.Forms.Label labCrc16TimeC;
+		private System.Windows.Forms.Label labCrc16ResC;
+		private System.Windows.Forms.Label labCrc16TimeN;
+		private System.Windows.Forms.Label labCrc16ResN;
+		private System.Windows.Forms.Label label3;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.Label label1;
+		private System.Windows.Forms.Button btnCRC16;
+		private System.Windows.Forms.Label labCrc16ByteT;
+		private System.Windows.Forms.Label labCrc16ByteC;
+		private System.Windows.Forms.Label labCrc16ByteN;
 	}
 }
