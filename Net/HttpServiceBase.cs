@@ -49,6 +49,7 @@ namespace CJF.Net
 	[Serializable]
 	public class HttpServiceBase : IDisposable
 	{
+		LogManager _log = new LogManager(typeof(HttpServiceBase));
 		bool isDisposed = false;
 		bool _SendMail = false;
 		Random rndKey = new Random(DateTime.Now.Millisecond);
@@ -82,8 +83,6 @@ namespace CJF.Net
 		/// <summary>[覆寫] 接收到 Http Request 時的處理流程</summary>
 		public virtual void ProcessRequest()
 		{
-			//string msg = this.Context.Request.HttpMethod + " " + this.Context.Request.Url;
-			//LogManager.WriteLog(msg);
 			HttpListenerRequest request = this.Context.Request;
 			string rawUrl = request.RawUrl;
 			string pageUrl = rawUrl.Split('?')[0].TrimStart('/');
@@ -100,8 +99,6 @@ namespace CJF.Net
 		/// <param name="index">追蹤用序號</param>
 		public virtual void ProcessRequest(int index)
 		{
-			//string msg = this.Context.Request.HttpMethod + " " + this.Context.Request.Url;
-			//LogManager.WriteLog(msg);
 			HttpListenerRequest request = this.Context.Request;
 			string rawUrl = request.RawUrl;
 			string pageUrl = rawUrl.Split('?')[0].TrimStart('/');
@@ -119,14 +116,12 @@ namespace CJF.Net
 		/// <param name="queryString">要求中所包含的查詢字串。</param>
 		protected virtual void HttpGetMethod(string path, NameValueCollection queryString)
 		{
-			int invokeID = rndKey.Next(1, 65536);
-			HttpGetMethod(invokeID, path, queryString);
-			//string svc = path.TrimEnd('/');
-			//string[] paras = svc.Split('/');
-			//string file = path.Replace("/", "\\").ToLower();
-			//file = Path.Combine("Web", file);
-			//LogManager.WriteLog("[GET][{0:X4}]MG:File:{1}", invokeID, file);
-			//ResponseFile(file);
+			string svc = path.TrimEnd('/');
+			string[] paras = svc.Split('/');
+			string file = path.Replace("/", "\\").ToLower();
+			file = Path.Combine("Web", file);
+			_log.Write(LogManager.LogLevel.Debug, "GET File:{0}", file);
+			ResponseFile(file);
 		}
 		#endregion
 
@@ -141,7 +136,7 @@ namespace CJF.Net
 			string[] paras = svc.Split('/');
 			string file = path.Replace("/", "\\").ToLower();
 			file = Path.Combine("Web", file);
-			LogManager.WriteLog("[GET][{0:X4}]MG:File:{1}", index, file);
+			_log.Write(LogManager.LogLevel.Debug, "[{0}]GET File:{1}", index, file);
 			ResponseFile(file);
 		}
 		#endregion
@@ -152,35 +147,33 @@ namespace CJF.Net
 		/// <param name="queryString">要求中所包含的查詢字串。</param>
 		protected virtual void HttpPostMethod(string path, NameValueCollection queryString)
 		{
-			int invokeID = rndKey.Next(1, 65536);
-			HttpPostMethod(invokeID, path, queryString);
-			//try
-			//{
-			//    string svc = path.Replace("/", "\\").ToLower().TrimEnd('\\').Split('\\')[0];
-			//    HttpListenerRequest request = this.Context.Request;
-			//    NameValueCollection nvc = null;
-			//    this.ReceivedFiles = null;
-			//    if (request.ContentType == "application/x-www-form-urlencoded")
-			//    {
-			//        StreamReader reader = new StreamReader(request.InputStream);
-			//        string data = reader.ReadToEnd();
-			//        //LogManager.WriteLog("Service:{0}:{1}", svc, data);
-			//        nvc = System.Web.HttpUtility.ParseQueryString(data);
-			//        ReceivedAPI(svc, invokeID, nvc);
-			//    }
-			//    else if (request.ContentType.StartsWith("multipart/form-data"))
-			//    {
-			//        PopulatePostMultiPart(request, out nvc);
-			//        List<string> arr = this.ReceivedFiles.ConvertAll<string>(rfi => rfi.FileName);
-			//        //LogManager.WriteLog("Service:{0},Files:{1}", svc, string.Join(",", arr.ToArray()));
-			//        ReceivedAPI(svc, invokeID, nvc);
-			//    }
-			//}
-			//catch (Exception ex)
-			//{
-			//    LogManager.WriteLog("[ERR][{0:X4}]EX:From:HttpPostMethod:{1}", invokeID, path);
-			//    LogManager.LogException("ERR", invokeID, ex, _SendMail);
-			//}
+			try
+			{
+				string svc = path.Replace("/", "\\").ToLower().TrimEnd('\\').Split('\\')[0];
+				HttpListenerRequest request = this.Context.Request;
+				NameValueCollection nvc = null;
+				this.ReceivedFiles = null;
+				if (request.ContentType == "application/x-www-form-urlencoded")
+				{
+					StreamReader reader = new StreamReader(request.InputStream);
+					string data = reader.ReadToEnd();
+					//_log.Write(LogManager.LogLevel.Debug, "Service:{0}:{1}", svc, data);
+					nvc = System.Web.HttpUtility.ParseQueryString(data);
+					ReceivedAPI(svc, nvc);
+				}
+				else if (request.ContentType.StartsWith("multipart/form-data"))
+				{
+					PopulatePostMultiPart(request, out nvc);
+					List<string> arr = this.ReceivedFiles.ConvertAll<string>(rfi => rfi.FileName);
+					//_log.Write(LogManager.LogLevel.Debug, "Service:{0},Files:{1}", svc, string.Join(",", arr.ToArray()));
+					ReceivedAPI(svc, nvc);
+				}
+			}
+			catch (Exception ex)
+			{
+				_log.Write(LogManager.LogLevel.Debug, "From:HttpPostMethod:{0}", path);
+				_log.WriteException(ex, _SendMail);
+			}
 		}
 		#endregion
 
@@ -201,7 +194,7 @@ namespace CJF.Net
 				{
 					StreamReader reader = new StreamReader(request.InputStream);
 					string data = reader.ReadToEnd();
-					//LogManager.WriteLog("Service:{0}:{1}", svc, data);
+					//_log.Write(LogManager.LogLevel.Debug, "Service:{0}:{1}", svc, data);
 					nvc = System.Web.HttpUtility.ParseQueryString(data);
 					ReceivedAPI(svc, index, nvc);
 				}
@@ -209,14 +202,14 @@ namespace CJF.Net
 				{
 					PopulatePostMultiPart(request, out nvc);
 					List<string> arr = this.ReceivedFiles.ConvertAll<string>(rfi => rfi.FileName);
-					//LogManager.WriteLog("Service:{0},Files:{1}", svc, string.Join(",", arr.ToArray()));
+					//_log.Write(LogManager.LogLevel.Debug, "Service:{0},Files:{1}", svc, string.Join(",", arr.ToArray()));
 					ReceivedAPI(svc, index, nvc);
 				}
 			}
 			catch (Exception ex)
 			{
-				LogManager.WriteLog("[ERR][{0:X4}]EX:From:HttpPostMethod:{1}", index, path);
-				LogManager.LogException("ERR", index, ex, _SendMail);
+				_log.Write(LogManager.LogLevel.Debug, "[ERR][{0:X4}]EX:From:HttpPostMethod:{1}", index, path);
+				_log.WriteException(index.ToString("X4"), ex, _SendMail);
 			}
 		}
 		#endregion
@@ -288,17 +281,17 @@ namespace CJF.Net
 				catch (HttpListenerException ex)
 				{
 					if (ex.ErrorCode == 64)
-						LogManager.WriteLog("[LIB]MG:From:Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+						_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
 					else
 					{
-						LogManager.WriteLog("[LIB]EX:From:ResponseFile");
-						LogManager.LogException("LIB", ex, _SendMail);
+						_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
+						_log.WriteException(ex, _SendMail);
 					}
 				}
 				catch (Exception ex)
 				{
-					LogManager.WriteLog("[LIB]EX:From:ResponseFile");
-					LogManager.LogException("LIB", ex, _SendMail);
+					_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
+					_log.WriteException(ex, _SendMail);
 				}
 				finally
 				{
@@ -380,17 +373,17 @@ namespace CJF.Net
 				catch (HttpListenerException ex)
 				{
 					if (ex.ErrorCode == 64)
-						LogManager.WriteLog("[LIB]MG:From:Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+						_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
 					else
 					{
-						LogManager.WriteLog("[LIB]EX:From:ResponseFile");
-						LogManager.LogException("LIB", ex, _SendMail);
+						_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
+						_log.WriteException(ex, _SendMail);
 					}
 				}
 				catch (Exception ex)
 				{
-					LogManager.WriteLog("[LIB]EX:From:ResponseFile");
-					LogManager.LogException("LIB", ex, _SendMail);
+					_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
+					_log.WriteException(ex, _SendMail);
 				}
 				finally
 				{
@@ -451,17 +444,6 @@ namespace CJF.Net
 		}
 		#endregion
 
-		#region Private Method : ImageCodecInfo GetImageEncoder(ImageFormat format)
-		private ImageCodecInfo GetImageEncoder(ImageFormat format)
-		{
-			ImageCodecInfo[] codes = ImageCodecInfo.GetImageDecoders();
-			foreach (ImageCodecInfo ici in codes)
-				if (ici.FormatID == format.Guid)
-					return ici;
-			return null;
-		}
-		#endregion
-
 		#region Public Virtual Method : bool ResponseBitmap(Bitmap bitmap, ImageFormat format)
 		/// <summary>繪製 Bitmap 資料至終端</summary>
 		/// <param name="bitmap">Bitmap 圖像資料</param>
@@ -496,19 +478,19 @@ namespace CJF.Net
 			{
 				if (ex.ErrorCode == 64)
 				{
-					LogManager.WriteLog("[LIB]MG:From:Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+					_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
 					result = false;
 				}
 				else
 				{
-					LogManager.WriteLog("[ERR]EX:From:ResponseBitmap");
-					LogManager.LogException(ex, _SendMail);
+					_log.Write(LogManager.LogLevel.Debug, "From:ResponseBitmap");
+					_log.WriteException(ex, _SendMail);
 				}
 			}
 			catch (Exception ex)
 			{
-				LogManager.WriteLog("[ERR]EX:From:ResponseBitmap");
-				LogManager.LogException(ex, _SendMail);
+				_log.Write(LogManager.LogLevel.Debug, "From:ResponseBitmap");
+				_log.WriteException(ex, _SendMail);
 			}
 			finally
 			{
@@ -566,19 +548,19 @@ namespace CJF.Net
 			{
 				if (ex.ErrorCode == 64)
 				{
-					LogManager.WriteLog("[LIB]MG:From:Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+					_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
 					result = false;
 				}
 				else
 				{
-					LogManager.WriteLog("[ERR]EX:From:ResponseBinary");
-					LogManager.LogException(ex, _SendMail);
+					_log.Write(LogManager.LogLevel.Debug, "From:ResponseBinary");
+					_log.WriteException(ex, _SendMail);
 				}
 			}
 			catch (Exception ex)
 			{
-				LogManager.WriteLog("[ERR]EX:From:ResponseBinary");
-				LogManager.LogException(ex, _SendMail);
+				_log.Write(LogManager.LogLevel.Debug, "From:ResponseBinary");
+				_log.WriteException(ex, _SendMail);
 			}
 			finally
 			{
@@ -598,24 +580,24 @@ namespace CJF.Net
 		/// <returns>是否正確傳送</returns>
 		public virtual bool ResponseException(Exception ex)
 		{
-			StringBuilder sb = new StringBuilder(ex.Message.Replace(Environment.NewLine, "<br />"));
+			StringBuilder sb = new StringBuilder(ex.Message.Replace("\r", "").Replace("\n", "<br />"));
 			sb.AppendFormat("<br />{0}<br />", "=".PadLeft(40, '='));
 			if (ex.StackTrace != null)
-				sb.AppendFormat("{0}<br />", ex.StackTrace.Replace(Environment.NewLine, "<br />"));
+				sb.AppendFormat("{0}<br />", ex.StackTrace.Replace("\r", "").Replace("\n", "<br />"));
 			if (ex.InnerException != null)
 			{
 				sb.AppendFormat("{0}<br />", "-".PadLeft(40, '-'));
 				sb.AppendFormat("InnerException<br />");
-				sb.AppendFormat("{0}<br />", ex.InnerException.Message.Replace(Environment.NewLine, "<br />"));
+				sb.AppendFormat("{0}<br />", ex.InnerException.Message.Replace("\r", "").Replace("\n", "<br />"));
 				if (ex.InnerException.StackTrace != null)
 				{
 					sb.AppendFormat("StackTrace<br />");
-					sb.AppendFormat("{0}<br />", ex.InnerException.StackTrace.Replace(Environment.NewLine, "<br />"));
+					sb.AppendFormat("{0}<br />", ex.InnerException.StackTrace.Replace("\r", "").Replace("\n", "<br />"));
 				}
 			}
 			if (File.Exists("Web\\Exception.htm"))
 			{
-				string content = File.ReadAllText("Web\\Exception.htm");
+				string content = ReadHtmlFile("Web\\Exception.htm");
 				content = content.Replace("<!-- #ERROR_MSG# -->", sb.ToString());
 				return ResponseString(content);
 			}
@@ -640,8 +622,8 @@ namespace CJF.Net
 			}
 			catch (Exception ex)
 			{
-				LogManager.WriteLog("[ERR]EX:From:ResponseXML");
-				LogManager.LogException(ex, _SendMail);
+				_log.Write(LogManager.LogLevel.Debug, "From:ResponseXML");
+				_log.WriteException(ex, _SendMail);
 				return false;
 			}
 		}
@@ -666,7 +648,7 @@ namespace CJF.Net
 		}
 		#endregion
 
-		#region Public Virtual Method : bool ResponseServiceNotSupport()
+		#region Public Virtual Method : bool ResponseUnauthorized()
 		/// <summary>傳送「未獲得授權或未認證」給終端, HTTP Error Code:401</summary>
 		/// <returns>是否正確傳送</returns>
 		public virtual bool ResponseUnauthorized()
@@ -817,7 +799,7 @@ namespace CJF.Net
 							line = ms.ReadLine();	// 捨棄空行
 
 							int length = 0;
-							int idx = ConvUtils.ByteArrayIndexOf(buffer, splitBytes, (int)ms.Position);
+							int idx = ConvUtils.IndexOfBytes(buffer, splitBytes, (int)ms.Position);
 							byte[] buf = null;
 							if (idx != -1)
 							{
@@ -858,10 +840,45 @@ namespace CJF.Net
 		}
 		#endregion
 
+		#region Public Virtual Method : void RedirectURL(string url)
+		/// <summary>將回應設定為重新導向用戶端至指定的 URL。</summary>
+		/// <param name="url">用戶端應用來尋找所要求之資源的 URL</param>
+		public virtual void RedirectURL(string url)
+		{
+			try
+			{
+				this.Context.Response.Redirect(url);
+			}
+			catch (HttpListenerException ex)
+			{
+				if (ex.ErrorCode == 64)
+				{
+					_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+				}
+				else
+				{
+					_log.Write(LogManager.LogLevel.Debug, "From:RedirectURL");
+					_log.WriteException(ex, _SendMail);
+				}
+			}
+			catch (Exception ex)
+			{
+				_log.Write(LogManager.LogLevel.Debug, "From:RedirectURL");
+				_log.WriteException(ex, _SendMail);
+			}
+			finally
+			{
+				if (this.Context.Response != null)
+				{
+					try { this.Context.Response.Close(); }
+					catch { }
+				}
+			}
+		}
+		#endregion
+
 		#region Public Static Method : NameValueCollection ViewStateToNameValueCollection(string viewState)
-		/// <summary>
-		/// 將頁面中的VIEWSTATE資料轉為鍵值索引集合
-		/// </summary>
+		/// <summary>將頁面中的VIEWSTATE資料轉為鍵值索引集合</summary>
 		/// <param name="viewState">VIEWSTATE字串</param>
 		/// <returns>鍵值索引集合</returns>
 		public static NameValueCollection ViewStateToNameValueCollection(string viewState)
@@ -907,5 +924,17 @@ namespace CJF.Net
 				return File.ReadAllText(fileName);
 		}
 		#endregion
+
+		#region Private Method : ImageCodecInfo GetImageEncoder(ImageFormat format)
+		private ImageCodecInfo GetImageEncoder(ImageFormat format)
+		{
+			ImageCodecInfo[] codes = ImageCodecInfo.GetImageDecoders();
+			foreach (ImageCodecInfo ici in codes)
+				if (ici.FormatID == format.Guid)
+					return ici;
+			return null;
+		}
+		#endregion
+
 	}
 }

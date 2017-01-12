@@ -28,11 +28,14 @@ namespace CJF.Utility
 			Error = 3,
 			/// <summary>致命錯誤訊息</summary>
 			Fatal = 4
+			///// <summary>所有訊息</summary>
+			//All = 5
 		}
 		#endregion
 
 		#region LogManager Static Methods
 		private static ILog _GlobalLogger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+
 		#region Public Static Methods : void WriteLog(...)
 		/// <summary>記錄事件，使用LogLevel.Info級別記錄訊息</summary>
 		/// <param name="msg">訊息</param>
@@ -426,9 +429,9 @@ namespace CJF.Utility
 		/// <summary>
 		/// 建立LogManager類別
 		/// </summary>
-		public LogManager()
+		public LogManager(Type source)
 		{
-			_PrivateLogger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+			_PrivateLogger = log4net.LogManager.GetLogger(source);
 		}
 		/// <summary>
 		/// 建立私用的LogManager類別
@@ -586,9 +589,24 @@ namespace CJF.Utility
 		/// <summary>記錄錯誤事件</summary>
 		/// <param name="sessionKey">關鍵索引鍵</param>
 		/// <param name="ex">錯誤類別</param>
+		/// <param name="sendMail">是否寄發信件</param>
+		public void WriteException(string sessionKey, Exception ex, bool sendMail)
+		{
+			LogException(_PrivateLogger, sessionKey, ex, sendMail);
+		}
+		/// <summary>記錄錯誤事件</summary>
+		/// <param name="sessionKey">關鍵索引鍵</param>
+		/// <param name="ex">錯誤類別</param>
 		public void WriteException(string sessionKey, Exception ex)
 		{
 			LogException(_PrivateLogger, sessionKey, ex);
+		}
+		/// <summary>記錄錯誤事件</summary>
+		/// <param name="ex">錯誤類別</param>
+		/// <param name="sendMail">是否寄發信件</param>
+		public void WriteException(Exception ex, bool sendMail)
+		{
+			LogException(_PrivateLogger, "ERR", ex, sendMail);
 		}
 		/// <summary>記錄錯誤事件</summary>
 		/// <param name="ex">錯誤類別</param>

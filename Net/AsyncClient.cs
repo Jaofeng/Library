@@ -19,6 +19,7 @@ namespace CJF.Net
 
 		private AutoResetEvent m_ResetEvent = null;
 
+		LogManager _log = new LogManager(typeof(AsyncClient));
 		bool _IsDisposed = false;
 		SocketAsyncEventArgs m_AsyncArg = null;
 		int m_SendBufferSize = 2048;
@@ -230,10 +231,10 @@ namespace CJF.Net
 			m_AsyncArg.UserToken = new AsyncUserToken(m_Socket, this.ReceiveBufferSize, this.ExtraInfo);
 			m_AsyncArg.RemoteEndPoint = this.RemoteEndPoint;
 			m_AsyncArg.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessConnect);
-			if ((m_Debug & SocketDebugType.Connect) != 0)
+			if (m_Debug.HasFlag(SocketDebugType.Connect))
 				Console.WriteLine("[{0}]Socket : Before ConnectAsync In AsyncClient.Connect", DateTime.Now.ToString("HH:mm:ss.fff"));
 			m_Socket.ConnectAsync(m_AsyncArg);
-			if ((m_Debug & SocketDebugType.Connect) != 0)
+			if (m_Debug.HasFlag(SocketDebugType.Connect))
 				Console.WriteLine("[{0}]Socket : After ConnectAsync In AsyncClient.Connect", DateTime.Now.ToString("HH:mm:ss.fff"));
 			bool back = m_ResetEvent.WaitOne(this.ConnectTimeout, true);
 			if (!back)
@@ -251,8 +252,8 @@ namespace CJF.Net
 				else
 					throw new SocketException((int)m_AsyncArg.SocketError);
 			}
-			else if (m_AsyncArg.SocketError != SocketError.Success && m_AsyncArg.ConnectSocket == null)				
-					throw new SocketException((int)m_AsyncArg.SocketError);
+			else if (m_AsyncArg.SocketError != SocketError.Success && m_AsyncArg.ConnectSocket == null)
+				throw new SocketException((int)m_AsyncArg.SocketError);
 		}
 		#endregion
 
@@ -297,10 +298,10 @@ namespace CJF.Net
 			bool isNull = false;
 			if (m_Socket == null)
 			{
-				if (((m_Debug & SocketDebugType.Close) | (m_Debug & SocketDebugType.Shutdown)) != 0)
+				if (m_Debug.HasFlag(SocketDebugType.Close) || m_Debug.HasFlag(SocketDebugType.Shutdown))
 				{
 					Console.WriteLine("[{0}]Socket Is Null In AsyncClient.Close", DateTime.Now.ToString("HH:mm:ss.fff"));
-					LogManager.WriteLog("[LIB][CLT]DM:Socket Is Null In AsyncClient.Close");
+					_log.Write(LogManager.LogLevel.Debug, "Socket Is Null In AsyncClient.Close");
 				}
 				return;
 			}
@@ -319,7 +320,7 @@ namespace CJF.Net
 							foreach (EventHandler<AsyncClientEventArgs> del in this.OnClosing.GetInvocationList())
 							{
 								try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-								catch (Exception ex) { LogManager.LogException("LIB", ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -330,7 +331,7 @@ namespace CJF.Net
 							foreach (Delegate del in this.OnClosing.GetInvocationList())
 							{
 								try { del.DynamicInvoke(this, acea); }
-								catch (Exception ex) { LogManager.LogException("LIB", ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -345,7 +346,7 @@ namespace CJF.Net
 									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 								}
-								catch (Exception ex) { LogManager.LogException(ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -354,10 +355,10 @@ namespace CJF.Net
 			}
 			#endregion
 
-			if ((m_Debug & SocketDebugType.Shutdown) != 0)
+			if (m_Debug.HasFlag(SocketDebugType.Shutdown))
 			{
 				Console.WriteLine("[{0}]Socket : Before Shutdown In AsyncClient.Close", DateTime.Now.ToString("HH:mm:ss.fff"));
-				LogManager.WriteLog("[LIB][CLT]DM:Before Shutdown");
+				_log.Write(LogManager.LogLevel.Debug, "Before Shutdown");
 			}
 			try
 			{
@@ -366,32 +367,31 @@ namespace CJF.Net
 			catch (ObjectDisposedException) { isNull = true; }
 			catch (NullReferenceException) { isNull = true; }
 			catch (SocketException) { isNull = true; }
-			if ((m_Debug & SocketDebugType.Shutdown) != 0)
+			if (m_Debug.HasFlag(SocketDebugType.Shutdown))
 			{
 				Console.WriteLine("[{0}]Socket : After Shutdown In AsyncClient.Close", DateTime.Now.ToString("HH:mm:ss.fff"));
-				LogManager.WriteLog("[LIB][CLT]DM:After Shutdown");
+				_log.Write(LogManager.LogLevel.Debug, "After Shutdown");
 			}
-			if ((m_Debug & SocketDebugType.Close) != 0)
+			if (m_Debug.HasFlag(SocketDebugType.Close))
 			{
 				Console.WriteLine("[{0}]Socket : Before Close In AsyncServer.Close", DateTime.Now.ToString("HH:mm:ss.fff"));
-				LogManager.WriteLog("[LIB][CLT]DM:Before Close");
+				_log.Write(LogManager.LogLevel.Debug, "Before Close");
 			}
 			if (!isNull)
 			{
 				try
 				{
 					m_Socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.DontLinger, true);
-					//m_Socket.Disconnect(true);
 					m_Socket.Close();
 				}
 				catch (ObjectDisposedException) { isNull = true; }
 				catch (NullReferenceException) { isNull = true; }
 				catch (SocketException) { isNull = true; }
 			}
-			if ((m_Debug & SocketDebugType.Close) != 0)
+			if (m_Debug.HasFlag(SocketDebugType.Close))
 			{
 				Console.WriteLine("[{0}]Socket : After Close In AsyncServer.Close", DateTime.Now.ToString("HH:mm:ss.fff"));
-				LogManager.WriteLog("[LIB][CLT]DM:After Close");
+				_log.Write(LogManager.LogLevel.Debug, "After Close");
 			}
 			m_Connected = false;
 			SecondCounterCallback(null);
@@ -427,7 +427,7 @@ namespace CJF.Net
 							foreach (EventHandler<AsyncClientEventArgs> del in this.OnClosed.GetInvocationList())
 							{
 								try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-								catch (Exception ex) { LogManager.LogException("LIB", ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -438,7 +438,7 @@ namespace CJF.Net
 							foreach (Delegate del in this.OnClosed.GetInvocationList())
 							{
 								try { del.DynamicInvoke(this, acea); }
-								catch (Exception ex) { LogManager.LogException("LIB", ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -453,7 +453,7 @@ namespace CJF.Net
 									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 								}
-								catch (Exception ex) { LogManager.LogException(ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -511,7 +511,7 @@ namespace CJF.Net
 								foreach (EventHandler<AsyncClientEventArgs> del in this.OnBeforeSended.GetInvocationList())
 								{
 									try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-									catch (Exception ex) { LogManager.LogException("LIB", ex); }
+									catch (Exception ex) { _log.WriteException(ex); }
 								}
 								break;
 							}
@@ -522,7 +522,7 @@ namespace CJF.Net
 								foreach (Delegate del in this.OnBeforeSended.GetInvocationList())
 								{
 									try { del.DynamicInvoke(this, acea); }
-									catch (Exception ex) { LogManager.LogException("LIB", ex); }
+									catch (Exception ex) { _log.WriteException(ex); }
 								}
 								break;
 							}
@@ -537,7 +537,7 @@ namespace CJF.Net
 										EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 										ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 									}
-									catch (Exception ex) { LogManager.LogException(ex); }
+									catch (Exception ex) { _log.WriteException(ex); }
 								}
 								break;
 							}
@@ -551,8 +551,11 @@ namespace CJF.Net
 				arg.UserToken = new AsyncUserToken(m_Socket, this.SendBufferSize, extraInfo);
 				arg.RemoteEndPoint = this.RemoteEndPoint;
 				arg.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessSend);
-				if ((m_Debug & SocketDebugType.Send) != 0)
+				if (m_Debug.HasFlag(SocketDebugType.Send))
+				{
 					Console.WriteLine("[{0}]Socket : Before SendAsync In AsyncClient.SendData", DateTime.Now.ToString("HH:mm:ss.fff"));
+					_log.Write(LogManager.LogLevel.Debug, "Before SendAsync In AsyncClient.SendData");
+				}
 				SocketException sex = null;
 				try
 				{
@@ -560,9 +563,9 @@ namespace CJF.Net
 						ProcessSend(this, arg);
 					success = true;
 				}
-				catch (ObjectDisposedException) { LogManager.WriteLog("[LIB]DM:Send Fail(ObjectDisposed):{0}", ConvUtils.Byte2HexString(data)); }
+				catch (ObjectDisposedException) { _log.Write(LogManager.LogLevel.Warn, "Send Fail(ObjectDisposed):{0}", ConvUtils.Byte2HexString(data)); }
 				catch (SocketException se) { sex = se; }
-				catch (Exception ex) { LogManager.LogException("LIB", ex); }
+				catch (Exception ex) { _log.WriteException(ex); }
 				if (!success)
 				{
 					Interlocked.Add(ref m_WaittingSend, -data.Length);
@@ -583,7 +586,7 @@ namespace CJF.Net
 									foreach (EventHandler<AsyncClientEventArgs> del in this.OnSendedFail.GetInvocationList())
 									{
 										try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-										catch (Exception ex) { LogManager.LogException("LIB", ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -594,7 +597,7 @@ namespace CJF.Net
 									foreach (Delegate del in this.OnSendedFail.GetInvocationList())
 									{
 										try { del.DynamicInvoke(this, acea); }
-										catch (Exception ex) { LogManager.LogException("LIB", ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -609,7 +612,7 @@ namespace CJF.Net
 											EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 											ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 										}
-										catch (Exception ex) { LogManager.LogException(ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -618,8 +621,11 @@ namespace CJF.Net
 					}
 					#endregion
 				}
-				if ((m_Debug & SocketDebugType.Send) != 0)
+				if (m_Debug.HasFlag(SocketDebugType.Send))
+				{
 					Console.WriteLine("[{0}]Socket : After SendAsync In AsyncClient.SendData", DateTime.Now.ToString("HH:mm:ss.fff"));
+					_log.Write(LogManager.LogLevel.Debug, "After SendAsync In AsyncClient.SendData");
+				}
 				if (sex != null)
 				{
 					#region 產生事件 - OnException
@@ -638,7 +644,7 @@ namespace CJF.Net
 									foreach (EventHandler<AsyncClientEventArgs> del in this.OnException.GetInvocationList())
 									{
 										try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-										catch (Exception ex) { LogManager.LogException("LIB", ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -649,7 +655,7 @@ namespace CJF.Net
 									foreach (Delegate del in this.OnException.GetInvocationList())
 									{
 										try { del.DynamicInvoke(this, acea); }
-										catch (Exception ex) { LogManager.LogException("LIB", ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -664,7 +670,7 @@ namespace CJF.Net
 											EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 											ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 										}
-										catch (Exception ex) { LogManager.LogException(ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -691,7 +697,7 @@ namespace CJF.Net
 								foreach (EventHandler<AsyncClientEventArgs> del in this.OnSendedFail.GetInvocationList())
 								{
 									try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-									catch (Exception ex) { LogManager.LogException("LIB", ex); }
+									catch (Exception ex) { _log.WriteException(ex); }
 								}
 								break;
 							}
@@ -702,7 +708,7 @@ namespace CJF.Net
 								foreach (Delegate del in this.OnSendedFail.GetInvocationList())
 								{
 									try { del.DynamicInvoke(this, acea); }
-									catch (Exception ex) { LogManager.LogException("LIB", ex); }
+									catch (Exception ex) { _log.WriteException(ex); }
 								}
 								break;
 							}
@@ -717,7 +723,7 @@ namespace CJF.Net
 										EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 										ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 									}
-									catch (Exception ex) { LogManager.LogException(ex); }
+									catch (Exception ex) { _log.WriteException(ex); }
 								}
 								break;
 							}
@@ -747,7 +753,7 @@ namespace CJF.Net
 				del.EndInvoke(result);
 			}
 			catch (ObjectDisposedException) { }
-			catch (Exception ex) { LogManager.LogException("LIB", ex); }
+			catch (Exception ex) { _log.WriteException(ex); }
 		}
 		private void TransferCounterCallback(IAsyncResult result)
 		{
@@ -757,7 +763,7 @@ namespace CJF.Net
 				del.EndInvoke(result);
 			}
 			catch (ObjectDisposedException) { }
-			catch (Exception ex) { LogManager.LogException("LIB", ex); }
+			catch (Exception ex) { _log.WriteException(ex); }
 		}
 		#endregion
 
@@ -803,11 +809,17 @@ namespace CJF.Net
 				m_ResetEvent.Close();
 				try
 				{
-					if ((m_Debug & SocketDebugType.Shutdown) != 0)
+					if (m_Debug.HasFlag(SocketDebugType.Shutdown))
+					{
 						Console.WriteLine("[{0}]Socket : Before Shutdown In AsyncClient.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
+						_log.Write(LogManager.LogLevel.Debug, "Before Shutdown In AsyncClient.Dispose");
+					}
 					m_Socket.Shutdown(SocketShutdown.Both);
-					if ((m_Debug & SocketDebugType.Shutdown) != 0)
+					if (m_Debug.HasFlag(SocketDebugType.Shutdown))
+					{
 						Console.WriteLine("[{0}]Socket : After Shutdown In AsyncClient.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
+						_log.Write(LogManager.LogLevel.Debug, "After Shutdown In AsyncClient.Dispose");
+					}
 				}
 				catch (ObjectDisposedException) { }
 				catch (Exception) { } // throws if client process has already closed
@@ -817,12 +829,18 @@ namespace CJF.Net
 					{
 						if (m_Socket != null)
 						{
-							if ((m_Debug & SocketDebugType.Close) != 0)
+							if (m_Debug.HasFlag(SocketDebugType.Close))
+							{
 								Console.WriteLine("[{0}]Socket : Before Close In AsyncClient.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
+								_log.Write(LogManager.LogLevel.Debug, "Before Close In AsyncClient.Dispose");
+							}
 							m_Socket.Close();
 							m_Socket.Dispose();
-							if ((m_Debug & SocketDebugType.Close) != 0)
+							if (m_Debug.HasFlag(SocketDebugType.Close))
+							{
 								Console.WriteLine("[{0}]Socket : After Close In AsyncClient.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
+								_log.Write(LogManager.LogLevel.Debug, "After Close In AsyncClient.Dispose");
+							}
 							m_Socket = null;
 						}
 					}
@@ -860,7 +878,7 @@ namespace CJF.Net
 							foreach (EventHandler<DataTransEventArgs> del in this.OnCounterChanged.GetInvocationList())
 							{
 								try { del.BeginInvoke(this, dtea, new AsyncCallback(TransferCounterCallback), del); }
-								catch (Exception ex) { LogManager.LogException("LIB", ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -871,7 +889,7 @@ namespace CJF.Net
 							foreach (Delegate del in this.OnCounterChanged.GetInvocationList())
 							{
 								try { del.DynamicInvoke(this, dtea); }
-								catch (Exception ex) { LogManager.LogException("LIB", ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -886,7 +904,7 @@ namespace CJF.Net
 									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, dtea } };
 									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 								}
-								catch (Exception ex) { LogManager.LogException(ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -930,7 +948,7 @@ namespace CJF.Net
 								foreach (EventHandler<AsyncClientEventArgs> del in this.OnException.GetInvocationList())
 								{
 									try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-									catch (Exception ex) { LogManager.LogException("LIB", ex); }
+									catch (Exception ex) { _log.WriteException(ex); }
 								}
 								break;
 							}
@@ -941,7 +959,7 @@ namespace CJF.Net
 								foreach (Delegate del in this.OnException.GetInvocationList())
 								{
 									try { del.DynamicInvoke(this, acea); }
-									catch (Exception ex) { LogManager.LogException("LIB", ex); }
+									catch (Exception ex) { _log.WriteException(ex); }
 								}
 								break;
 							}
@@ -956,7 +974,7 @@ namespace CJF.Net
 										EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 										ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 									}
-									catch (Exception ex) { LogManager.LogException(ex); }
+									catch (Exception ex) { _log.WriteException(ex); }
 								}
 								break;
 							}
@@ -971,11 +989,17 @@ namespace CJF.Net
 			{
 				try
 				{
-					if ((m_Debug & SocketDebugType.Shutdown) != 0)
+					if (m_Debug.HasFlag(SocketDebugType.Shutdown))
+					{
 						Console.WriteLine("[{0}]Socket : Before Shutdown In AsyncClient.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
+						_log.Write(LogManager.LogLevel.Debug, "Before Shutdown In AsyncClient.ProcessError");
+					}
 					s.Shutdown(SocketShutdown.Both);
-					if ((m_Debug & SocketDebugType.Shutdown) != 0)
+					if (m_Debug.HasFlag(SocketDebugType.Shutdown))
+					{
 						Console.WriteLine("[{0}]Socket : After Shutdown In AsyncClient.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
+						_log.Write(LogManager.LogLevel.Debug, "After Shutdown In AsyncClient.ProcessError");
+					}
 				}
 				catch (Exception) { }	// 如果遠端伺服器已關閉則不處理
 				finally
@@ -984,15 +1008,21 @@ namespace CJF.Net
 					{
 						if (s != null)
 						{
-							if ((m_Debug & SocketDebugType.Close) != 0)
+							if (m_Debug.HasFlag(SocketDebugType.Close))
+							{
 								Console.WriteLine("[{0}]Socket : Before Close In AsyncClient.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
+								_log.Write(LogManager.LogLevel.Debug, "Before Close In AsyncClient.ProcessError");
+							}
 							s.Close();
-							if ((m_Debug & SocketDebugType.Close) != 0)
+							if (m_Debug.HasFlag(SocketDebugType.Close))
+							{
 								Console.WriteLine("[{0}]Socket : After Close In AsyncClient.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
+								_log.Write(LogManager.LogLevel.Debug, "After Close In AsyncClient.ProcessError");
+							}
 						}
 						s = null;
 					}
-					catch (Exception ex) { LogManager.LogException("LIB", ex); }
+					catch (Exception ex) { _log.WriteException(ex); }
 				}
 			}
 			#endregion
@@ -1010,7 +1040,7 @@ namespace CJF.Net
 							foreach (EventHandler<AsyncClientEventArgs> del in this.OnException.GetInvocationList())
 							{
 								try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-								catch (Exception ex) { LogManager.LogException("LIB", ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -1021,7 +1051,7 @@ namespace CJF.Net
 							foreach (Delegate del in this.OnException.GetInvocationList())
 							{
 								try { del.DynamicInvoke(this, acea); }
-								catch (Exception ex) { LogManager.LogException("LIB", ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -1036,7 +1066,7 @@ namespace CJF.Net
 									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 								}
-								catch (Exception ex) { LogManager.LogException(ex); }
+								catch (Exception ex) { _log.WriteException(ex); }
 							}
 							break;
 						}
@@ -1057,8 +1087,11 @@ namespace CJF.Net
 			try
 			{
 				m_ResetEvent.Set();
-				if ((m_Debug & SocketDebugType.Connect) != 0)
+				if (m_Debug.HasFlag(SocketDebugType.Connect))
+				{
 					Console.WriteLine("[{0}]Socket : Exec ConnectAsync In AsyncClient.OnConnect", DateTime.Now.ToString("HH:mm:ss.fff"));
+					_log.Write(LogManager.LogLevel.Debug, "Exec ConnectAsync In AsyncClient.OnConnect");
+				}
 				if (e.SocketError == SocketError.Success)
 				{
 					AsyncUserToken token = e.UserToken as AsyncUserToken;
@@ -1083,7 +1116,7 @@ namespace CJF.Net
 									foreach (EventHandler<AsyncClientEventArgs> del in this.OnConnected.GetInvocationList())
 									{
 										try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-										catch (Exception ex) { LogManager.LogException("LIB", ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -1094,7 +1127,7 @@ namespace CJF.Net
 									foreach (Delegate del in this.OnConnected.GetInvocationList())
 									{
 										try { del.DynamicInvoke(this, acea); }
-										catch (Exception ex) { LogManager.LogException("LIB", ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -1109,7 +1142,7 @@ namespace CJF.Net
 											EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 											ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 										}
-										catch (Exception ex) { LogManager.LogException(ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -1123,8 +1156,11 @@ namespace CJF.Net
 					byte[] receiveBuffer = new byte[this.ReceiveBufferSize];
 					e.SetBuffer(receiveBuffer, 0, receiveBuffer.Length);
 					e.Completed += new EventHandler<SocketAsyncEventArgs>(ProcessReceive);
-					if ((m_Debug & SocketDebugType.Receive) != 0)
+					if (m_Debug.HasFlag(SocketDebugType.Receive))
+					{
 						Console.WriteLine("[{0}]Socket : Before ReceiveAsync In AsyncClient.OnConnect", DateTime.Now.ToString("HH:mm:ss.fff"));
+						_log.Write(LogManager.LogLevel.Debug, "Before ReceiveAsync In AsyncClient.OnConnect");
+					}
 					try
 					{
 						if (!s.ReceiveAsync(e))
@@ -1132,10 +1168,13 @@ namespace CJF.Net
 					}
 					catch (Exception ex)
 					{
-						LogManager.LogException("LIB", ex);
+						_log.WriteException(ex);
 					}
-					if ((m_Debug & SocketDebugType.Receive) != 0)
+					if (m_Debug.HasFlag(SocketDebugType.Receive))
+					{
 						Console.WriteLine("[{0}]Socket : After ReceiveAsync In AsyncClient.OnConnect", DateTime.Now.ToString("HH:mm:ss.fff"));
+						_log.Write(LogManager.LogLevel.Debug, "After ReceiveAsync In AsyncClient.OnConnect");
+					}
 				}
 				else
 				{
@@ -1147,7 +1186,7 @@ namespace CJF.Net
 			catch (Exception ex)
 			{
 				if (!_IsDisposed)
-					LogManager.LogException("LIB", ex);
+					_log.WriteException(ex);
 			}
 		}
 		#endregion
@@ -1157,8 +1196,11 @@ namespace CJF.Net
 		{
 			if (e.LastOperation != SocketAsyncOperation.Receive || _IsDisposed || !m_Connected) return;
 			m_LastAction = DateTime.Now;
-			if ((m_Debug & SocketDebugType.Receive) != 0)
+			if (m_Debug.HasFlag(SocketDebugType.Receive))
+			{
 				Console.WriteLine("[{0}]Socket : Exec ReceiveAsync In AsyncClient.OnReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
+				_log.Write(LogManager.LogLevel.Debug, "Exec ReceiveAsync In AsyncClient.OnReceive");
+			}
 			if (e.BytesTransferred > 0)
 			{
 				if (e.SocketError == SocketError.Success)
@@ -1198,7 +1240,7 @@ namespace CJF.Net
 										foreach (EventHandler<AsyncClientEventArgs> del in this.OnDataReceived.GetInvocationList())
 										{
 											try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-											catch (Exception ex) { LogManager.LogException("LIB", ex); }
+											catch (Exception ex) { _log.WriteException(ex); }
 										}
 										break;
 									}
@@ -1209,7 +1251,7 @@ namespace CJF.Net
 										foreach (Delegate del in this.OnDataReceived.GetInvocationList())
 										{
 											try { del.DynamicInvoke(this, acea); }
-											catch (Exception ex) { LogManager.LogException("LIB", ex); }
+											catch (Exception ex) { _log.WriteException(ex); }
 										}
 										break;
 									}
@@ -1224,7 +1266,7 @@ namespace CJF.Net
 												EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 												ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 											}
-											catch (Exception ex) { LogManager.LogException(ex); }
+											catch (Exception ex) { _log.WriteException(ex); }
 										}
 										break;
 									}
@@ -1233,8 +1275,11 @@ namespace CJF.Net
 						}
 						#endregion
 
-						if ((m_Debug & SocketDebugType.Receive) != 0)
+						if (m_Debug.HasFlag(SocketDebugType.Receive))
+						{
 							Console.WriteLine("[{0}]Socket : Before ReceiveAsync In AsyncClient.OnReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
+							_log.Write(LogManager.LogLevel.Debug, "Before ReceiveAsync In AsyncClient.OnReceive");
+						}
 						try
 						{
 							if (!s.ReceiveAsync(e))
@@ -1243,14 +1288,17 @@ namespace CJF.Net
 						catch (ObjectDisposedException) { }
 						catch (Exception ex)
 						{
-							LogManager.LogException("LIB", ex);
+							_log.WriteException(ex);
 						}
-						if ((m_Debug & SocketDebugType.Receive) != 0)
+						if (m_Debug.HasFlag(SocketDebugType.Receive))
+						{
 							Console.WriteLine("[{0}]Socket : After ReceiveAsync In AsyncClient.OnReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
+							_log.Write(LogManager.LogLevel.Debug, "After ReceiveAsync In AsyncClient.OnReceive");
+						}
 					}
 					catch (Exception ex)
 					{
-						LogManager.LogException("LIB", ex);
+						_log.WriteException(ex);
 					}
 				}
 				else
@@ -1289,7 +1337,7 @@ namespace CJF.Net
 									foreach (EventHandler<AsyncClientEventArgs> del in this.OnSendedFail.GetInvocationList())
 									{
 										try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-										catch (Exception ex) { LogManager.LogException("LIB", ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -1300,7 +1348,7 @@ namespace CJF.Net
 									foreach (Delegate del in this.OnSendedFail.GetInvocationList())
 									{
 										try { del.DynamicInvoke(this, acea); }
-										catch (Exception ex) { LogManager.LogException("LIB", ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -1315,7 +1363,7 @@ namespace CJF.Net
 											EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 											ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 										}
-										catch (Exception ex) { LogManager.LogException(ex); }
+										catch (Exception ex) { _log.WriteException(ex); }
 									}
 									break;
 								}
@@ -1327,8 +1375,11 @@ namespace CJF.Net
 				}
 			}
 			catch (ObjectDisposedException) { return; }
-			if ((m_Debug & SocketDebugType.Send) != 0)
+			if (m_Debug.HasFlag(SocketDebugType.Send))
+			{
 				Console.WriteLine("[{0}]Socket : Exec SendAsync In AsyncClient.OnSend", DateTime.Now.ToString("HH:mm:ss.fff"));
+				_log.Write(LogManager.LogLevel.Debug, "Exec SendAsync In AsyncClient.OnSend");
+			}
 			if (e.BytesTransferred > 0)
 			{
 				if (e.SocketError == SocketError.Success)
@@ -1357,7 +1408,7 @@ namespace CJF.Net
 										foreach (EventHandler<AsyncClientEventArgs> del in this.OnDataSended.GetInvocationList())
 										{
 											try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-											catch (Exception ex) { LogManager.LogException("LIB", ex); }
+											catch (Exception ex) { _log.WriteException(ex); }
 										}
 										break;
 									}
@@ -1368,7 +1419,7 @@ namespace CJF.Net
 										foreach (Delegate del in this.OnDataSended.GetInvocationList())
 										{
 											try { del.DynamicInvoke(this, acea); }
-											catch (Exception ex) { LogManager.LogException("LIB", ex); }
+											catch (Exception ex) { _log.WriteException(ex); }
 										}
 										break;
 									}
@@ -1383,7 +1434,7 @@ namespace CJF.Net
 												EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 												ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 											}
-											catch (Exception ex) { LogManager.LogException(ex); }
+											catch (Exception ex) { _log.WriteException(ex); }
 										}
 										break;
 									}
@@ -1394,7 +1445,7 @@ namespace CJF.Net
 					}
 					catch (Exception ex)
 					{
-						LogManager.LogException("LIB", ex);
+						_log.WriteException(ex);
 
 						#region 產生事件 - OnSendedFail
 						if (this.OnSendedFail != null)
@@ -1413,7 +1464,7 @@ namespace CJF.Net
 										foreach (EventHandler<AsyncClientEventArgs> del in this.OnSendedFail.GetInvocationList())
 										{
 											try { del.BeginInvoke(this, acea, new AsyncCallback(AsyncClientEventCallback), del); }
-											catch (Exception exx) { LogManager.LogException("LIB", exx); }
+											catch (Exception exx) { _log.WriteException(exx); }
 										}
 										break;
 									}
@@ -1424,7 +1475,7 @@ namespace CJF.Net
 										foreach (Delegate del in this.OnSendedFail.GetInvocationList())
 										{
 											try { del.DynamicInvoke(this, acea); }
-											catch (Exception exx) { LogManager.LogException("LIB", exx); }
+											catch (Exception exx) { _log.WriteException(exx); }
 										}
 										break;
 									}
@@ -1439,7 +1490,7 @@ namespace CJF.Net
 												EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, acea } };
 												ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
 											}
-											catch (Exception exx) { LogManager.LogException(exx); }
+											catch (Exception exx) { _log.WriteException(exx); }
 										}
 										break;
 									}
@@ -1465,7 +1516,7 @@ namespace CJF.Net
 				EventThreadVariables etv = (EventThreadVariables)o;
 				etv.InvokeMethod.DynamicInvoke(etv.Args);
 			}
-			catch (Exception ex) { LogManager.LogException("LIB", ex); }
+			catch (Exception ex) { _log.WriteException(ex); }
 		}
 		#endregion
 
@@ -1494,7 +1545,7 @@ namespace CJF.Net
 		private bool IsSocketConnected()
 		{
 			/********************************************************************************************
-			 * Connected  屬性的值會反映最近一次作業的連接狀態。 
+			 * Connected  屬性的值僅會反映最近一次作業的連接狀態。 
 			 * 如果您需要判斷連接的目前狀態，請執行非封鎖、零位元組的 Send 呼叫。 
 			 * 如果該呼叫成功傳回或擲回 WAEWOULDBLOCK 錯誤碼 (10035)，則表示通訊端仍在連接中，否則，就表示通訊端已不再連接。 
 			 * Depending on http://msdn.microsoft.com/zh-tw/library/system.net.sockets.socket.connected.aspx?cs-save-lang=1&cs-lang=csharp
@@ -1561,7 +1612,6 @@ namespace CJF.Net
 			if (address.AddressFamily != AddressFamily.InterNetwork)
 				throw new ArgumentException("Only supports IPv4 Addresses.");
 			int addrInt = IpAddressAsInt32(address);
-			//Int32 srcAddrInt = IpAddressAsInt32(sourceAddress);
 			int srcAddrInt = IpAddressAsInt32(IPAddress.Any);
 			const int MacAddressLength = 6;// 48bits
 			byte[] macAddress = new byte[MacAddressLength];

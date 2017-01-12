@@ -10,6 +10,7 @@ namespace CJF.Net
 	/// <summary>處理 Ping 的類別元件</summary>
 	public class PingTester : IDisposable
 	{
+		LogManager _log = new LogManager(typeof(PingTester));
 		Timer _PingTimer = null;
 		bool _IsDisposed = false;
 
@@ -201,7 +202,7 @@ namespace CJF.Net
 						foreach (EventHandler<PingResultEventArgs> del in this.OnResult.GetInvocationList())
 						{
 							try { del.BeginInvoke(this, arg, new AsyncCallback(PingResultCallback), del); }
-							catch (Exception exx) { LogManager.LogException(exx); }
+							catch (Exception exx) { _log.WriteException(exx); }
 						}
 					}
 				}
@@ -213,7 +214,7 @@ namespace CJF.Net
 						foreach (EventHandler<PingResultEventArgs> del in this.OnException.GetInvocationList())
 						{
 							try { del.BeginInvoke(this, arg, new AsyncCallback(PingResultCallback), del); }
-							catch (Exception exx) { LogManager.LogException(exx); }
+							catch (Exception exx) { _log.WriteException(exx); }
 						}
 					}
 				}
@@ -228,7 +229,7 @@ namespace CJF.Net
 					foreach (EventHandler del in this.OnFinished.GetInvocationList())
 					{
 						try { del.BeginInvoke(this, new EventArgs(), new AsyncCallback(EventCallback) , del); }
-						catch (Exception exx) { LogManager.LogException(exx); }
+						catch (Exception exx) { _log.WriteException(exx); }
 					}
 				}
 			}

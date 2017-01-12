@@ -104,6 +104,17 @@ namespace CJF.Utility
 		}
 		#endregion
 
+		#region Public Static Method : string RemoveANSI(string str)
+		/// <summary>移除ANSI代碼</summary>
+		/// <param name="str">包含 ANSI 代碼的字串</param>
+		/// <returns></returns>
+		public static string RemoveANSI(string str)
+		{
+			System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("\\{[\\w|!]+\\}");
+			return reg.Replace(str, "");
+		}
+		#endregion
+
 		#region Public Static Method : string CleanKeycode(string str)
 		/// <summary>將關鍵字清除</summary>
 		/// <param name="str">內含關鍵字的原始字串</param>

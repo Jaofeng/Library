@@ -702,22 +702,10 @@ namespace CJF.Utility
 		/// </summary>
 		/// <param name="source">來源陣列</param>
 		/// <param name="pattern">比對陣列</param>
-		/// <returns></returns>
-		public static int ByteArrayIndexOf(byte[] source, byte[] pattern)
-		{
-			return ByteArrayIndexOf(source, pattern, 0);
-		}
-		#endregion
-
-		#region Public Static Method : int ByteArrayIndexOf(byte[] pattern, byte[] bytes, int startIndex)
-		/// <summary>
-		/// 尋找位元組陣列所在位置
-		/// </summary>
-		/// <param name="source">來源陣列</param>
-		/// <param name="pattern">比對陣列</param>
 		/// <param name="startIndex">開始比對位置</param>
 		/// <returns></returns>
-		public static int ByteArrayIndexOf(byte[] source, byte[] pattern, int startIndex)
+		[Obsolete("請使用 IndexOfBytes(byte[] source, byte[] pattern, [int startIndex = 0])")]
+		public static int ByteArrayIndexOf(byte[] source, byte[] pattern, int startIndex = 0)
 		{
 			int sLen = source.Length;
 			int pLen = pattern.Length;
@@ -999,6 +987,42 @@ namespace CJF.Utility
 				return false;
 			else
 				return defVal;
+		}
+		#endregion
+
+		#region Public Static Method : int IndexOfBytes(byte[] source, byte[] pattern, int startIndex = 0)
+		/// <summary>尋找位元組陣列中的特定陣列值</summary>
+		/// <param name="source">原始陣列</param>
+		/// <param name="pattern">欲搜尋的陣列</param>
+		/// <param name="startIndex">起始位置</param>
+		/// <returns>-1:未搜尋到結果；大於等於 0:第一個位元組的位置</returns>
+		public static int IndexOfBytes(byte[] source, byte[] pattern, int startIndex = 0)
+		{
+			int fidx = 0;
+			int result = Array.FindIndex(source, startIndex, source.Length - startIndex, (byte b) =>
+			{
+				fidx = (b == pattern[fidx]) ? fidx + 1 : 0;
+				return (fidx == pattern.Length);
+			});
+			return (result < 0) ? -1 : result - fidx + 1;
+		}
+		#endregion
+
+		#region Public Static Method : int IndexOfPattern<T>(T[] source, T[] pattern, int startIndex = 0)
+		/// <summary>尋找 T 資料型態陣列中的特定陣列值</summary>
+		/// <param name="source">原始陣列</param>
+		/// <param name="pattern">欲搜尋的陣列</param>
+		/// <param name="startIndex">起始位置</param>
+		/// <returns>-1:未搜尋到結果；大於等於 0:第一個位置</returns>
+		public static int IndexOfPattern<T>(T[] source, T[] pattern, int startIndex = 0)
+		{
+			int fidx = 0;
+			int result = Array.FindIndex<T>(source, startIndex, source.Length - startIndex, (T item) =>
+			{
+				fidx = item.Equals(pattern[fidx]) ? fidx + 1 : 0;
+				return (fidx == pattern.Length);
+			});
+			return (result < 0) ? -1 : result - fidx + 1;
 		}
 		#endregion
 	}

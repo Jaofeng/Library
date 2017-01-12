@@ -16,6 +16,7 @@ namespace Tester
 		{
 			InitializeComponent();
 			cbDateType.SelectedIndex = 0;
+			cbLogLevel.SelectedIndex = 0;
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -127,6 +128,14 @@ namespace Tester
 			labCrc16ByteT.Text = ConvUtils.Byte2HexString(table.ComputeChecksumBytes(source));
 			watch.Stop();
 			labCrc16TimeT.Text = watch.ElapsedTicks.ToString() + " Ticks";
+		}
+
+		private void button10_Click(object sender, EventArgs e)
+		{
+			LogManager.LogLevel lv = LogManager.LogLevel.Info;
+			if (!Enum.TryParse<LogManager.LogLevel>(cbLogLevel.SelectedItem.ToString(),true, out lv))
+				return;
+			LogManager.WriteLog(lv, txtLog.Text);
 		}
 	}
 }

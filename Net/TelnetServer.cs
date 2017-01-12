@@ -43,6 +43,7 @@ namespace CJF.Net
 		#endregion
 
 		#region Variables
+		LogManager _log = new LogManager(typeof(TelnetServer));
 		AsyncServer m_Server;						// 伺服器 Socket 物件
 		IPEndPoint m_LocalEndPort;					// 本地端通訊埠
 		int m_MaxConnections;						// 同時可連接的最大連線數 
@@ -148,7 +149,7 @@ namespace CJF.Net
 				foreach (EventHandler<SocketServerEventArgs> del in this.OnShutdown.GetInvocationList())
 				{
 					try { del.BeginInvoke(this, null, null, del); }
-					catch (Exception ex) { LogManager.LogException(ex); }
+					catch (Exception ex) { _log.WriteException(ex); }
 				}
 			}
 			#endregion
@@ -326,7 +327,7 @@ namespace CJF.Net
 				foreach (EventHandler<SocketServerEventArgs> del in this.OnStarted.GetInvocationList())
 				{
 					try { del.BeginInvoke(this, null, null, del); }
-					catch (Exception ex) { LogManager.LogException(ex); }
+					catch (Exception ex) { _log.WriteException(ex); }
 				}
 			}
 			#endregion
@@ -341,7 +342,7 @@ namespace CJF.Net
 				foreach (EventHandler<SocketServerEventArgs> del in this.OnSendedFail.GetInvocationList())
 				{
 					try { del.BeginInvoke(this, e, null, del); }
-					catch (Exception ex) { LogManager.LogException(ex); }
+					catch (Exception ex) { _log.WriteException(ex); }
 				}
 			}
 		}
@@ -355,7 +356,7 @@ namespace CJF.Net
 				foreach (EventHandler<SocketServerEventArgs> del in this.OnException.GetInvocationList())
 				{
 					try { del.BeginInvoke(this, e, null, del); }
-					catch (Exception ex) { LogManager.LogException(ex); }
+					catch (Exception ex) { _log.WriteException(ex); }
 				}
 			}
 		}
@@ -377,7 +378,7 @@ namespace CJF.Net
 				foreach (EventHandler<SocketServerEventArgs> del in this.OnDataSended.GetInvocationList())
 				{
 					try { del.BeginInvoke(this, ssea, null, del); }
-					catch (Exception ex) { LogManager.LogException(ex); }
+					catch (Exception ex) { _log.WriteException(ex); }
 				}
 			}
 		}
@@ -473,7 +474,7 @@ namespace CJF.Net
 											foreach (EventHandler<SocketServerEventArgs> del in this.OnClientConnected.GetInvocationList())
 											{
 												try { del.BeginInvoke(this, e, null, del); }
-												catch (Exception ex) { LogManager.LogException(ex); }
+												catch (Exception ex) { _log.WriteException(ex); }
 											}
 										}
 									});
@@ -503,7 +504,7 @@ namespace CJF.Net
 						foreach (EventHandler<SocketServerEventArgs> del in this.OnDataReceived.GetInvocationList())
 						{
 							try { del.BeginInvoke(this, arg, null, del); }
-							catch (Exception ex) { LogManager.LogException(ex); }
+							catch (Exception ex) { _log.WriteException(ex); }
 						}
 					}
 					#endregion
@@ -542,7 +543,7 @@ namespace CJF.Net
 					foreach (EventHandler<SocketServerEventArgs> del in this.OnDataReceived.GetInvocationList())
 					{
 						try { del.BeginInvoke(this, arg, null, del); }
-						catch (Exception ex) { LogManager.LogException(ex); }
+						catch (Exception ex) { _log.WriteException(ex); }
 					}
 				}
 				#endregion
@@ -575,7 +576,7 @@ namespace CJF.Net
 					foreach (EventHandler<SocketServerEventArgs> del in this.OnClientConnected.GetInvocationList())
 					{
 						try { del.BeginInvoke(this, e, null, del); }
-						catch (Exception ex) { LogManager.LogException(ex); }
+						catch (Exception ex) { _log.WriteException(ex); }
 					}
 				}
 			}
@@ -590,7 +591,7 @@ namespace CJF.Net
 				foreach (EventHandler<SocketServerEventArgs> del in this.OnClientClosing.GetInvocationList())
 				{
 					try { del.BeginInvoke(this, e, null, del); }
-					catch (Exception ex) { LogManager.LogException(ex); }
+					catch (Exception ex) { _log.WriteException(ex); }
 				}
 			}
 			if (e.RemoteEndPoint != null)
@@ -618,7 +619,7 @@ namespace CJF.Net
 				foreach (EventHandler<SocketServerEventArgs> del in this.OnClientClosed.GetInvocationList())
 				{
 					try { del.BeginInvoke(this, e, null, del); }
-					catch (Exception ex) { LogManager.LogException(ex); }
+					catch (Exception ex) { _log.WriteException(ex); }
 				}
 			}
 			if (e.RemoteEndPoint != null && !m_IsDisposed)
