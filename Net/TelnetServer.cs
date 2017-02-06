@@ -217,8 +217,8 @@ namespace CJF.Net
 		/// <summary>取得或設定是否為除錯模式</summary>
 		public SocketDebugType Debug
 		{
-			get { return (m_Server == null) ? SocketDebugType.None : m_Server.Debug; }
-			set { if (m_Server != null) m_Server.Debug = value; }
+			get { return (m_Server == null) ? SocketDebugType.None : m_Server.DebugMode; }
+			set { if (m_Server != null) m_Server.DebugMode = value; }
 		}
 		/// <summary>設定或取得長時間未操作自動將用戶端斷線的設定時間，單位秒，0表不作動，預設值為0</summary>
 		public uint AutoCloseTime

@@ -264,33 +264,33 @@ namespace CJF.Net
 				{
 					if (m_Debug.HasFlag(SocketDebugType.Shutdown))
 					{
-						Console.WriteLine("[{0}]Socket : Before Shutdown In AsyncServer.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : Before Shutdown In AsyncServer.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "Before Shutdown");
 					}
 					m_ListenSocket.Shutdown(SocketShutdown.Both);
 					if (m_Debug.HasFlag(SocketDebugType.Shutdown))
 					{
-						Console.WriteLine("[{0}]Socket : After Shutdown In AsyncServer.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : After Shutdown In AsyncServer.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "After Shutdown");
 					}
 				}
 				catch (Exception ex)
 				{
-					Console.WriteLine("[LIB]EX:Shutdown:{0}", ex.Message);
+					Debug.Print("[LIB]EX:Shutdown:{0}", ex.Message);
 					_log.WriteException(ex);
 				}
 				finally
 				{
 					if (m_Debug.HasFlag(SocketDebugType.Close))
 					{
-						Console.WriteLine("[{0}]Socket : Before Close In AsyncServer.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : Before Close In AsyncServer.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "Before Close");
 					}
 					m_ListenSocket.Close();
 					Thread.Sleep(500);
 					if (m_Debug.HasFlag(SocketDebugType.Close))
 					{
-						Console.WriteLine("[{0}]Socket : After Close In AsyncServer.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : After Close In AsyncServer.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "After Close");
 					}
 				}
@@ -390,7 +390,7 @@ namespace CJF.Net
 					arg.UserToken = new AsyncUserToken(ac.Socket, data.Length);
 					if (m_Debug.HasFlag(SocketDebugType.Send))
 					{
-						Console.WriteLine("[{0}]Socket : Before SendAsync In AsyncServer.SendData", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : Before SendAsync In AsyncServer.SendData", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "Before SendAsync");
 					}
 					try
@@ -410,7 +410,7 @@ namespace CJF.Net
 					}
 					if (m_Debug.HasFlag(SocketDebugType.Send))
 					{
-						Console.WriteLine("[{0}]Socket : After SendAsync In AsyncServer.SendData", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : After SendAsync In AsyncServer.SendData", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "After SendAsync");
 					}
 				}
@@ -456,7 +456,7 @@ namespace CJF.Net
 		/// <summary>取得值，目前伺服器否啟動中</summary>
 		public bool IsStarted { get { return m_ServerStarted; } }
 		/// <summary>取得或設定是否為除錯模式</summary>
-		public SocketDebugType Debug
+		public SocketDebugType DebugMode
 		{
 			get { return m_Debug; }
 			set
@@ -468,7 +468,7 @@ namespace CJF.Net
 				foreach (string ep in eps)
 				{
 					if (m_OnlineClients[ep] != null)
-						m_OnlineClients[ep].Debug = m_Debug;
+						m_OnlineClients[ep].DebugMode = m_Debug;
 				}
 			}
 		}
@@ -516,8 +516,6 @@ namespace CJF.Net
 			if (m_IsDisposed || m_IsShutdown) return;
 			int index = Thread.CurrentThread.ManagedThreadId;
 			string rep = "Unknow";
-			if (e.RemoteEndPoint != null)
-				rep = e.RemoteEndPoint.ToString();
 			try
 			{
 				if (e == null)
@@ -527,11 +525,13 @@ namespace CJF.Net
 				}
 				else
 				{
+					if (e.RemoteEndPoint != null)
+						rep = e.RemoteEndPoint.ToString();
 					e.AcceptSocket = null;
 				}
 				if (m_Debug.HasFlag(SocketDebugType.Connect))
 				{
-					Console.WriteLine("[{0}]Socket : Before AcceptAsync In AsyncServer.StartAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
+					Debug.Print("[{0}]Socket : Before AcceptAsync In AsyncServer.StartAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
 					_log.Write(LogManager.LogLevel.Debug, "Before AcceptAsync:{0}", rep);
 				}
 				m_MaxNumberAcceptedClients.WaitOne();
@@ -540,12 +540,12 @@ namespace CJF.Net
 					ProcessAccept(e);
 				if (e.SocketError != SocketError.Success)
 				{
-					Console.WriteLine("[{0}]Socket : AsyncServer.StartAccept Fail:{1}", DateTime.Now.ToString("HH:mm:ss.fff"), e.SocketError);
+					Debug.Print("[{0}]Socket : AsyncServer.StartAccept Fail:{1}", DateTime.Now.ToString("HH:mm:ss.fff"), e.SocketError);
 					_log.Write(LogManager.LogLevel.Debug, "AsyncServer.StartAccept Fail:{0}:{1}", rep, e.SocketError);
 				}
 				if (m_Debug.HasFlag(SocketDebugType.Connect))
 				{
-					Console.WriteLine("[{0}]Socket : After AcceptAsync In AsyncServer.StartAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
+					Debug.Print("[{0}]Socket : After AcceptAsync In AsyncServer.StartAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
 					_log.Write(LogManager.LogLevel.Debug, "After AcceptAsync:{0}", rep);
 				}
 			}
@@ -564,7 +564,7 @@ namespace CJF.Net
 		{
 			if (m_Debug.HasFlag(SocketDebugType.IO_Completed))
 			{
-				Console.WriteLine("[{0}]Socket : Before IO_Completed:{1}", DateTime.Now.ToString("HH:mm:ss.fff"), e.LastOperation);
+				Debug.Print("[{0}]Socket : Before IO_Completed:{1}", DateTime.Now.ToString("HH:mm:ss.fff"), e.LastOperation);
 				_log.Write(LogManager.LogLevel.Debug, "Before IO_Completed:{0}:{1}", Thread.CurrentThread.ManagedThreadId, e.LastOperation);
 			}
 			switch (e.LastOperation)
@@ -588,7 +588,7 @@ namespace CJF.Net
 			}
 			if (m_Debug.HasFlag(SocketDebugType.IO_Completed))
 			{
-				Console.WriteLine("[{0}]Socket : After IO_Completed:{1}", DateTime.Now.ToString("HH:mm:ss.fff"), e.LastOperation);
+				Debug.Print("[{0}]Socket : After IO_Completed:{1}", DateTime.Now.ToString("HH:mm:ss.fff"), e.LastOperation);
 				_log.Write(LogManager.LogLevel.Debug, "After IO_Completed:{0}:{1}", Thread.CurrentThread.ManagedThreadId, e.LastOperation);
 			}
 		}
@@ -617,13 +617,13 @@ namespace CJF.Net
 					SocketAsyncEventArgs readEventArgs = null;
 					if (m_Debug.HasFlag(SocketDebugType.PopSocketArg))
 					{
-						Console.WriteLine("[{0}]Socket : Before Pop In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : Before Pop In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "Before Pop In ProcessAccept:{0}", rep);
 					}
 					readEventArgs = m_ReadWritePool.Pop();
 					if (m_Debug.HasFlag(SocketDebugType.PopSocketArg))
 					{
-						Console.WriteLine("[{0}]Socket : After Pop In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : After Pop In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "After Pop In ProcessAccept:{0}:{1}:{2}", rep,
 							(m_Counters[ServerCounterType.PoolUsed] == null) ? "Unknow" : m_Counters[ServerCounterType.PoolUsed].RawValue.ToString(), this.Connections);
 					}
@@ -632,7 +632,7 @@ namespace CJF.Net
 						AsyncClient ac = new AsyncClient(s);
 						ac.ResetIdleTime();
 						ac.AutoClose = m_AutoCloseTime;
-						ac.Debug = this.Debug;
+						ac.DebugMode = this.DebugMode;
 						ac.OnBeforeSended += new EventHandler<AsyncClientEventArgs>(ac_OnBeforeSended);
 						ac.OnDataSended += new EventHandler<AsyncClientEventArgs>(ac_OnDataSended);
 						ac.OnSendedFail += new EventHandler<AsyncClientEventArgs>(ac_OnSendedFail);
@@ -706,7 +706,7 @@ namespace CJF.Net
 
 						if (m_Debug.HasFlag(SocketDebugType.Receive))
 						{
-							Console.WriteLine("[{0}]Socket : Before ReceiveAsync In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
+							Debug.Print("[{0}]Socket : Before ReceiveAsync In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
 							_log.Write(LogManager.LogLevel.Debug, "Before ReceiveAsync In ProcessAccept:{0}", rep);
 						}
 						try
@@ -717,7 +717,7 @@ namespace CJF.Net
 						catch (ObjectDisposedException) { }
 						if (m_Debug.HasFlag(SocketDebugType.Receive))
 						{
-							Console.WriteLine("[{0}]Socket : After ReceiveAsync In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
+							Debug.Print("[{0}]Socket : After ReceiveAsync In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
 							_log.Write(LogManager.LogLevel.Debug, "After ReceiveAsync In ProcessAccept:{0}", rep);
 						}
 					}
@@ -732,8 +732,8 @@ namespace CJF.Net
 					AsyncUserToken token = (AsyncUserToken)e.UserToken;
 					if (m_Debug.HasFlag(SocketDebugType.Connect))
 					{
-						Console.WriteLine("[{0}]Socket : SocketException:{1} In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"), ex.SocketErrorCode);
-						Console.WriteLine(ex.Message);
+						Debug.Print("[{0}]Socket : SocketException:{1} In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"), ex.SocketErrorCode);
+						Debug.Print(ex.Message);
 						_log.Write(LogManager.LogLevel.Debug, "SocketException In ProcessAccept:{0}", rep);
 					}
 					if (s != null && token != null && token.Client != null)
@@ -811,8 +811,8 @@ namespace CJF.Net
 				{
 					if (m_Debug.HasFlag(SocketDebugType.Connect))
 					{
-						Console.WriteLine("[{0}]Socket : Exception In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
-						Console.WriteLine(ex.Message);
+						Debug.Print("[{0}]Socket : Exception In AsyncServer.ProcessAccept", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print(ex.Message);
 						_log.Write(LogManager.LogLevel.Debug, "Exception In ProcessAccept:{0}", rep);
 					}
 					_log.WriteException(ex);
@@ -861,7 +861,7 @@ namespace CJF.Net
 				{
 					if (m_Debug.HasFlag(SocketDebugType.Receive))
 					{
-						Console.WriteLine("[{0}]Socket : Exec ReceiveAsync In AsyncServer.ProcessReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : Exec ReceiveAsync In AsyncServer.ProcessReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "Exec ReceiveAsync In AsyncServer.ProcessReceive:{0}", rep);
 					}
 					if (e.SocketError == SocketError.Success)
@@ -887,7 +887,7 @@ namespace CJF.Net
 
 						if (ac == null)
 						{
-							Console.WriteLine("Unknow Socket Connect!!");
+							Debug.Print("Unknow Socket Connect!!");
 							_log.Write(LogManager.LogLevel.Debug, "Unknow Socket:{0}", rep);
 							_log.Write(LogManager.LogLevel.Debug, "Data:{0}", ConvUtils.Byte2HexString(rec.ToArray()));
 							this.CloseClientSocket(e);
@@ -950,7 +950,7 @@ namespace CJF.Net
 
 						if (m_Debug.HasFlag(SocketDebugType.Receive))
 						{
-							Console.WriteLine("[{0}]Socket : Before ReceiveAsync In AsyncServer.ProcessReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
+							Debug.Print("[{0}]Socket : Before ReceiveAsync In AsyncServer.ProcessReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
 							_log.Write(LogManager.LogLevel.Debug, "Before ReceiveAsync:{0}", rep);
 						}
 						if (!ac.Connected)
@@ -974,7 +974,7 @@ namespace CJF.Net
 						}
 						if (m_Debug.HasFlag(SocketDebugType.Receive))
 						{
-							Console.WriteLine("[{0}]Socket : After ReceiveAsync In AsyncServer.ProcessReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
+							Debug.Print("[{0}]Socket : After ReceiveAsync In AsyncServer.ProcessReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
 							_log.Write(LogManager.LogLevel.Debug, "After ReceiveAsync:{0}", rep);
 						}
 					}
@@ -1011,7 +1011,7 @@ namespace CJF.Net
 			{
 				if (m_Debug.HasFlag(SocketDebugType.Send))
 				{
-					Console.WriteLine("[{0}]Socket : Exec SendAsync In AsyncServer.ProcessSend", DateTime.Now.ToString("HH:mm:ss.fff"));
+					Debug.Print("[{0}]Socket : Exec SendAsync In AsyncServer.ProcessSend", DateTime.Now.ToString("HH:mm:ss.fff"));
 					_log.Write(LogManager.LogLevel.Debug, "Exec SendAsync In AsyncServer.ProcessSend");
 				}
 				if (e.SocketError == SocketError.Success)
@@ -1030,7 +1030,7 @@ namespace CJF.Net
 					}
 					if (ac == null)
 					{
-						Console.WriteLine("Unknow Socket Connect!!");
+						Debug.Print("Unknow Socket Connect!!");
 						if (e.RemoteEndPoint != null)
 							_log.Write(LogManager.LogLevel.Debug, "Unknow Socket:{0}", e.RemoteEndPoint);
 						this.CloseClientSocket(e);
@@ -1176,13 +1176,13 @@ namespace CJF.Net
 
 					if (m_Debug.HasFlag(SocketDebugType.Shutdown))
 					{
-						Console.WriteLine("[{0}]Socket : Before CloseClientSocket In AsyncServer.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : Before CloseClientSocket In AsyncServer.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "Before CloseClientSocket In ProcessError");
 					}
 					this.CloseClientSocket(e);
 					if (m_Debug.HasFlag(SocketDebugType.Shutdown))
 					{
-						Console.WriteLine("[{0}]Socket : After CloseClientSocket In AsyncServer.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : After CloseClientSocket In AsyncServer.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "After CloseClientSocket In ProcessError");
 					}
 				}
@@ -1225,13 +1225,13 @@ namespace CJF.Net
 						#region Try Shutdown
 						if (m_Debug.HasFlag(SocketDebugType.Close))
 						{
-							Console.WriteLine("[{0}]Socket : Before Shutdown In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+							Debug.Print("[{0}]Socket : Before Shutdown In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 							_log.Write(LogManager.LogLevel.Debug, "Before Shutdown(CloseClient)");
 						}
 						s.Shutdown(SocketShutdown.Both);
 						if (m_Debug.HasFlag(SocketDebugType.Close))
 						{
-							Console.WriteLine("[{0}]Socket : After Shutdown In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+							Debug.Print("[{0}]Socket : After Shutdown In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 							_log.Write(LogManager.LogLevel.Debug, "After Shutdown(CloseClient)");
 						}
 						#endregion
@@ -1244,13 +1244,13 @@ namespace CJF.Net
 						{
 							if (m_Debug.HasFlag(SocketDebugType.Close))
 							{
-								Console.WriteLine("[{0}]Socket : Before Close In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+								Debug.Print("[{0}]Socket : Before Close In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 								_log.Write(LogManager.LogLevel.Debug, "Before Close(CloseClient)");
 							}
 							s.Close();
 							if (m_Debug.HasFlag(SocketDebugType.Close))
 							{
-								Console.WriteLine("[{0}]Socket : After Close In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+								Debug.Print("[{0}]Socket : After Close In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 								_log.Write(LogManager.LogLevel.Debug, "After Close(CloseClient)");
 							}
 						}
@@ -1288,7 +1288,7 @@ namespace CJF.Net
 					{
 						if ((m_Debug & SocketDebugType.PushSocketArg) != 0)
 						{
-							Console.WriteLine("[{0}]Socket : Before Push In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+							Debug.Print("[{0}]Socket : Before Push In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 							_log.Write(LogManager.LogLevel.Debug, "Before Push:{0}", m_ReadWritePool.Count);
 						}
 						if (!m_IsDisposed && m_Counters[ServerCounterType.PoolUsed] != null)
@@ -1296,7 +1296,7 @@ namespace CJF.Net
 						m_ReadWritePool.Push(e);
 						if ((m_Debug & SocketDebugType.PushSocketArg) != 0)
 						{
-							Console.WriteLine("[{0}]Socket : After Push In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+							Debug.Print("[{0}]Socket : After Push In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 							_log.Write(LogManager.LogLevel.Debug, "After Push:{0}", m_ReadWritePool.Count);
 						}
 					}
@@ -1387,13 +1387,13 @@ namespace CJF.Net
 							#region Try Shutdown
 							if (m_Debug.HasFlag(SocketDebugType.Close))
 							{
-								Console.WriteLine("[{0}]Socket : Before Shutdown In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+								Debug.Print("[{0}]Socket : Before Shutdown In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 								_log.Write(LogManager.LogLevel.Debug, "Before Shutdown(CloseClient)");
 							}
 							s.Shutdown(SocketShutdown.Both);
 							if (m_Debug.HasFlag(SocketDebugType.Close))
 							{
-								Console.WriteLine("[{0}]Socket : After Shutdown In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+								Debug.Print("[{0}]Socket : After Shutdown In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 								_log.Write(LogManager.LogLevel.Debug, "After Shutdown(CloseClient)");
 							}
 							#endregion
@@ -1406,13 +1406,13 @@ namespace CJF.Net
 							{
 								if (m_Debug.HasFlag(SocketDebugType.Close))
 								{
-									Console.WriteLine("[{0}]Socket : Before Close In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+									Debug.Print("[{0}]Socket : Before Close In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 									_log.Write(LogManager.LogLevel.Debug, "Before Close(CloseClient)");
 								}
 								s.Close();
 								if (m_Debug.HasFlag(SocketDebugType.Close))
 								{
-									Console.WriteLine("[{0}]Socket : After Close In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+									Debug.Print("[{0}]Socket : After Close In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 									_log.Write(LogManager.LogLevel.Debug, "After Close(CloseClient)");
 								}
 							}
@@ -1442,7 +1442,7 @@ namespace CJF.Net
 				{
 					if ((m_Debug & SocketDebugType.PushSocketArg) != 0)
 					{
-						Console.WriteLine("[{0}]Socket : Before Push In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : Before Push In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "Before Push:{0}", m_ReadWritePool.Count);
 					}
 					if (!m_IsDisposed && m_Counters[ServerCounterType.PoolUsed] != null)
@@ -1450,7 +1450,7 @@ namespace CJF.Net
 					m_ReadWritePool.Push(e);
 					if ((m_Debug & SocketDebugType.PushSocketArg) != 0)
 					{
-						Console.WriteLine("[{0}]Socket : After Push In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
+						Debug.Print("[{0}]Socket : After Push In AsyncServer.CloseClientSocket", DateTime.Now.ToString("HH:mm:ss.fff"));
 						_log.Write(LogManager.LogLevel.Debug, "After Push:{0}", m_ReadWritePool.Count);
 					}
 				}
@@ -1545,13 +1545,13 @@ namespace CJF.Net
 					{
 						if (m_Debug.HasFlag(SocketDebugType.PopSocketArg))
 						{
-							Console.WriteLine("[{0}]Socket : Before Pop In Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
+							Debug.Print("[{0}]Socket : Before Pop In Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
 							_log.Write(LogManager.LogLevel.Debug, "Before Push:{0}", m_ReadWritePool.Count);
 						}
 						arg = m_ReadWritePool.Pop();
 						if (m_Debug.HasFlag(SocketDebugType.PopSocketArg))
 						{
-							Console.WriteLine("[{0}]Socket : After Pop In Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
+							Debug.Print("[{0}]Socket : After Pop In Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
 							_log.Write(LogManager.LogLevel.Debug, "Before Push:{0}", m_ReadWritePool.Count);
 						}
 						arg.Dispose();
@@ -1577,13 +1577,13 @@ namespace CJF.Net
 						{
 							if (m_Debug.HasFlag(SocketDebugType.Shutdown))
 							{
-								Console.WriteLine("[{0}]Socket : Before Shutdown In AsyncServer.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
+								Debug.Print("[{0}]Socket : Before Shutdown In AsyncServer.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
 								_log.Write(LogManager.LogLevel.Debug, "Before Shutdown In Dispose");
 							}
 							m_ListenSocket.Shutdown(SocketShutdown.Both);
 							if (m_Debug.HasFlag(SocketDebugType.Shutdown))
 							{
-								Console.WriteLine("[{0}]Socket : After Shutdown In AsyncServer.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
+								Debug.Print("[{0}]Socket : After Shutdown In AsyncServer.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
 								_log.Write(LogManager.LogLevel.Debug, "After Shutdown In Dispose");
 							}
 						}
@@ -1594,13 +1594,13 @@ namespace CJF.Net
 							{
 								if (m_Debug.HasFlag(SocketDebugType.Close))
 								{
-									Console.WriteLine("[{0}]Socket : Before Close In AsyncServer.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
+									Debug.Print("[{0}]Socket : Before Close In AsyncServer.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
 									_log.Write(LogManager.LogLevel.Debug, "Before Close In Dispose");
 								}
 								m_ListenSocket.Close();
 								if (m_Debug.HasFlag(SocketDebugType.Close))
 								{
-									Console.WriteLine("[{0}]Socket : After Close In AsyncServer.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
+									Debug.Print("[{0}]Socket : After Close In AsyncServer.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
 									_log.Write(LogManager.LogLevel.Debug, "After Close In Dispose");
 								}
 							}

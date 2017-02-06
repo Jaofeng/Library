@@ -26,6 +26,17 @@ namespace CJF.Utility.CRC
 		ushort[] table = new ushort[256];
 		ushort initialValue = 0;
 
+		#region Public Method : ushort ComputeChecksum(tring fileName)
+		/// <summary>計算CRC</summary>
+		/// <param name="fileName">欲計算的檔案名稱</param>
+		/// <returns>計算後的 CRC16 值</returns>
+		public ushort ComputeChecksum(string fileName)
+		{
+			byte[] source = System.IO.File.ReadAllBytes(fileName);
+			return ComputeChecksum(source);
+		}
+		#endregion
+
 		#region Public Method : ushort ComputeChecksum(byte[] source)
 		/// <summary>計算CRC</summary>
 		/// <param name="source">欲計算的位元組陣列</param>
@@ -55,6 +66,17 @@ namespace CJF.Utility.CRC
 			byte[] tmp = new byte[length];
 			Array.Copy(source, startIndex, tmp, 0, length);
 			return ComputeChecksum(tmp);
+		}
+		#endregion
+
+		#region Public Method : byte[] ComputeChecksum(tring fileName)
+		/// <summary>計算CRC</summary>
+		/// <param name="fileName">欲計算的檔案名稱</param>
+		/// <returns>計算後的 CRC16 位元組陣列值</returns>
+		public byte[] ComputeChecksumBytes(string fileName)
+		{
+			byte[] source = System.IO.File.ReadAllBytes(fileName);
+			return ComputeChecksumBytes(source);
 		}
 		#endregion
 
@@ -123,6 +145,17 @@ namespace CJF.Utility.CRC
 		const ushort polynomial = 0xA001;
 		ushort[] table = new ushort[256];
 
+		#region Public Method : ushort ComputeChecksum(tring fileName)
+		/// <summary>計算CRC</summary>
+		/// <param name="fileName">欲計算的檔案名稱</param>
+		/// <returns>計算後的 CRC16 值</returns>
+		public ushort ComputeChecksum(string fileName)
+		{
+			byte[] source = System.IO.File.ReadAllBytes(fileName);
+			return ComputeChecksum(source);
+		}
+		#endregion
+
 		#region Public Method : ushort ComputeChecksum(byte[] source)
 		/// <summary>計算CRC</summary>
 		/// <param name="source">欲計算的位元組陣列</param>
@@ -152,6 +185,17 @@ namespace CJF.Utility.CRC
 			byte[] tmp = new byte[length];
 			Array.Copy(source, startIndex, tmp, 0, length);
 			return ComputeChecksum(tmp);
+		}
+		#endregion
+
+		#region Public Method : byte[] ComputeChecksum(tring fileName)
+		/// <summary>計算CRC</summary>
+		/// <param name="fileName">欲計算的檔案名稱</param>
+		/// <returns>計算後的 CRC16 位元組陣列值</returns>
+		public byte[] ComputeChecksumBytes(string fileName)
+		{
+			byte[] source = System.IO.File.ReadAllBytes(fileName);
+			return ComputeChecksumBytes(source);
 		}
 		#endregion
 
