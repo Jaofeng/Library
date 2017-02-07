@@ -120,7 +120,8 @@ namespace CJF.Net
 			get
 			{
 				if (_IsDisposed)
-					throw new ObjectDisposedException(this.GetType().ToString(), "物件已被 Dispose");
+					return false;
+					//throw new ObjectDisposedException(this.GetType().ToString(), "物件已被 Dispose");
 				try
 				{
 					if (m_Socket != null && !m_Socket.Connected)

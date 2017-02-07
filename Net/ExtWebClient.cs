@@ -1,14 +1,115 @@
 ﻿using System;
 using System.Collections.Specialized;
+using System.ComponentModel;
+using System.IO;
 using System.Net;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CJF.Net
 {
+	#region Public Enum : FileUploaderCompletedResult
+	/// <summary>檔案上傳完成回覆列舉</summary>
+	public enum FileUploaderCompletedResult
+	{
+		/// <summary>失敗</summary>
+		Failed = 0,
+		/// <summary>成功</summary>
+		Success = 1
+	}
+	#endregion
+
+	#region Public Class : FileUploaderProgessChangedEventArgs : EventArgs
+	/// <summary>FileUploaderProgessChangedEventArgs 事件參數類別</summary>
+	public class FileUploaderProgessChangedEventArgs : EventArgs
+	{
+		/// <summary>取得已傳送的位元組數目。</summary>
+		public long BytesSent { get; private set; }
+		/// <summary>取得要傳送的位元組總數。</summary>
+		public long TotalBytesToSend { get; private set; }
+		/// <summary>取得使用者自訂資料</summary>
+		public object UserState { get; private set; }
+		/// <summary>建立 FileUploaderProgessChangedEventArgs 事件參數類別</summary>
+		/// <param name="sent">已傳送位元組數</param>
+		/// <param name="total">總位元組數</param>
+		internal FileUploaderProgessChangedEventArgs(long sent, long total) : this(sent, total, null) { }
+		/// <summary>建立 FileUploaderProgessChangedEventArgs 事件參數類別</summary>
+		/// <param name="sent">已傳送位元組數</param>
+		/// <param name="total">總位元組數</param>
+		/// <param name="userState">使用者自訂資料</param>
+		internal FileUploaderProgessChangedEventArgs(long sent, long total, object userState)
+		{
+			this.BytesSent = sent;
+			this.TotalBytesToSend = total;
+			this.UserState = userState;
+		}
+	}
+	#endregion
+
+	#region Publuc Class : FileUploaderCompletedEventArgs : EventArgs
+	/// <summary>FileUploaderCompletedEventArgs 事件參數類別</summary>
+	public class FileUploaderCompletedEventArgs : EventArgs
+	{
+		/// <summary>取得伺服器對資料上載作業的回應。</summary>
+		public byte[] ServerResult { get; private set; }
+		/// <summary>取得伺服器回應的狀態。</summary>
+		public FileUploaderCompletedResult Status { get; private set; }
+		/// <summary>取得使用者自訂資料</summary>
+		public object UserState { get; private set; }
+		/// <summary>建立 FileUploaderCompletedEventArgs 事件參數類別</summary>
+		/// <param name="result">伺服器回覆的資料</param>
+		/// <param name="status">檔案上傳成功與否回覆</param>
+		internal FileUploaderCompletedEventArgs(byte[] result, FileUploaderCompletedResult status) : this(result, status, null) { }
+		/// <summary>建立 FileUploaderCompletedEventArgs 事件參數類別</summary>
+		/// <param name="result">伺服器回覆的資料</param>
+		/// <param name="status">檔案上傳成功與否回覆</param>
+		/// <param name="userState">使用者自訂資料</param>
+		internal FileUploaderCompletedEventArgs(byte[] result, FileUploaderCompletedResult status, object userState)
+		{
+			this.ServerResult = result;
+			this.Status = status;
+			this.UserState = userState;
+		}
+	}
+	#endregion
+
 	#region Class : ExtWebClient
 	/// <summary>自定義 WebClient 類別，繼承自 System.Net.WebClient。</summary>
 	public class ExtWebClient : WebClient
 	{
+		#region Public Struct : FileData
+		/// <summary>檔案上傳用的資料結構</summary>
+		public struct FileData
+		{
+			/// <summary>鍵值</summary>
+			public string KeyName;
+			/// <summary>包含路徑的檔案名稱</summary>
+			public string FileName;
+			/// <summary>回傳結構是否為空值</summary>
+			public bool IsEmpty { get { return string.IsNullOrEmpty(KeyName) && string.IsNullOrEmpty(FileName); } }
+			/// <summary>檔案種類</summary>
+			public string ContentType;
+			/// <summary>建立一個新的 FileHttpUpload 結構</summary>
+			/// <param name="key">上傳的鍵值</param>
+			/// <param name="fileName">包含路徑的檔案名稱</param>
+			/// <param name="type">檔案種類 ContentType</param>
+			/// <returns></returns>
+			public static FileData Create(string key, string fileName, string type)
+			{
+				return new FileData() { KeyName = key, FileName = fileName, ContentType = type };
+			}
+		}
+		#endregion
+
+		#region 類別公開事件
+		/// <summary>檔案上傳進度事件，由 FileUploaderAsync(...) 函示產生</summary>
+		public event EventHandler<FileUploaderProgessChangedEventArgs> OnFileUploaderProgressChanged;
+		/// <summary>檔案上傳完成的事件，由 FileUploaderAsync(...) 函示產生</summary>
+		public event EventHandler<FileUploaderCompletedEventArgs> OnFileUploaderCompleted;
+		#endregion
+
 		/// <summary>設定或取得請求逾時時間，單位豪秒</summary>
 		public int RequestTimeout { get; set; }
 
@@ -40,6 +141,235 @@ namespace CJF.Net
 			}
 			else
 				return base.GetWebRequest(address);
+		}
+		#endregion
+
+		#region Public Method : void FileUploaderAsync(string urlAddress, string fileName)
+		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <param name="urlAddress">欲傳送的網址</param>
+		/// <param name="fileName">包含路徑的檔案名稱</param>
+		/// <exception cref="ArgumentNullException">uri 不得為空值。</exception>
+		/// <exception cref="ArgumentException">values 與 fileName 不可同時為空值。</exception>
+		/// <exception cref="FileNotFoundException">找不到檔案</exception>
+		public void FileUploaderAsync(string urlAddress, string fileName)
+		{
+			FileUploaderAsync(new Uri(urlAddress), null, fileName);
+		}
+		#endregion
+
+		#region Public Method : void FileUploaderAsync(string urlAddress, string fileName, object userState)
+		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <param name="urlAddress">欲傳送的網址</param>
+		/// <param name="fileName">包含路徑的檔案名稱</param>
+		/// <param name="userState">使用者自訂的附加資訊</param>
+		/// <exception cref="ArgumentNullException">uri 不得為空值。</exception>
+		/// <exception cref="ArgumentException">values 與 fileName 不可同時為空值。</exception>
+		/// <exception cref="FileNotFoundException">找不到檔案</exception>
+		public void FileUploaderAsync(string urlAddress, string fileName, object userState)
+		{
+			FileUploaderAsync(new Uri(urlAddress), null, fileName, userState);
+		}
+		#endregion
+
+		#region Public Method : void FileUploaderAsync(string urlAddress, NameValueCollection values, string fileName)
+		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <param name="urlAddress">欲傳送的網址</param>
+		/// <param name="values">參數資料</param>
+		/// <param name="fileName">包含路徑的檔案名稱</param>
+		/// <exception cref="ArgumentNullException">uri 不得為空值。</exception>
+		/// <exception cref="ArgumentException">values 與 fileName 不可同時為空值。</exception>
+		/// <exception cref="FileNotFoundException">找不到檔案</exception>
+		public void FileUploaderAsync(string urlAddress, NameValueCollection values, string fileName)
+		{
+			FileUploaderAsync(new Uri(urlAddress), values, fileName);
+		}
+		#endregion
+
+		#region Public Method : void FileUploaderAsync(string urlAddress, NameValueCollection values, string fileName, object userState)
+		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <param name="urlAddress">欲傳送的網址</param>
+		/// <param name="values">參數資料</param>
+		/// <param name="fileName">包含路徑的檔案名稱</param>
+		/// <param name="userState">使用者自訂的附加資訊</param>
+		/// <exception cref="ArgumentNullException">uri 不得為空值。</exception>
+		/// <exception cref="ArgumentException">values 與 fileName 不可同時為空值。</exception>
+		/// <exception cref="FileNotFoundException">找不到檔案</exception>
+		public void FileUploaderAsync(string urlAddress, NameValueCollection values, string fileName, object userState)
+		{
+			FileUploaderAsync(new Uri(urlAddress), values, fileName, userState);
+		}
+		#endregion
+
+		#region Public Method : void FileUploaderAsync(Uri uri, string fileName)
+		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <param name="uri">欲傳送的網址</param>
+		/// <param name="fileName">包含路徑的檔案名稱</param>
+		/// <exception cref="ArgumentNullException">uri 不得為空值。</exception>
+		/// <exception cref="ArgumentException">values 與 fileName 不可同時為空值。</exception>
+		/// <exception cref="FileNotFoundException">找不到檔案</exception>
+		public void FileUploaderAsync(Uri uri, string fileName)
+		{
+			FileUploaderAsync(uri, null, fileName);
+		}
+		#endregion
+
+		#region Public Method : void FileUploaderAsync(Uri uri, string fileName, object userState)
+		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <param name="uri">欲傳送的網址</param>
+		/// <param name="fileName">包含路徑的檔案名稱</param>
+		/// <param name="userState">使用者自訂的附加資訊</param>
+		/// <exception cref="ArgumentNullException">uri 不得為空值。</exception>
+		/// <exception cref="ArgumentException">values 與 fileName 不可同時為空值。</exception>
+		/// <exception cref="FileNotFoundException">找不到檔案</exception>
+		public void FileUploaderAsync(Uri uri, string fileName, object userState)
+		{
+			FileUploaderAsync(uri, null, fileName, userState);
+		}
+		#endregion
+
+		#region Public Method : void FileUploaderAsync(Uri uri, NameValueCollection values, string fileName)
+		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <param name="uri">欲傳送的網址</param>
+		/// <param name="values">參數資料</param>
+		/// <param name="fileName">包含路徑的檔案名稱</param>
+		/// <exception cref="ArgumentNullException">uri 不得為空值。</exception>
+		/// <exception cref="ArgumentException">values 與 fileName 不可同時為空值。</exception>
+		/// <exception cref="FileNotFoundException">找不到檔案</exception>
+		public void FileUploaderAsync(Uri uri, NameValueCollection values, string fileName)
+		{
+			if (string.IsNullOrEmpty(fileName) && (values == null || values.Count == 0))
+				throw new ArgumentException("values 與 fileName 不可同時為空值。");
+			FileUploaderAsync(uri, values, new FileData[] { FileData.Create("file", fileName, CJF.Utility.ConvUtils.GetContentType(fileName)) }, null);
+		}
+		#endregion
+
+		#region Public Method : void FileUploaderAsync(Uri uri, NameValueCollection values, string fileName, object userState)
+		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <param name="uri">欲傳送的網址</param>
+		/// <param name="values">參數資料</param>
+		/// <param name="fileName">包含路徑的檔案名稱</param>
+		/// <param name="userState">使用者自訂的附加資訊</param>
+		/// <exception cref="ArgumentNullException">uri 不得為空值。</exception>
+		/// <exception cref="ArgumentException">values 與 fileName 不可同時為空值。</exception>
+		/// <exception cref="FileNotFoundException">找不到檔案</exception>
+		public void FileUploaderAsync(Uri uri, NameValueCollection values, string fileName, object userState)
+		{
+			if (string.IsNullOrEmpty(fileName) && (values == null || values.Count == 0))
+				throw new ArgumentException("values 與 fileName 不可同時為空值。");
+			FileUploaderAsync(uri, values, new FileData[] { FileData.Create("file", fileName, CJF.Utility.ConvUtils.GetContentType(fileName)) }, userState);
+		}
+		#endregion
+
+		#region Public Mehod : void FileUploaderAsync(Uri uri, NameValueCollection values, FileData[] files, object userState)
+		/// <summary>非同步方式上傳一個以上的檔案與資料</summary>
+		/// <param name="uri">欲傳送的網址</param>
+		/// <param name="values">參數資料</param>
+		/// <param name="files">檔案清單</param>
+		/// <param name="userState">使用者自訂的附加資訊</param>
+		/// <exception cref="ArgumentNullException">uri 不得為空值。</exception>
+		/// <exception cref="ArgumentException">values 與 files 不可同時為空值。</exception>
+		/// <exception cref="FileNotFoundException">找不到檔案</exception>
+		public void FileUploaderAsync(Uri uri, NameValueCollection values, FileData[] files, object userState)
+		{
+			if (uri == null)
+				throw new ArgumentNullException("uri");
+			if ((values == null || values.Count == 0) && (files == null || files.Length == 0))
+				throw new ArgumentException("values 與 files 不可同時為空值。");
+
+			Task.Factory.StartNew(() =>
+			{
+				try
+				{
+					WebRequest req = WebRequest.Create(uri);
+					req.Method = "POST";
+					string boundary = string.Format("xxSTE@TGLxx{0:X}xxSTE@TGLxx", DateTime.Now.Ticks);
+					req.ContentType = "multipart/form-data; boundary=" + boundary;
+					boundary = "--" + boundary;
+
+					MemoryStream msOut = new MemoryStream();
+					byte[] buf;
+					// Write the values into Output Stream
+					if (values != null && values.Count != 0)
+					{
+						foreach (string name in values.Keys)
+						{
+							buf = Encoding.ASCII.GetBytes(boundary + Environment.NewLine);
+							msOut.Write(buf, 0, buf.Length);
+							buf = Encoding.ASCII.GetBytes(string.Format("Content-Disposition: form-data; name=\"{0}\"{1}{1}", name, Environment.NewLine));
+							msOut.Write(buf, 0, buf.Length);
+							buf = Encoding.UTF8.GetBytes(values[name] + Environment.NewLine);
+							msOut.Write(buf, 0, buf.Length);
+						}
+					}
+					if (files != null && files.Length != 0)
+					{
+						const string format = "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"{2}";
+						foreach (FileData fd in files)
+						{
+							if (!File.Exists(fd.FileName))
+								throw new FileNotFoundException(fd.FileName);
+							// Write the file into Output Stream
+							buf = Encoding.ASCII.GetBytes(boundary + Environment.NewLine);
+							msOut.Write(buf, 0, buf.Length);
+							buf = Encoding.UTF8.GetBytes(string.Format(format, fd.KeyName, fd.FileName, Environment.NewLine));
+							msOut.Write(buf, 0, buf.Length);
+							buf = Encoding.ASCII.GetBytes(string.Format("Content-Type: {0}{1}{1}", fd.ContentType, Environment.NewLine));
+							msOut.Write(buf, 0, buf.Length);
+							using (FileStream fs = File.OpenRead(fd.FileName))
+							{
+								fs.CopyTo(msOut);
+								fs.Close();
+							}
+							buf = Encoding.ASCII.GetBytes(Environment.NewLine);
+							msOut.Write(buf, 0, buf.Length);
+						}
+						buf = Encoding.ASCII.GetBytes(boundary + "--");
+						msOut.Write(buf, 0, buf.Length);
+
+						msOut.Position = 0;
+						//IMPORTANT: set content length to directly write to network socket
+						req.ContentLength = msOut.Length;
+						var requestStream = req.GetRequestStream();
+
+						//Write data in chunks and report progress
+						var size = msOut.Length;
+						const int chunkSize = 64 * 1024;
+						buf = new byte[chunkSize];
+						long bytesSent = 0;
+						int readBytes;
+						while ((readBytes = msOut.Read(buf, 0, buf.Length)) > 0)
+						{
+							requestStream.Write(buf, 0, readBytes);
+							bytesSent += readBytes;
+
+							//var status = "Uploading... " + bytesSent / 1024 + "KB of " + size / 1024 + "KB";
+							var percentage = Convert.ToInt32(100 * bytesSent / size);
+							if (OnFileUploaderProgressChanged != null)
+								OnFileUploaderProgressChanged(this, new FileUploaderProgessChangedEventArgs(bytesSent, size, userState));
+						}
+					}
+					//get response
+					using (WebResponse response = req.GetResponse())
+					using (Stream responseStream = response.GetResponseStream())
+					using (MemoryStream stream = new MemoryStream())
+					{
+						// ReSharper disable once PossibleNullReferenceException - exception would get catched anyway
+						responseStream.CopyTo(stream);
+						if (OnFileUploaderCompleted != null)
+						{
+							if (stream == null || stream.Length == 0)
+								OnFileUploaderCompleted(this, new FileUploaderCompletedEventArgs(null, FileUploaderCompletedResult.Failed, userState));
+							else
+								OnFileUploaderCompleted(this, new FileUploaderCompletedEventArgs(stream.ToArray(), FileUploaderCompletedResult.Success, userState));
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					if (OnFileUploaderCompleted != null)
+						OnFileUploaderCompleted(this, new FileUploaderCompletedEventArgs(Encoding.UTF8.GetBytes(ex.Message), FileUploaderCompletedResult.Failed, userState));
+				}
+			}, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 		}
 		#endregion
 
