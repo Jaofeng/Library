@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using CJF.Utility;
 
-namespace CJF.Net
+namespace CJF.Net.Telnet
 {
 	/// <summary>非同步 Telnet 連線伺服器，使用xxxAsync</summary>
 	[Serializable]

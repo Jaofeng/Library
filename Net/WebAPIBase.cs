@@ -4,7 +4,7 @@ using System.Net;
 using System.Reflection;
 using System.Xml;
 
-namespace CJF.Net
+namespace CJF.Net.Http
 {
 	#region Public Class : APIFormatException
 	/// <summary>WebAPI格式錯誤類別</summary>

@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using CJF.Net;
+using CJF.Net.Telnet;
 using CJF.Utility;
 
 namespace Tester

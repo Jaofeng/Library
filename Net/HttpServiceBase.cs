@@ -10,7 +10,7 @@ using System.Text;
 using System.Web;
 using CJF.Utility;
 
-namespace CJF.Net
+namespace CJF.Net.Http
 {
 	#region Struct : ReceivedFileInfo
 	/// <summary>
@@ -24,6 +24,8 @@ namespace CJF.Net
 		public string TempFile;
 		/// <summary>檔案種類</summary>
 		public string ContentType;
+		/// <summary>檔案長度</summary>
+		public long Length;
 	}
 	#endregion
 
@@ -86,70 +88,75 @@ namespace CJF.Net
 			HttpListenerRequest request = this.Context.Request;
 			string rawUrl = request.RawUrl;
 			string pageUrl = rawUrl.Split('?')[0].TrimStart('/');
+			// [Remote IP] - [Method] [RawUrl] [HTTP/Ver] - [User Agent]
+			string format = "{0} - {1} {2} HTTP/{3}.{4} - {5}";
+			_log.Write(LogManager.LogLevel.Debug, format, request.RemoteEndPoint, request.HttpMethod, rawUrl, request.ProtocolVersion.Major, request.ProtocolVersion.Minor, request.UserAgent);
 			NameValueCollection queryString = request.QueryString;
-			if (request.HttpMethod.ToUpper() == "GET")
-				HttpGetMethod(pageUrl, queryString);
-			else if (request.HttpMethod.ToUpper() == "POST")
-				HttpPostMethod(pageUrl, queryString);
+			switch (request.HttpMethod.ToUpper())
+			{
+				case "HEAD":
+					HttpHeadMethod(pageUrl, queryString); break;
+				case "GET":
+					HttpGetMethod(pageUrl, queryString); break;
+				case "POST":
+					HttpPostMethod(pageUrl, queryString); break;
+				case "PUT":
+					if (request.ProtocolVersion.Major >= 1 && request.ProtocolVersion.Minor >= 1)
+						HttpPutMethod(pageUrl, queryString);
+					else
+						ResponseMethodNotAllowed();
+					break;
+				case "DELETE":
+					if (request.ProtocolVersion.Major >= 1 && request.ProtocolVersion.Minor >= 1)
+						HttpDeleteMethod(pageUrl, queryString);
+					else
+						ResponseMethodNotAllowed();
+					break;
+				case "PATCH":
+					if (request.ProtocolVersion.Major >= 1 && request.ProtocolVersion.Minor >= 1)
+						HttpPatchMethod(pageUrl, queryString);
+					else
+						ResponseMethodNotAllowed();
+					break;
+				default:
+					ResponseServiceNotSupport(); break;
+			}
 		}
 		#endregion
 
-		#region Public Virtual Method : void ProcessRequest(int index)
-		/// <summary>[覆寫] 接收到 Http Request 時的處理流程</summary>
-		/// <param name="index">追蹤用序號</param>
-		public virtual void ProcessRequest(int index)
+		#region Protected Virtual Method : void HttpHeadMethod(string path, NameValueCollection queryString)
+		/// <summary>[覆寫]HEAD 模式</summary>
+		/// <param name="path">網址路徑</param>
+		/// <param name="queryString">要求中所包含的查詢字串。</param>
+		protected virtual void HttpHeadMethod(string path, NameValueCollection queryString)
 		{
-			HttpListenerRequest request = this.Context.Request;
-			string rawUrl = request.RawUrl;
-			string pageUrl = rawUrl.Split('?')[0].TrimStart('/');
-			NameValueCollection queryString = request.QueryString;
-			if (request.HttpMethod.ToUpper() == "GET")
-				HttpGetMethod(index, pageUrl, queryString);
-			else if (request.HttpMethod.ToUpper() == "POST")
-				HttpPostMethod(index, pageUrl, queryString);
+			string file = path.Replace("/", "\\").ToLower();
+			file = Path.Combine("Web", file);
+			ResponseHead(file);
 		}
 		#endregion
 
 		#region Protected Virtual Method : void HttpGetMethod(string path, NameValueCollection queryString)
-		/// <summary>GET 模式</summary>
+		/// <summary>[覆寫]GET 模式</summary>
 		/// <param name="path">網址路徑</param>
 		/// <param name="queryString">要求中所包含的查詢字串。</param>
 		protected virtual void HttpGetMethod(string path, NameValueCollection queryString)
 		{
-			string svc = path.TrimEnd('/');
-			string[] paras = svc.Split('/');
 			string file = path.Replace("/", "\\").ToLower();
 			file = Path.Combine("Web", file);
-			_log.Write(LogManager.LogLevel.Debug, "GET File:{0}", file);
-			ResponseFile(file);
-		}
-		#endregion
-
-		#region Protected Virtual Method : void HttpGetMethod(int index, string path, NameValueCollection queryString)
-		/// <summary>GET 模式</summary>
-		/// <param name="index">追蹤用序號</param>
-		/// <param name="path">網址路徑</param>
-		/// <param name="queryString">要求中所包含的查詢字串。</param>
-		protected virtual void HttpGetMethod(int index, string path, NameValueCollection queryString)
-		{
-			string svc = path.TrimEnd('/');
-			string[] paras = svc.Split('/');
-			string file = path.Replace("/", "\\").ToLower();
-			file = Path.Combine("Web", file);
-			_log.Write(LogManager.LogLevel.Debug, "[{0}]GET File:{1}", index, file);
 			ResponseFile(file);
 		}
 		#endregion
 
 		#region Protected Virtual Method : void HttpPostMethod(string path, NameValueCollection queryString)
-		/// <summary>POST 模式</summary>
+		/// <summary>[覆寫]POST 模式</summary>
 		/// <param name="path">網址路徑</param>
 		/// <param name="queryString">要求中所包含的查詢字串。</param>
 		protected virtual void HttpPostMethod(string path, NameValueCollection queryString)
 		{
 			try
 			{
-				string svc = path.Replace("/", "\\").ToLower().TrimEnd('\\').Split('\\')[0];
+				//string svc = path.Replace("/", "\\").ToLower().TrimEnd('\\').Split('\\')[0];
 				HttpListenerRequest request = this.Context.Request;
 				NameValueCollection nvc = null;
 				this.ReceivedFiles = null;
@@ -159,14 +166,34 @@ namespace CJF.Net
 					string data = reader.ReadToEnd();
 					//_log.Write(LogManager.LogLevel.Debug, "Service:{0}:{1}", svc, data);
 					nvc = System.Web.HttpUtility.ParseQueryString(data);
-					ReceivedAPI(svc, nvc);
+					if (queryString != null && queryString.Count != 0)
+					{
+						foreach (KeyValuePair<string, string> kv in queryString)
+						{
+							if (nvc.AllKeys.Contains<string>(kv.Key))
+								nvc[kv.Key] += ";" + kv.Value;
+							else
+								nvc.Add(kv.Key, kv.Value);
+						}
+					}
+					ReceivedAPI(path, nvc);
 				}
 				else if (request.ContentType.StartsWith("multipart/form-data"))
 				{
 					PopulatePostMultiPart(request, out nvc);
+					if (queryString != null && queryString.Count != 0)
+					{
+						foreach (KeyValuePair<string, string> kv in queryString)
+						{
+							if (nvc.AllKeys.Contains<string>(kv.Key))
+								nvc[kv.Key] += ";" + kv.Value;
+							else
+								nvc.Add(kv.Key, kv.Value);
+						}
+					}
 					List<string> arr = this.ReceivedFiles.ConvertAll<string>(rfi => rfi.FileName);
 					//_log.Write(LogManager.LogLevel.Debug, "Service:{0},Files:{1}", svc, string.Join(",", arr.ToArray()));
-					ReceivedAPI(svc, nvc);
+					ReceivedAPI(path, nvc);
 				}
 			}
 			catch (Exception ex)
@@ -177,44 +204,104 @@ namespace CJF.Net
 		}
 		#endregion
 
-		#region Protected Virtual Method : void HttpPostMethod(int index, string path, NameValueCollection queryString)
-		/// <summary>POST 模式</summary>
-		/// <param name="index">追蹤用序號</param>
+		#region Protected Virtual Method : void HttpPutMethod(string path, NameValueCollection queryString)
+		/// <summary>[覆寫]PUT 模式</summary>
 		/// <param name="path">網址路徑</param>
 		/// <param name="queryString">要求中所包含的查詢字串。</param>
-		protected virtual void HttpPostMethod(int index, string path, NameValueCollection queryString)
+		protected virtual void HttpPutMethod(string path, NameValueCollection queryString)
 		{
-			try
-			{
-				string svc = path.Replace("/", "\\").ToLower().TrimEnd('\\').Split('\\')[0];
-				HttpListenerRequest request = this.Context.Request;
-				NameValueCollection nvc = null;
-				this.ReceivedFiles = null;
-				if (request.ContentType == "application/x-www-form-urlencoded")
-				{
-					StreamReader reader = new StreamReader(request.InputStream);
-					string data = reader.ReadToEnd();
-					//_log.Write(LogManager.LogLevel.Debug, "Service:{0}:{1}", svc, data);
-					nvc = System.Web.HttpUtility.ParseQueryString(data);
-					ReceivedAPI(svc, index, nvc);
-				}
-				else if (request.ContentType.StartsWith("multipart/form-data"))
-				{
-					PopulatePostMultiPart(request, out nvc);
-					List<string> arr = this.ReceivedFiles.ConvertAll<string>(rfi => rfi.FileName);
-					//_log.Write(LogManager.LogLevel.Debug, "Service:{0},Files:{1}", svc, string.Join(",", arr.ToArray()));
-					ReceivedAPI(svc, index, nvc);
-				}
-			}
-			catch (Exception ex)
-			{
-				_log.Write(LogManager.LogLevel.Debug, "[ERR][{0:X4}]EX:From:HttpPostMethod:{1}", index, path);
-				_log.WriteException(index.ToString("X4"), ex, _SendMail);
-			}
+			_log.Write(LogManager.LogLevel.Debug, "PUT {0}", path);
+			string msg = "No Support PUT method!!";
+			byte[] buffer = this.Context.Request.ContentEncoding.GetBytes(msg);
+			ResponseBinary(buffer, (int)System.Net.HttpStatusCode.Forbidden, msg);
+		}
+		#endregion
+
+		#region Protected Virtual Method : void HttpDeleteMethod(string path, NameValueCollection queryString)
+		/// <summary>[覆寫]DELETE 模式</summary>
+		/// <param name="path">網址路徑</param>
+		/// <param name="queryString">要求中所包含的查詢字串。</param>
+		protected virtual void HttpDeleteMethod(string path, NameValueCollection queryString)
+		{
+			_log.Write(LogManager.LogLevel.Debug, "DELETE {0}", path);
+			string msg = "No Support DELETE method!!";
+			byte[] buffer = this.Context.Request.ContentEncoding.GetBytes(msg);
+			ResponseBinary(buffer, (int)System.Net.HttpStatusCode.Forbidden, msg);
+		}
+		#endregion
+
+		#region Protected Virtual Method : void HttpPatchMethod(string path, NameValueCollection queryString)
+		/// <summary>[覆寫]PATCH 模式</summary>
+		/// <param name="path">網址路徑</param>
+		/// <param name="queryString">要求中所包含的查詢字串。</param>
+		protected virtual void HttpPatchMethod(string path, NameValueCollection queryString)
+		{
+			_log.Write(LogManager.LogLevel.Debug, "PATCH {0}", path);
+			string msg = "No Support PATCH method!!";
+			byte[] buffer = this.Context.Request.ContentEncoding.GetBytes(msg);
+			ResponseBinary(buffer, (int)System.Net.HttpStatusCode.Forbidden, msg);
 		}
 		#endregion
 
 		#region Response Methods
+		#region Public Virtual Method : bool ResponseHead(string fileName)
+		/// <summary>傳送檔案資訊至終端</summary>
+		/// <param name="fileName">檔案路徑</param>
+		/// <returns>是否正確傳送</returns>
+		public virtual bool ResponseHead(string fileName)
+		{
+			bool result = false;
+			if (!File.Exists(fileName))
+			{
+				this.Context.Response.StatusCode = (int)System.Net.HttpStatusCode.NotFound;
+				this.Context.Response.OutputStream.Close();
+				result = true;
+			}
+			else
+			{
+				try
+				{
+					using (FileStream fs = File.OpenRead(fileName))
+					{
+						this.Context.Response.StatusCode = (int)System.Net.HttpStatusCode.OK;
+						this.Context.Response.ContentLength64 = fs.Length;
+						string mime = ConvUtils.GetContentType(fileName);
+						this.Context.Response.ContentType = mime;
+						if (mime.Equals("application/octetstream", StringComparison.OrdinalIgnoreCase))
+							this.Context.Response.AddHeader("content-disposition", "attachment;filename=" + HttpUtility.UrlEncode(Path.GetFileName(fileName)));
+					}
+					this.Context.Response.OutputStream.Close();
+					result = true;
+				}
+				catch (HttpListenerException ex)
+				{
+					if (ex.ErrorCode == 64)
+						_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+					else
+					{
+						_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
+						_log.WriteException(ex, _SendMail);
+					}
+				}
+				catch (Exception ex)
+				{
+					_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
+					_log.WriteException(ex, _SendMail);
+				}
+				finally
+				{
+					try
+					{
+						if (this.Context.Response != null)
+							this.Context.Response.Close();
+					}
+					catch { }
+				}
+			}
+			return result;
+		}
+		#endregion
+
 		#region Public Virtual Method : bool ResponseFile(string fileName)
 		/// <summary>傳送檔案至終端</summary>
 		/// <param name="fileName">檔案路徑</param>
@@ -257,22 +344,16 @@ namespace CJF.Net
 						this.Context.Response.ContentLength64 = fs.Length;
 						string mime = ConvUtils.GetContentType(fileName);
 						this.Context.Response.ContentType = mime;
+
 						if (mime.Equals("application/octetstream", StringComparison.OrdinalIgnoreCase))
 							this.Context.Response.AddHeader("content-disposition", "attachment;filename=" + HttpUtility.UrlEncode(Path.GetFileName(fileName)));
 						byte[] buffer = new byte[packageSize];
 						int read;
-						if (speed != 0)
+						while ((read = fs.Read(buffer, 0, packageSize)) > 0)
 						{
-							while ((read = fs.Read(buffer, 0, packageSize)) > 0)
-							{
-								this.Context.Response.OutputStream.Write(buffer, 0, read);
+							this.Context.Response.OutputStream.Write(buffer, 0, read);
+							if (speed != 0)
 								System.Threading.Thread.Sleep(speed);
-							}
-						}
-						else
-						{
-							while ((read = fs.Read(buffer, 0, packageSize)) > 0)
-								this.Context.Response.OutputStream.Write(buffer, 0, read);
 						}
 					}
 					this.Context.Response.OutputStream.Close();
@@ -539,12 +620,17 @@ namespace CJF.Net
 				this.Context.Response.StatusCode = statusCode;
 				if (!string.IsNullOrEmpty(description))
 					this.Context.Response.StatusDescription = description;
-				this.Context.Response.ContentLength64 = buffer.Length;
-				this.Context.Response.OutputStream.Write(buffer, 0, buffer.Length);
+				if (buffer != null)
+				{
+					this.Context.Response.ContentLength64 = buffer.Length;
+					this.Context.Response.OutputStream.Write(buffer, 0, buffer.Length);
+				}
+				else
+					this.Context.Response.ContentLength64 = 0;
 				this.Context.Response.OutputStream.Close();
 				result = true;
 			}
-			catch(HttpListenerException ex)
+			catch (HttpListenerException ex)
 			{
 				if (ex.ErrorCode == 64)
 				{
@@ -616,7 +702,7 @@ namespace CJF.Net
 			{
 				// XML 強制使用 UTF-8 轉碼，不可再異動 By JF @ 2012/04/18
 				this.Context.Response.ContentEncoding = Encoding.UTF8;
-				if (this.Context.Response.ContentType == null) 
+				if (this.Context.Response.ContentType == null)
 					this.Context.Response.ContentType = "application/xhtml+xml";
 				return ResponseBinary(Encoding.UTF8.GetBytes(xml), (int)System.Net.HttpStatusCode.OK);
 			}
@@ -645,6 +731,15 @@ namespace CJF.Net
 		{
 			byte[] buffer = this.Context.Request.ContentEncoding.GetBytes("Service Not Support!!");
 			return ResponseBinary(buffer, (int)System.Net.HttpStatusCode.NotImplemented, "Service Not Support!!");
+		}
+		#endregion
+
+		#region Public Virtual Method : bool ResponseMethodNotAllowed()
+		/// <summary>傳送「不支援此 Method」給終端, HTTP Error Code:405</summary>
+		/// <returns>是否正確傳送</returns>
+		public virtual bool ResponseMethodNotAllowed()
+		{
+			return ResponseBinary(null, (int)System.Net.HttpStatusCode.MethodNotAllowed);
 		}
 		#endregion
 
@@ -694,17 +789,6 @@ namespace CJF.Net
 		/// <param name="svc">服務代碼</param>
 		/// <param name="nvc">自 QueryString 取得的資料</param>
 		protected internal virtual void ReceivedAPI(string svc, NameValueCollection nvc)
-		{
-			ResponseException(new NotImplementedException());
-		}
-		#endregion
-
-		#region Protected Virtual Method : void ReceivedAPI(string svc, int indexKey, NameValueCollection nvc)
-		/// <summary>[覆寫]收到 API 時的處理函示</summary>
-		/// <param name="svc">服務代碼</param>
-		/// <param name="indexKey">索引鍵值</param>
-		/// <param name="nvc">自 QueryString 取得的資料</param>
-		protected internal virtual void ReceivedAPI(string svc, int indexKey, NameValueCollection nvc)
 		{
 			ResponseException(new NotImplementedException());
 		}
@@ -792,10 +876,10 @@ namespace CJF.Net
 								continue;
 							string ct = line.Split(':')[1].Trim();
 							string fn = arr1[2].Trim().Split('=')[1].Trim('"');
-							if (Array.IndexOf<string>(nvc.AllKeys, key) == -1)
-								nvc.Add(key, fn);
-							else
+							if (nvc.AllKeys.Contains<string>(key))
 								nvc[key] += ';' + fn;
+							else
+								nvc.Add(key, fn);
 							line = ms.ReadLine();	// 捨棄空行
 
 							int length = 0;
@@ -807,7 +891,13 @@ namespace CJF.Net
 								length = ms.Read(buf, 0, buf.Length);
 								string tmp = Path.GetTempFileName();
 								File.WriteAllBytes(tmp, buf);
-								this.ReceivedFiles.Add(new ReceivedFileInfo() { FileName = fn, ContentType = ct, TempFile = tmp });
+								this.ReceivedFiles.Add(new ReceivedFileInfo()
+								{
+									FileName = fn,
+									ContentType = ct,
+									Length = buf.Length,
+									TempFile = tmp
+								});
 								ms.Position += splitBytes.Length + 6;
 								no = 0;
 								continue;
