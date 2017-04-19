@@ -316,6 +316,14 @@ namespace CJF.Utility
 			LogException(_GlobalLogger, "ERR", ex, true);
 		}
 		#endregion
+
+		#region Public Static Method : void ReinitinalLogger()
+		/// <summary>重新載入記錄器</summary>
+		public static void ReinitinalLogger()
+		{
+			_GlobalLogger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		}
+		#endregion
 		#endregion
 
 		#region Public Static Method : void SendMail(string subject, string content, Encoding enc, bool useHtml)
