@@ -346,7 +346,7 @@ namespace CJF.Net.Multicast
 			}
 		}
 		/// <summary>取得每一秒的接收量，單位:位元組</summary>
-		public long ReceiveSpeed { get { return m_ReceiveByteCount; } }
+		public long ReceiveSpeed { get { return Interlocked.Read(ref m_ReceiveByteCount); } }
 		/// <summary>取得值，是否已Disposed</summary>
 		public bool IsDisposed { get { return m_IsDisposed; } }
 		/// <summary>取得與設定，是否使用非同步方式產生回呼事件</summary>

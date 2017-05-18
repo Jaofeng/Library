@@ -76,9 +76,8 @@ namespace CJF.Net
 		#endregion
 
 		#region Properties
-		private string _HostNameOrAddress = string.Empty;
-		/// <summary></summary>
-		public string HostNameOrAddress { get { return _HostNameOrAddress; } set { _HostNameOrAddress = value; } }
+		/// <summary>設定或取得對象 IP</summary>
+		public string HostNameOrAddress { get; set; }
 
 		#region Cycle : int
 		private int _Cycle = 0;
@@ -97,7 +96,7 @@ namespace CJF.Net
 					if (_PingTimer != null)
 						_PingTimer.Change(0, _Cycle);
 					else
-						_PingTimer = new Timer(PingCallback, null, 0, _Cycle);
+						_PingTimer = new Timer(PingCallback, null, _Cycle, _Cycle);
 				}
 			}
 		}
@@ -129,7 +128,7 @@ namespace CJF.Net
 			set
 			{
 				if (value > 65500 || value < 32)
-					throw new ArgumentOutOfRangeException("DataLength", "資料長度必須大於 32 且小於 65,500。");
+					throw new ArgumentOutOfRangeException("DataLength", "資料長度必須介於(包含) 32 與 65,500 之間。");
 				_DataLength = value;
 			}
 		}
@@ -184,8 +183,6 @@ namespace CJF.Net
 				return;
 			}
 			Interlocked.Increment(ref _DoneTimes);
-			if (_DoneTimes >= long.MaxValue)
-				Interlocked.Exchange(ref _DoneTimes, 0);
 			using (Ping pingSender = new Ping())
 			{
 				PingOptions options = new PingOptions(this.TimeToLive, true);
@@ -222,8 +219,10 @@ namespace CJF.Net
 			if (_Times != 0 && _DoneTimes >= _Times)
 			{
 				if (_PingTimer != null)
+				{
 					_PingTimer.Dispose();
-				_PingTimer = null;
+					_PingTimer = null;
+				}
 				if (OnFinished != null)
 				{
 					foreach (EventHandler del in this.OnFinished.GetInvocationList())

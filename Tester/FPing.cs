@@ -53,10 +53,11 @@ namespace Tester
 
 		void Tester_OnResult(object sender, PingResultEventArgs e)
 		{
+			PingTester tester = (PingTester)sender;
 			WriteLog("回應狀態 : {0}", e.Status);
 			WriteLog("對象主機IP : {0}", e.RemoteIP);
 			WriteLog("回應時間 {0} 豪秒", e.RoundtripTime);
-			WriteLog("轉送次數 : {0}", _Tester.TimeToLive - e.Ttl);
+			WriteLog("轉送次數 : {0}", tester.TimeToLive - e.Ttl);
 			WriteLog("============================");
 		}
 
