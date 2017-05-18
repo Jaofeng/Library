@@ -434,12 +434,22 @@ namespace CJF.Utility
 
 		#region LogManager Methods
 		private ILog _PrivateLogger;
-		/// <summary>
-		/// 建立LogManager類別
-		/// </summary>
+		/// <summary>建立 LogManager 類別</summary>
+		/// <param name="source">類別型別</param>
 		public LogManager(Type source)
 		{
 			_PrivateLogger = log4net.LogManager.GetLogger(source);
+		}
+		/// <summary>
+		/// 建立含自訂欄位的 LogManager 類別
+		/// </summary>
+		/// <param name="source">類別型別</param>
+		/// <param name="tokenValue">自訂欄位值</param>
+		public LogManager(Type source, string tokenValue)
+			: this(source)
+		{
+			_PrivateLogger = log4net.LogManager.GetLogger(source);
+			this.TokenValue = tokenValue;
 		}
 		/// <summary>
 		/// 建立私用的LogManager類別
@@ -451,6 +461,8 @@ namespace CJF.Utility
 			log4net.Config.XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo(configFile));
 			_PrivateLogger = log4net.LogManager.GetLogger(appender);
 		}
+		/// <summary>設定或取得自訂欄位值</summary>
+		public string TokenValue { get; set; }
 
 		#region Write(...)
 		/// <summary>記錄事件，使用LogLevel.Info級別記錄訊息</summary>
@@ -464,6 +476,7 @@ namespace CJF.Utility
 		/// <param name="msg">訊息</param>
 		public void Write(LogLevel lv, string msg)
 		{
+			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			switch (lv)
 			{
 				case LogLevel.Fatal:
@@ -491,6 +504,7 @@ namespace CJF.Utility
 		/// <param name="arg0">要格式化的物件</param>
 		public void Write(LogLevel lv, string format, object arg0)
 		{
+			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			switch (lv)
 			{
 				case LogLevel.Fatal:
@@ -520,6 +534,7 @@ namespace CJF.Utility
 		/// <param name="arg1">要格式化的第二個物件</param>
 		public void Write(LogLevel lv, string format, object arg0, object arg1)
 		{
+			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			switch (lv)
 			{
 				case LogLevel.Fatal:
@@ -551,6 +566,7 @@ namespace CJF.Utility
 		/// <param name="arg2">要格式化的第三個物件</param>
 		public void Write(LogLevel lv, string format, object arg0, object arg1, object arg2)
 		{
+			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			switch (lv)
 			{
 				case LogLevel.Fatal:
@@ -578,6 +594,7 @@ namespace CJF.Utility
 		/// <param name="args">物件陣列，包含零或多個要格式化的物件。</param>
 		public void Write(LogLevel lv, string format, params object[] args)
 		{
+			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			switch (lv)
 			{
 				case LogLevel.Fatal:
@@ -600,6 +617,7 @@ namespace CJF.Utility
 		/// <param name="sendMail">是否寄發信件</param>
 		public void WriteException(string sessionKey, Exception ex, bool sendMail)
 		{
+			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			LogException(_PrivateLogger, sessionKey, ex, sendMail);
 		}
 		/// <summary>記錄錯誤事件</summary>
@@ -607,6 +625,7 @@ namespace CJF.Utility
 		/// <param name="ex">錯誤類別</param>
 		public void WriteException(string sessionKey, Exception ex)
 		{
+			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			LogException(_PrivateLogger, sessionKey, ex);
 		}
 		/// <summary>記錄錯誤事件</summary>
@@ -614,12 +633,14 @@ namespace CJF.Utility
 		/// <param name="sendMail">是否寄發信件</param>
 		public void WriteException(Exception ex, bool sendMail)
 		{
+			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			LogException(_PrivateLogger, "ERR", ex, sendMail);
 		}
 		/// <summary>記錄錯誤事件</summary>
 		/// <param name="ex">錯誤類別</param>
 		public void WriteException(Exception ex)
 		{
+			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			LogException(_PrivateLogger, "ERR", ex);
 		}
 		#endregion
