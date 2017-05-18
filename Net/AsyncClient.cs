@@ -79,7 +79,17 @@ namespace CJF.Net
 			IPEndPoint ipp = null;
 			ipp = (IPEndPoint)socket.RemoteEndPoint;
 			this.RemoteEndPoint = new IPEndPoint(ipp.Address, ipp.Port);
-			this.RemoteMacAddress = GetDestinationMacAddress(ipp.Address);
+			int count = 0;
+			while (string.IsNullOrEmpty(this.RemoteMacAddress) && count < 3)
+			{
+				try { this.RemoteMacAddress = GetDestinationMacAddress(ipp.Address); }
+				catch (ArgumentException) { this.RemoteMacAddress = null; }
+				if (this.RemoteMacAddress == null)
+				{
+					count++;
+					Thread.Sleep(100);
+				}
+			}
 			ipp = (IPEndPoint)socket.LocalEndPoint;
 			this.LocalEndPoint = new IPEndPoint(ipp.Address, ipp.Port);
 			m_Connected = m_Socket.Connected;
@@ -121,7 +131,7 @@ namespace CJF.Net
 			{
 				if (_IsDisposed)
 					return false;
-					//throw new ObjectDisposedException(this.GetType().ToString(), "物件已被 Dispose");
+				//throw new ObjectDisposedException(this.GetType().ToString(), "物件已被 Dispose");
 				try
 				{
 					if (m_Socket != null && !m_Socket.Connected)
@@ -196,11 +206,11 @@ namespace CJF.Net
 		/// <summary>設定或取得使用的字元編碼</summary>
 		public Encoding Encoding { get; set; }
 		/// <summary>取得每秒的接收量，單位:位元組</summary>
-		public long ReceiveSpeed { get { return m_ReceiveByteCount; } }
+		public long ReceiveSpeed { get { return Interlocked.Read(ref m_ReceiveByteCount); } }
 		/// <summary>取得每秒發送量，單位:位元組</summary>
-		public long SendSpeed { get { return m_SendByteCount; } }
+		public long SendSpeed { get { return Interlocked.Read(ref m_SendByteCount); } }
 		/// <summary>取得現在等待發送的資料量，單位:位元組</summary>
-		public long WaittingSend { get { return m_WaittingSend; } }
+		public long WaittingSend { get { return Interlocked.Read(ref m_WaittingSend); } }
 		/// <summary>取得或設定是否為除錯模式</summary>
 		public SocketDebugType DebugMode { get { return m_Debug; } set { m_Debug = value; } }
 		/// <summary>取得值，是否已Disposed</summary>
@@ -1103,7 +1113,17 @@ namespace CJF.Net
 					AsyncUserToken token = e.UserToken as AsyncUserToken;
 					Socket s = token.Client;
 					this.LocalEndPoint = (IPEndPoint)s.LocalEndPoint;
-					this.RemoteMacAddress = GetDestinationMacAddress(((IPEndPoint)e.RemoteEndPoint).Address);
+					int count = 0;
+					while (string.IsNullOrEmpty(this.RemoteMacAddress) && count < 3)
+					{
+						try { this.RemoteMacAddress = GetDestinationMacAddress(((IPEndPoint)e.RemoteEndPoint).Address); }
+						catch (ArgumentException) { this.RemoteMacAddress = null; }
+						if (this.RemoteMacAddress == null)
+						{
+							count++;
+							Thread.Sleep(100);
+						}
+					}
 					m_Connected = true;
 
 					#region 產生事件 - OnConnected
@@ -1612,25 +1632,30 @@ namespace CJF.Net
 		#region Public Static Method : string GetDestinationMacAddress(IPAddress address)
 		/// <summary>取得目標網路介面的 MAC 位址</summary>
 		/// <param name="address">遠端 IP 位址</param>
+		/// <exception cref="ArgumentException">Only supports IPv4 Addresses.</exception>
 		/// <returns></returns>
 		public static string GetDestinationMacAddress(IPAddress address)
 		{
 			if (address.AddressFamily != AddressFamily.InterNetwork)
 				throw new ArgumentException("Only supports IPv4 Addresses.");
-			int addrInt = IpAddressAsInt32(address);
-			int srcAddrInt = IpAddressAsInt32(IPAddress.Any);
-			const int MacAddressLength = 6;// 48bits
-			byte[] macAddress = new byte[MacAddressLength];
-			int macAddrLen = macAddress.Length;
-			int ret = SendArp(addrInt, srcAddrInt, macAddress, ref macAddrLen);
-			if (ret != 0)
-				throw new System.ComponentModel.Win32Exception(ret);
-			string mac = string.Empty;
-			for (int i = 0; i < macAddress.Length; i++)
-				mac += macAddress[i].ToString("X2") + ":";
-			if (mac.Length != 0)
-				mac = mac.TrimEnd(':');
-			return mac;
+			try
+			{
+				int addrInt = IpAddressAsInt32(address);
+				int srcAddrInt = IpAddressAsInt32(IPAddress.Any);
+				const int MacAddressLength = 6;// 48bits
+				byte[] macAddress = new byte[MacAddressLength];
+				int macAddrLen = macAddress.Length;
+				int ret = SendArp(addrInt, srcAddrInt, macAddress, ref macAddrLen);
+				if (ret != 0)
+					return null;
+				string mac = string.Empty;
+				for (int i = 0; i < macAddress.Length; i++)
+					mac += macAddress[i].ToString("X2") + ":";
+				if (mac.Length != 0)
+					mac = mac.TrimEnd(':');
+				return mac;
+			}
+			catch { return null; }
 		}
 		#endregion
 
