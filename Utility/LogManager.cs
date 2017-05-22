@@ -454,6 +454,14 @@ namespace CJF.Utility
 		/// <summary>
 		/// 建立私用的LogManager類別
 		/// </summary>
+		/// <param name="logName">記錄器名稱</param>
+		public LogManager(string logName)
+		{
+			_PrivateLogger = log4net.LogManager.GetLogger(logName);
+		}
+		/// <summary>
+		/// 建立私用的LogManager類別
+		/// </summary>
 		/// <param name="configFile">log4net 參數存放位置</param>
 		/// <param name="appender">私用鍵值</param>
 		public LogManager(string configFile, string appender)
