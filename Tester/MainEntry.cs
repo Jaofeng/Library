@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using CJF.Utility;
@@ -136,6 +132,12 @@ namespace Tester
 			if (!Enum.TryParse<LogManager.LogLevel>(cbLogLevel.SelectedItem.ToString(),true, out lv))
 				return;
 			LogManager.WriteLog(lv, txtLog.Text);
+		}
+
+		private void button11_Click(object sender, EventArgs e)
+		{
+			FHttpService fp = new FHttpService();
+			fp.Show();
 		}
 	}
 }

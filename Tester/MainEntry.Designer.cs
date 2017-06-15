@@ -67,6 +67,7 @@
 			this.txtLog = new System.Windows.Forms.TextBox();
 			this.cbLogLevel = new System.Windows.Forms.ComboBox();
 			this.button10 = new System.Windows.Forms.Button();
+			this.button11 = new System.Windows.Forms.Button();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -95,7 +96,7 @@
 			// 
 			// button3
 			// 
-			this.button3.Location = new System.Drawing.Point(22, 133);
+			this.button3.Location = new System.Drawing.Point(135, 21);
 			this.button3.Name = "button3";
 			this.button3.Size = new System.Drawing.Size(107, 50);
 			this.button3.TabIndex = 2;
@@ -105,7 +106,7 @@
 			// 
 			// button4
 			// 
-			this.button4.Location = new System.Drawing.Point(22, 189);
+			this.button4.Location = new System.Drawing.Point(22, 133);
 			this.button4.Name = "button4";
 			this.button4.Size = new System.Drawing.Size(107, 50);
 			this.button4.TabIndex = 3;
@@ -115,7 +116,7 @@
 			// 
 			// button5
 			// 
-			this.button5.Location = new System.Drawing.Point(22, 301);
+			this.button5.Location = new System.Drawing.Point(135, 133);
 			this.button5.Name = "button5";
 			this.button5.Size = new System.Drawing.Size(107, 50);
 			this.button5.TabIndex = 4;
@@ -125,7 +126,7 @@
 			// 
 			// button6
 			// 
-			this.button6.Location = new System.Drawing.Point(22, 413);
+			this.button6.Location = new System.Drawing.Point(135, 189);
 			this.button6.Name = "button6";
 			this.button6.Size = new System.Drawing.Size(107, 50);
 			this.button6.TabIndex = 5;
@@ -205,7 +206,7 @@
 			// 
 			// button7
 			// 
-			this.button7.Location = new System.Drawing.Point(509, 28);
+			this.button7.Location = new System.Drawing.Point(609, 28);
 			this.button7.Name = "button7";
 			this.button7.Size = new System.Drawing.Size(107, 50);
 			this.button7.TabIndex = 15;
@@ -217,14 +218,14 @@
 			// 
 			this.listBox1.FormattingEnabled = true;
 			this.listBox1.ItemHeight = 12;
-			this.listBox1.Location = new System.Drawing.Point(509, 84);
+			this.listBox1.Location = new System.Drawing.Point(609, 84);
 			this.listBox1.Name = "listBox1";
 			this.listBox1.Size = new System.Drawing.Size(107, 208);
 			this.listBox1.TabIndex = 16;
 			// 
 			// button8
 			// 
-			this.button8.Location = new System.Drawing.Point(22, 357);
+			this.button8.Location = new System.Drawing.Point(22, 189);
 			this.button8.Name = "button8";
 			this.button8.Size = new System.Drawing.Size(107, 50);
 			this.button8.TabIndex = 4;
@@ -234,7 +235,7 @@
 			// 
 			// button9
 			// 
-			this.button9.Location = new System.Drawing.Point(22, 245);
+			this.button9.Location = new System.Drawing.Point(135, 77);
 			this.button9.Name = "button9";
 			this.button9.Size = new System.Drawing.Size(107, 50);
 			this.button9.TabIndex = 4;
@@ -247,7 +248,7 @@
 			this.groupBox1.Controls.Add(this.labConvResult);
 			this.groupBox1.Controls.Add(this.txtConvUnit);
 			this.groupBox1.Controls.Add(this.btnUnitConv);
-			this.groupBox1.Location = new System.Drawing.Point(161, 21);
+			this.groupBox1.Location = new System.Drawing.Point(261, 21);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(333, 50);
 			this.groupBox1.TabIndex = 17;
@@ -272,7 +273,7 @@
 			this.groupBox2.Controls.Add(this.cbDateType);
 			this.groupBox2.Controls.Add(this.chkBigEndian);
 			this.groupBox2.Controls.Add(this.txtGetBytesResult);
-			this.groupBox2.Location = new System.Drawing.Point(161, 77);
+			this.groupBox2.Location = new System.Drawing.Point(261, 77);
 			this.groupBox2.Name = "groupBox2";
 			this.groupBox2.Size = new System.Drawing.Size(333, 81);
 			this.groupBox2.TabIndex = 18;
@@ -295,7 +296,7 @@
 			this.groupBox3.Controls.Add(this.label1);
 			this.groupBox3.Controls.Add(this.txtCrcSource);
 			this.groupBox3.Controls.Add(this.btnCRC16);
-			this.groupBox3.Location = new System.Drawing.Point(161, 166);
+			this.groupBox3.Location = new System.Drawing.Point(261, 166);
 			this.groupBox3.Name = "groupBox3";
 			this.groupBox3.Size = new System.Drawing.Size(333, 129);
 			this.groupBox3.TabIndex = 19;
@@ -450,7 +451,7 @@
 			this.groupBox4.Controls.Add(this.txtLog);
 			this.groupBox4.Controls.Add(this.cbLogLevel);
 			this.groupBox4.Controls.Add(this.button10);
-			this.groupBox4.Location = new System.Drawing.Point(161, 302);
+			this.groupBox4.Location = new System.Drawing.Point(261, 302);
 			this.groupBox4.Name = "groupBox4";
 			this.groupBox4.Size = new System.Drawing.Size(455, 83);
 			this.groupBox4.TabIndex = 21;
@@ -489,17 +490,28 @@
 			this.button10.UseVisualStyleBackColor = true;
 			this.button10.Click += new System.EventHandler(this.button10_Click);
 			// 
+			// button11
+			// 
+			this.button11.Location = new System.Drawing.Point(22, 245);
+			this.button11.Name = "button11";
+			this.button11.Size = new System.Drawing.Size(107, 50);
+			this.button11.TabIndex = 5;
+			this.button11.Text = "HttpService Test";
+			this.button11.UseVisualStyleBackColor = true;
+			this.button11.Click += new System.EventHandler(this.button11_Click);
+			// 
 			// MainEntry
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(637, 479);
+			this.ClientSize = new System.Drawing.Size(737, 402);
 			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.groupBox2);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.listBox1);
 			this.Controls.Add(this.button7);
+			this.Controls.Add(this.button11);
 			this.Controls.Add(this.button6);
 			this.Controls.Add(this.button9);
 			this.Controls.Add(this.button8);
@@ -566,5 +578,6 @@
 		private System.Windows.Forms.TextBox txtLog;
 		private System.Windows.Forms.ComboBox cbLogLevel;
 		private System.Windows.Forms.Button button10;
+		private System.Windows.Forms.Button button11;
 	}
 }

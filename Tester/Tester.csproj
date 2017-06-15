@@ -51,6 +51,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -72,6 +73,12 @@
     </Compile>
     <Compile Include="FAsyncServer.Designer.cs">
       <DependentUpon>FAsyncServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FHttpService.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FHttpService.Designer.cs">
+      <DependentUpon>FHttpService.cs</DependentUpon>
     </Compile>
     <Compile Include="FTelnetServer.cs">
       <SubType>Form</SubType>
@@ -121,6 +128,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FAsyncServer.resx">
       <DependentUpon>FAsyncServer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FHttpService.resx">
+      <DependentUpon>FHttpService.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FTelnetServer.resx">
       <DependentUpon>FTelnetServer.cs</DependentUpon>
