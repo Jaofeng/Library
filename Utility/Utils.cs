@@ -704,7 +704,7 @@ namespace CJF.Utility
 		/// <param name="pattern">比對陣列</param>
 		/// <param name="startIndex">開始比對位置</param>
 		/// <returns></returns>
-		[Obsolete("請使用 IndexOfBytes(byte[] source, byte[] pattern, [int startIndex = 0])")]
+		[Obsolete("請使用 IndexOfBytes(byte[] source, byte[] pattern, [int startIndex = 0])", true)]
 		public static int ByteArrayIndexOf(byte[] source, byte[] pattern, int startIndex = 0)
 		{
 			int sLen = source.Length;
@@ -998,31 +998,26 @@ namespace CJF.Utility
 		/// <returns>-1:未搜尋到結果；大於等於 0:第一個位元組的位置</returns>
 		public static int IndexOfBytes(byte[] source, byte[] pattern, int startIndex = 0)
 		{
-			int fidx = 0;
-			int result = Array.FindIndex(source, startIndex, source.Length - startIndex, (byte b) =>
+			if (source == null || source.Length == 0 || pattern == null || pattern.Length == 0)
+				return -1;
+			for (int i = startIndex; i < source.Length; i++)
 			{
-				fidx = (b == pattern[fidx]) ? fidx + 1 : 0;
-				return (fidx == pattern.Length);
-			});
-			return (result < 0) ? -1 : result - fidx + 1;
+				if (!IsMatch(source, i, pattern)) continue;
+				return i;
+			}
+			return -1;
 		}
 		#endregion
 
-		#region Public Static Method : int IndexOfPattern<T>(T[] source, T[] pattern, int startIndex = 0)
-		/// <summary>尋找 T 資料型態陣列中的特定陣列值</summary>
-		/// <param name="source">原始陣列</param>
-		/// <param name="pattern">欲搜尋的陣列</param>
-		/// <param name="startIndex">起始位置</param>
-		/// <returns>-1:未搜尋到結果；大於等於 0:第一個位置</returns>
-		public static int IndexOfPattern<T>(T[] source, T[] pattern, int startIndex = 0)
+		#region Private Method : bool IsMatch<T>(T[] array, int position, T[] candidate)
+		private static bool IsMatch<T>(T[] array, int position, T[] candidate)
 		{
-			int fidx = 0;
-			int result = Array.FindIndex<T>(source, startIndex, source.Length - startIndex, (T item) =>
-			{
-				fidx = item.Equals(pattern[fidx]) ? fidx + 1 : 0;
-				return (fidx == pattern.Length);
-			});
-			return (result < 0) ? -1 : result - fidx + 1;
+			if (candidate.Length > (array.Length - position))
+				return false;
+			for (int i = 0; i < candidate.Length; i++)
+				if (!array[position + i].Equals(candidate[i]))
+					return false;
+			return true;
 		}
 		#endregion
 	}
