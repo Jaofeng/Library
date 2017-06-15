@@ -18,9 +18,11 @@ namespace CJF.Net.Http
 	/// </summary>
 	public struct ReceivedFileInfo
 	{
+		/// <summary>在 Form 中的鍵名</summary>
+		public string FieldKey;
 		/// <summary>原始檔案名稱</summary>
 		public string FileName;
-		/// <summary>暫存檔路徑</summary>
+		/// <summary>包含完整路徑的暫存檔名</summary>
 		public string TempFile;
 		/// <summary>檔案種類</summary>
 		public string ContentType;
@@ -32,6 +34,7 @@ namespace CJF.Net.Http
 	#region Class : MyMemoryStream
 	internal class MyMemoryStream : MemoryStream
 	{
+		public MyMemoryStream() : base() { }
 		public MyMemoryStream(byte[] buffer) : base(buffer) { }
 		public string ReadLine()
 		{
@@ -845,11 +848,13 @@ namespace CJF.Net.Http
 			int no = 0;
 			string[] arr1 = null;
 			string[] arr2 = null;
-			byte[] buffer = new byte[request.ContentLength64];
-			request.InputStream.Read(buffer, 0, buffer.Length);
-			MyMemoryStream ms = new MyMemoryStream(buffer);
-			StreamReader sr = new StreamReader(new MemoryStream(buffer));
-			string data = sr.ReadToEnd();
+			byte[] buff = new byte[64 * 1024];
+			int readed = 0;
+			MyMemoryStream ms = new MyMemoryStream();
+			while ((readed = request.InputStream.Read(buff, 0, buff.Length)) > 0)
+				ms.Write(buff, 0, readed);
+			byte[] buffer = ms.ToArray();
+			ms.Position = 0;
 			while (ms.Position < ms.Length)
 			{
 				line = ms.ReadLine();
@@ -893,6 +898,7 @@ namespace CJF.Net.Http
 								File.WriteAllBytes(tmp, buf);
 								this.ReceivedFiles.Add(new ReceivedFileInfo()
 								{
+									FieldKey = key,
 									FileName = fn,
 									ContentType = ct,
 									Length = buf.Length,
