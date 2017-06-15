@@ -52,10 +52,9 @@ namespace CJF.Net.Multicast
 		public CastReceiver(int listenPort) : this(new IPEndPoint(IPAddress.Any, listenPort)) { }
 		#endregion
 
-		#region Construct Method : CastReceiver(int localPort)
+		#region Construct Method : CastReceiver(IPEndPoint localPort)
 		/// <summary>建立新的 CastReceiver 類別，並初始化相關屬性值</summary>
-		/// <param name="localIp">指定的本地IP</param>
-		/// <param name="localPort">傾聽的通訊埠號</param>
+		/// <param name="localPort">傾聽的通訊埠</param>
 		public CastReceiver(IPEndPoint localPort)
 		{
 			m_IsExit = false;
@@ -69,7 +68,6 @@ namespace CJF.Net.Multicast
 			m_Handle = m_Socket.Handle;
 			m_Socket.ReceiveBufferSize = m_BufferSize;
 			m_Socket.SendBufferSize = m_BufferSize;
-			//m_Socket.ExclusiveAddressUse = true;
 			m_LocalEndPoint = localPort;
 			m_ReceiveBuffer = new byte[m_BufferSize];
 			m_ReadEventArgs = new SocketAsyncEventArgs();
