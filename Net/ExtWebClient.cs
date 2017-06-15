@@ -23,7 +23,7 @@ namespace CJF.Net.Http
 
 	#region Public Class : UploadMultiFilesProgessChangedEventArgs : EventArgs
 	/// <summary>UploadMultiFilesProgessChangedEventArgs 事件參數類別</summary>
-	public class UploadMultiFilesProgessChangedEventArgs : EventArgs
+	public class UploadMultiFilesProgressChangedEventArgs : EventArgs
 	{
 		/// <summary>取得已傳送的位元組數目。</summary>
 		public long BytesSent { get; private set; }
@@ -36,12 +36,12 @@ namespace CJF.Net.Http
 		/// <summary>建立 UploadMultiFilesProgessChangedEventArgs 事件參數類別</summary>
 		/// <param name="sent">已傳送位元組數</param>
 		/// <param name="total">總位元組數</param>
-		internal UploadMultiFilesProgessChangedEventArgs(long sent, long total) : this(sent, total, null) { }
+		internal UploadMultiFilesProgressChangedEventArgs(long sent, long total) : this(sent, total, null) { }
 		/// <summary>建立 UploadMultiFilesProgessChangedEventArgs 事件參數類別</summary>
 		/// <param name="sent">已傳送位元組數</param>
 		/// <param name="total">總位元組數</param>
 		/// <param name="userToken">使用者自訂資料</param>
-		internal UploadMultiFilesProgessChangedEventArgs(long sent, long total, object userToken)
+		internal UploadMultiFilesProgressChangedEventArgs(long sent, long total, object userToken)
 		{
 			this.BytesSent = sent;
 			this.TotalBytesToSend = total;
@@ -112,7 +112,7 @@ namespace CJF.Net.Http
 
 		#region 類別公開事件
 		/// <summary>檔案上傳進度事件，由 UploadMultiFilesAsync(...) 函示產生</summary>
-		public event EventHandler<UploadMultiFilesProgessChangedEventArgs> UploadMultiFilesProgressChanged;
+		public event EventHandler<UploadMultiFilesProgressChangedEventArgs> UploadMultiFilesProgressChanged;
 		/// <summary>檔案上傳完成的事件，由 UploadMultiFilesAsync(...) 函示產生</summary>
 		public event EventHandler<UploadMultiFilesCompletedEventArgs> UploadMultiFilesCompleted;
 		#endregion
@@ -152,7 +152,7 @@ namespace CJF.Net.Http
 		#endregion
 
 		#region Protected Virtual Method : void OnUploadMultiFilesProgressChanged(UploadMultiFilesProgessChangedEventArgs e)
-		protected virtual void OnUploadMultiFilesProgressChanged(UploadMultiFilesProgessChangedEventArgs e)
+		protected virtual void OnUploadMultiFilesProgressChanged(UploadMultiFilesProgressChangedEventArgs e)
 		{
 			if (this.UploadMultiFilesProgressChanged != null)
 				this.UploadMultiFilesProgressChanged(this, e);
@@ -312,7 +312,7 @@ namespace CJF.Net.Http
 						{
 							requestStream.Write(buf, 0, readBytes);
 							bytesSent += readBytes;
-							OnUploadMultiFilesProgressChanged(new UploadMultiFilesProgessChangedEventArgs(bytesSent, size, userToken));
+							OnUploadMultiFilesProgressChanged(new UploadMultiFilesProgressChangedEventArgs(bytesSent, size, userToken));
 							Thread.Sleep(5);
 						}
 						msOut.Close();
