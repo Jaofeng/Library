@@ -439,6 +439,7 @@ namespace CJF.Utility
 		public LogManager(Type source)
 		{
 			_PrivateLogger = log4net.LogManager.GetLogger(source);
+			this.TokenValue = "";
 		}
 		/// <summary>
 		/// 建立含自訂欄位的 LogManager 類別
@@ -458,6 +459,7 @@ namespace CJF.Utility
 		public LogManager(string logName)
 		{
 			_PrivateLogger = log4net.LogManager.GetLogger(logName);
+			this.TokenValue = "";
 		}
 		/// <summary>
 		/// 建立私用的LogManager類別
@@ -468,6 +470,19 @@ namespace CJF.Utility
 		{
 			log4net.Config.XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo(configFile));
 			_PrivateLogger = log4net.LogManager.GetLogger(appender);
+			this.TokenValue = "";
+		}
+		/// <summary>
+		/// 建立私用的LogManager類別
+		/// </summary>
+		/// <param name="configFile">log4net 參數存放位置</param>
+		/// <param name="appender">私用鍵值</param>
+		/// <param name="tokenValue">自訂欄位值</param>
+		public LogManager(string configFile, string appender, string tokenValue)
+		{
+			log4net.Config.XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo(configFile));
+			_PrivateLogger = log4net.LogManager.GetLogger(appender);
+			this.TokenValue = tokenValue;
 		}
 		/// <summary>設定或取得自訂欄位值</summary>
 		public string TokenValue { get; set; }
