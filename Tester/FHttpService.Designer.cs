@@ -35,8 +35,12 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.txtSvcNames = new System.Windows.Forms.TextBox();
+			this.label9 = new System.Windows.Forms.Label();
 			this.btnStop = new System.Windows.Forms.Button();
 			this.btnStart = new System.Windows.Forms.Button();
+			this.txtPath = new System.Windows.Forms.TextBox();
+			this.label4 = new System.Windows.Forms.Label();
 			this.gbForm = new System.Windows.Forms.GroupBox();
 			this.btnExtWebClientUpload = new System.Windows.Forms.Button();
 			this.btnFile2 = new System.Windows.Forms.Button();
@@ -51,9 +55,7 @@
 			this.txtKey4 = new System.Windows.Forms.TextBox();
 			this.btnFile1 = new System.Windows.Forms.Button();
 			this.label14 = new System.Windows.Forms.Label();
-			this.txtUrl = new System.Windows.Forms.TextBox();
 			this.txtVal2 = new System.Windows.Forms.TextBox();
-			this.label4 = new System.Windows.Forms.Label();
 			this.label15 = new System.Windows.Forms.Label();
 			this.txtFile1 = new System.Windows.Forms.TextBox();
 			this.txtKey2 = new System.Windows.Forms.TextBox();
@@ -78,9 +80,9 @@
 			// 
 			this.groupBox1.Controls.Add(this.rtbLog);
 			this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.groupBox1.Location = new System.Drawing.Point(10, 326);
+			this.groupBox1.Location = new System.Drawing.Point(10, 278);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(669, 215);
+			this.groupBox1.Size = new System.Drawing.Size(838, 263);
 			this.groupBox1.TabIndex = 4;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Log Message";
@@ -94,15 +96,15 @@
 			this.rtbLog.Location = new System.Drawing.Point(3, 18);
 			this.rtbLog.Name = "rtbLog";
 			this.rtbLog.ReadOnly = true;
-			this.rtbLog.Size = new System.Drawing.Size(663, 194);
+			this.rtbLog.Size = new System.Drawing.Size(832, 242);
 			this.rtbLog.TabIndex = 0;
 			this.rtbLog.Text = "";
 			// 
 			// txtPort
 			// 
-			this.txtPort.Location = new System.Drawing.Point(227, 21);
+			this.txtPort.Location = new System.Drawing.Point(217, 21);
 			this.txtPort.Name = "txtPort";
-			this.txtPort.Size = new System.Drawing.Size(60, 22);
+			this.txtPort.Size = new System.Drawing.Size(50, 22);
 			this.txtPort.TabIndex = 3;
 			this.txtPort.Text = "8080";
 			// 
@@ -118,7 +120,7 @@
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(168, 26);
+			this.label2.Location = new System.Drawing.Point(158, 26);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(53, 12);
 			this.label2.TabIndex = 2;
@@ -135,6 +137,8 @@
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.txtSvcNames);
+			this.groupBox2.Controls.Add(this.label9);
 			this.groupBox2.Controls.Add(this.btnStop);
 			this.groupBox2.Controls.Add(this.btnStart);
 			this.groupBox2.Controls.Add(this.txtIP);
@@ -144,16 +148,35 @@
 			this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
 			this.groupBox2.Location = new System.Drawing.Point(10, 10);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(669, 56);
+			this.groupBox2.Size = new System.Drawing.Size(838, 56);
 			this.groupBox2.TabIndex = 0;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Http Server";
+			// 
+			// txtSvcNames
+			// 
+			this.txtSvcNames.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtSvcNames.Location = new System.Drawing.Point(342, 21);
+			this.txtSvcNames.Name = "txtSvcNames";
+			this.txtSvcNames.Size = new System.Drawing.Size(317, 22);
+			this.txtSvcNames.TabIndex = 7;
+			this.txtSvcNames.Text = "upload;remotelog";
+			// 
+			// label9
+			// 
+			this.label9.AutoSize = true;
+			this.label9.Location = new System.Drawing.Point(283, 26);
+			this.label9.Name = "label9";
+			this.label9.Size = new System.Drawing.Size(53, 12);
+			this.label9.TabIndex = 6;
+			this.label9.Text = "允許服務";
 			// 
 			// btnStop
 			// 
 			this.btnStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnStop.Enabled = false;
-			this.btnStop.Location = new System.Drawing.Point(577, 21);
+			this.btnStop.Location = new System.Drawing.Point(746, 21);
 			this.btnStop.Name = "btnStop";
 			this.btnStop.Size = new System.Drawing.Size(75, 23);
 			this.btnStop.TabIndex = 5;
@@ -164,13 +187,33 @@
 			// btnStart
 			// 
 			this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnStart.Location = new System.Drawing.Point(496, 21);
+			this.btnStart.Location = new System.Drawing.Point(665, 21);
 			this.btnStart.Name = "btnStart";
 			this.btnStart.Size = new System.Drawing.Size(75, 23);
 			this.btnStart.TabIndex = 4;
 			this.btnStart.Text = "啟動";
 			this.btnStart.UseVisualStyleBackColor = true;
 			this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
+			// 
+			// txtPath
+			// 
+			this.txtPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtPath.BackColor = System.Drawing.SystemColors.Window;
+			this.txtPath.Location = new System.Drawing.Point(57, 21);
+			this.txtPath.Name = "txtPath";
+			this.txtPath.Size = new System.Drawing.Size(515, 22);
+			this.txtPath.TabIndex = 1;
+			this.txtPath.Text = "http://127.0.0.1:8080/upload";
+			// 
+			// label4
+			// 
+			this.label4.AutoSize = true;
+			this.label4.Location = new System.Drawing.Point(22, 26);
+			this.label4.Name = "label4";
+			this.label4.Size = new System.Drawing.Size(29, 12);
+			this.label4.TabIndex = 0;
+			this.label4.Text = "網址";
 			// 
 			// gbForm
 			// 
@@ -180,6 +223,8 @@
 			this.gbForm.Controls.Add(this.label7);
 			this.gbForm.Controls.Add(this.btnWebClientGet);
 			this.gbForm.Controls.Add(this.btnWebClientPost);
+			this.gbForm.Controls.Add(this.txtPath);
+			this.gbForm.Controls.Add(this.label4);
 			this.gbForm.Controls.Add(this.txtVal4);
 			this.gbForm.Controls.Add(this.pbPercentage);
 			this.gbForm.Controls.Add(this.label13);
@@ -187,9 +232,7 @@
 			this.gbForm.Controls.Add(this.txtKey4);
 			this.gbForm.Controls.Add(this.btnFile1);
 			this.gbForm.Controls.Add(this.label14);
-			this.gbForm.Controls.Add(this.txtUrl);
 			this.gbForm.Controls.Add(this.txtVal2);
-			this.gbForm.Controls.Add(this.label4);
 			this.gbForm.Controls.Add(this.label15);
 			this.gbForm.Controls.Add(this.txtFile1);
 			this.gbForm.Controls.Add(this.txtKey2);
@@ -208,16 +251,16 @@
 			this.gbForm.Location = new System.Drawing.Point(10, 74);
 			this.gbForm.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
 			this.gbForm.Name = "gbForm";
-			this.gbForm.Size = new System.Drawing.Size(669, 244);
+			this.gbForm.Size = new System.Drawing.Size(838, 196);
 			this.gbForm.TabIndex = 2;
 			this.gbForm.TabStop = false;
 			this.gbForm.Text = "WebClient Post Data and File";
 			// 
 			// btnExtWebClientUpload
 			// 
-			this.btnExtWebClientUpload.Location = new System.Drawing.Point(342, 190);
+			this.btnExtWebClientUpload.Location = new System.Drawing.Point(579, 77);
 			this.btnExtWebClientUpload.Name = "btnExtWebClientUpload";
-			this.btnExtWebClientUpload.Size = new System.Drawing.Size(273, 23);
+			this.btnExtWebClientUpload.Size = new System.Drawing.Size(243, 23);
 			this.btnExtWebClientUpload.TabIndex = 27;
 			this.btnExtWebClientUpload.Text = "使用 ExtWebClient 上傳多個檔案與資料";
 			this.btnExtWebClientUpload.UseVisualStyleBackColor = true;
@@ -226,7 +269,7 @@
 			// btnFile2
 			// 
 			this.btnFile2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnFile2.Location = new System.Drawing.Point(627, 77);
+			this.btnFile2.Location = new System.Drawing.Point(547, 77);
 			this.btnFile2.Name = "btnFile2";
 			this.btnFile2.Size = new System.Drawing.Size(25, 23);
 			this.btnFile2.TabIndex = 7;
@@ -241,7 +284,7 @@
 			this.txtFile2.BackColor = System.Drawing.SystemColors.Window;
 			this.txtFile2.Location = new System.Drawing.Point(57, 77);
 			this.txtFile2.Name = "txtFile2";
-			this.txtFile2.Size = new System.Drawing.Size(564, 22);
+			this.txtFile2.Size = new System.Drawing.Size(484, 22);
 			this.txtFile2.TabIndex = 6;
 			// 
 			// label7
@@ -255,9 +298,9 @@
 			// 
 			// btnWebClientGet
 			// 
-			this.btnWebClientGet.Location = new System.Drawing.Point(342, 161);
+			this.btnWebClientGet.Location = new System.Drawing.Point(579, 133);
 			this.btnWebClientGet.Name = "btnWebClientGet";
-			this.btnWebClientGet.Size = new System.Drawing.Size(273, 23);
+			this.btnWebClientGet.Size = new System.Drawing.Size(243, 23);
 			this.btnWebClientGet.TabIndex = 25;
 			this.btnWebClientGet.Text = "使用 WebClient Get 資料";
 			this.btnWebClientGet.UseVisualStyleBackColor = true;
@@ -265,9 +308,9 @@
 			// 
 			// btnWebClientPost
 			// 
-			this.btnWebClientPost.Location = new System.Drawing.Point(57, 161);
+			this.btnWebClientPost.Location = new System.Drawing.Point(579, 106);
 			this.btnWebClientPost.Name = "btnWebClientPost";
-			this.btnWebClientPost.Size = new System.Drawing.Size(273, 23);
+			this.btnWebClientPost.Size = new System.Drawing.Size(243, 23);
 			this.btnWebClientPost.TabIndex = 24;
 			this.btnWebClientPost.Text = "使用 WebClient POST 資料";
 			this.btnWebClientPost.UseVisualStyleBackColor = true;
@@ -285,9 +328,9 @@
 			// 
 			this.pbPercentage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.pbPercentage.Location = new System.Drawing.Point(14, 219);
+			this.pbPercentage.Location = new System.Drawing.Point(14, 171);
 			this.pbPercentage.Name = "pbPercentage";
-			this.pbPercentage.Size = new System.Drawing.Size(638, 12);
+			this.pbPercentage.Size = new System.Drawing.Size(808, 12);
 			this.pbPercentage.TabIndex = 28;
 			// 
 			// label13
@@ -301,9 +344,9 @@
 			// 
 			// btnWebClientUpload
 			// 
-			this.btnWebClientUpload.Location = new System.Drawing.Point(57, 190);
+			this.btnWebClientUpload.Location = new System.Drawing.Point(579, 49);
 			this.btnWebClientUpload.Name = "btnWebClientUpload";
-			this.btnWebClientUpload.Size = new System.Drawing.Size(273, 23);
+			this.btnWebClientUpload.Size = new System.Drawing.Size(243, 23);
 			this.btnWebClientUpload.TabIndex = 26;
 			this.btnWebClientUpload.Text = "使用 WebClient 上傳第一個檔案";
 			this.btnWebClientUpload.UseVisualStyleBackColor = true;
@@ -320,7 +363,7 @@
 			// btnFile1
 			// 
 			this.btnFile1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnFile1.Location = new System.Drawing.Point(627, 49);
+			this.btnFile1.Location = new System.Drawing.Point(547, 49);
 			this.btnFile1.Name = "btnFile1";
 			this.btnFile1.Size = new System.Drawing.Size(25, 23);
 			this.btnFile1.TabIndex = 4;
@@ -337,17 +380,6 @@
 			this.label14.TabIndex = 20;
 			this.label14.Text = "鍵名4";
 			// 
-			// txtUrl
-			// 
-			this.txtUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtUrl.BackColor = System.Drawing.SystemColors.Window;
-			this.txtUrl.Location = new System.Drawing.Point(57, 21);
-			this.txtUrl.Name = "txtUrl";
-			this.txtUrl.Size = new System.Drawing.Size(595, 22);
-			this.txtUrl.TabIndex = 1;
-			this.txtUrl.Text = "http://127.0.0.1:8080/upload";
-			// 
 			// txtVal2
 			// 
 			this.txtVal2.BackColor = System.Drawing.SystemColors.Window;
@@ -355,15 +387,6 @@
 			this.txtVal2.Name = "txtVal2";
 			this.txtVal2.Size = new System.Drawing.Size(88, 22);
 			this.txtVal2.TabIndex = 15;
-			// 
-			// label4
-			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(22, 24);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(29, 12);
-			this.label4.TabIndex = 0;
-			this.label4.Text = "網址";
 			// 
 			// label15
 			// 
@@ -381,7 +404,7 @@
 			this.txtFile1.BackColor = System.Drawing.SystemColors.Window;
 			this.txtFile1.Location = new System.Drawing.Point(57, 49);
 			this.txtFile1.Name = "txtFile1";
-			this.txtFile1.Size = new System.Drawing.Size(564, 22);
+			this.txtFile1.Size = new System.Drawing.Size(484, 22);
 			this.txtFile1.TabIndex = 3;
 			// 
 			// txtKey2
@@ -483,22 +506,22 @@
 			this.label5.Dock = System.Windows.Forms.DockStyle.Top;
 			this.label5.Location = new System.Drawing.Point(10, 66);
 			this.label5.Name = "label5";
-			this.label5.Size = new System.Drawing.Size(669, 8);
+			this.label5.Size = new System.Drawing.Size(838, 8);
 			this.label5.TabIndex = 1;
 			// 
 			// label6
 			// 
 			this.label6.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label6.Location = new System.Drawing.Point(10, 318);
+			this.label6.Location = new System.Drawing.Point(10, 270);
 			this.label6.Name = "label6";
-			this.label6.Size = new System.Drawing.Size(669, 8);
+			this.label6.Size = new System.Drawing.Size(838, 8);
 			this.label6.TabIndex = 3;
 			// 
 			// FHttpService
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(689, 551);
+			this.ClientSize = new System.Drawing.Size(858, 551);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.label6);
 			this.Controls.Add(this.gbForm);
@@ -533,7 +556,7 @@
 		private System.Windows.Forms.GroupBox gbForm;
 		private System.Windows.Forms.Button btnWebClientUpload;
 		private System.Windows.Forms.Button btnFile1;
-		private System.Windows.Forms.TextBox txtUrl;
+		private System.Windows.Forms.TextBox txtPath;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.TextBox txtFile1;
 		private System.Windows.Forms.Label label3;
@@ -563,5 +586,7 @@
 		private System.Windows.Forms.Button btnWebClientGet;
 		private System.Windows.Forms.RichTextBox rtbLog;
 		private System.Windows.Forms.Button btnExtWebClientUpload;
+		private System.Windows.Forms.TextBox txtSvcNames;
+		private System.Windows.Forms.Label label9;
 	}
 }

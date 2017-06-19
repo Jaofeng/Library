@@ -82,7 +82,7 @@ namespace Tester
 		#region Private Method : void btnWebClientUpload_Click(object sender, EventArgs e)
 		private void btnWebClientUpload_Click(object sender, EventArgs e)
 		{
-			Uri uri = new Uri(txtUrl.Text);
+			Uri uri = new Uri(txtPath.Text);
 			// 準備檔案
 			bool done = false;
 			using (WebClient wc = new WebClient())
@@ -155,7 +155,7 @@ namespace Tester
 			HttpListenerContext ctx = null;
 			ctx = _HttpListener.EndGetContext(ar);
 			_HttpListener.BeginGetContext(new AsyncCallback(WebRequestCallback), _HttpListener);
-			HttpService http = new HttpService(ctx, this);
+			HttpService http = new HttpService(ctx, txtSvcNames.Text);
 			http.OnPopupMessage += new HttpService.PopupMessageHandler(delegate(object sender, string msg)
 				{
 					Task.Factory.StartNew(() => WriteLog(Color.Blue, msg));
@@ -244,7 +244,7 @@ namespace Tester
 				{
 					wc.Encoding = Encoding.UTF8;
 					wc.Headers.Add(HttpRequestHeader.UserAgent, "WebClientText");
-					byte[] res = wc.UploadValues(txtUrl.Text, "POST", nvc);
+					byte[] res = wc.UploadValues(txtPath.Text, "POST", nvc);
 					WriteLog("# 資料已使用 POST 送出，伺服器回覆：{0}", Encoding.UTF8.GetString(res));
 				}
 			}
@@ -269,7 +269,7 @@ namespace Tester
 				{
 					wc.Encoding = Encoding.UTF8;
 					wc.Headers.Add(HttpRequestHeader.UserAgent, "WebClientText");
-					byte[] res = wc.UploadValues(txtUrl.Text, "GET", nvc);
+					byte[] res = wc.UploadValues(txtPath.Text, "GET", nvc);
 					WriteLog("# 資料已使用 GET 送出，伺服器回覆：\n{0}", Encoding.UTF8.GetString(res));
 				}
 			}
@@ -284,9 +284,10 @@ namespace Tester
 		}
 		#endregion
 
+		#region Private Method : void btnExtWebClientUpload_Click(object sender, EventArgs e)
 		private void btnExtWebClientUpload_Click(object sender, EventArgs e)
 		{
-			Uri uri = new Uri(txtUrl.Text);
+			Uri uri = new Uri(txtPath.Text);
 			// 準備檔案
 			bool done = false;
 			using (ExtWebClient wc = new ExtWebClient())
@@ -334,6 +335,7 @@ namespace Tester
 					Application.DoEvents();
 			}
 		}
+		#endregion
 
 		private void FHttpService_FormClosing(object sender, FormClosingEventArgs e)
 		{
@@ -427,13 +429,13 @@ namespace Tester
 		public event PopupMessageHandler OnPopupMessage;
 		#endregion
 
-		FHttpService _Form = null;
+		string[] _AllowSvcNames = null;
 
 		#region Construct Method : HttpService(HttpListenerContext context, SvcWorker worker)
-		public HttpService(HttpListenerContext context, FHttpService frm)
+		public HttpService(HttpListenerContext context, string allowSvc)
 		{
 			this.Context = context;
-			_Form = frm;
+			_AllowSvcNames = allowSvc.Split(';');
 		}
 		~HttpService() { Dispose(false); }
 		#endregion
@@ -552,40 +554,16 @@ namespace Tester
 								for (int i = 0; i < this.ReceivedFiles.Count; i++)
 									WriteLog("* Received Files[{0}]={1}, Key={2}, ContentType={3}, {4}bytes", i, this.ReceivedFiles[i].FileName, this.ReceivedFiles[i].FieldKey, this.ReceivedFiles[i].ContentType, this.ReceivedFiles[i].Length);
 							}
-							IApiService webSvc = null;
-							switch (svcName)
+							WriteLog("* SvcName={0}", svcName);
+							if (nvc != null)
 							{
-								case "upload":
-									if (nvc != null)
-									{
-										foreach (string k in nvc.AllKeys)
-											WriteLog("* Key={0}, Value={1}", k, nvc[k]);
-									}
-									ResponseString("Success");
-									break;
-								default:
-									ResponseNotFound();
-									break;
+								foreach (string k in nvc.AllKeys)
+									WriteLog("* Key={0}, Value={1}", k, nvc[k]);
 							}
-							try
-							{
-								if (webSvc != null)
-									webSvc.DoProcess(nvc);
-							}
-							catch (NotSupportedException)
-							{
-								// 需再客制化->輸出特製頁面
+							if (Array.IndexOf(_AllowSvcNames, svcName) != -1)
+								ResponseString("Success");
+							else
 								ResponseServiceNotSupport();
-							}
-							catch (FileNotFoundException)
-							{
-								ResponseNotFound();
-							}
-							catch (Exception ex)
-							{
-								//_log.WriteException(svcName, ex);
-								ResponseException(ex);
-							}
 							if (this.ReceivedFiles != null && this.ReceivedFiles.Count != 0)
 							{
 								foreach (ReceivedFileInfo rfi in this.ReceivedFiles)
