@@ -67,9 +67,12 @@ namespace CJF.Net
 			if (_IsDisposed) return;
 			if (isDispose)
 			{
-				if (_PingTimer != null)
-					_PingTimer.Dispose();
-				_PingTimer = null;
+				try
+				{
+					if (_PingTimer != null)
+						_PingTimer.Dispose();
+				}
+				finally { _PingTimer = null; }
 			}
 			_IsDisposed = true;
 		}
@@ -177,61 +180,67 @@ namespace CJF.Net
 		{
 			if (_Times != 0 && _DoneTimes >= _Times)
 			{
-				if (_PingTimer != null)
-					_PingTimer.Dispose();
-				_PingTimer = null;
-				return;
-			}
-			Interlocked.Increment(ref _DoneTimes);
-			using (Ping pingSender = new Ping())
-			{
-				PingOptions options = new PingOptions(this.TimeToLive, true);
-				string data = "a".PadLeft(this.DataLength, 'a');
-				byte[] buffer = Encoding.ASCII.GetBytes(data);
 				try
 				{
-					PingReply reply = pingSender.Send(this.HostNameOrAddress, this.Timeout, buffer, options);
-
-					if (OnResult != null)
-					{
-
-						PingResultEventArgs arg = new PingResultEventArgs(reply);
-						foreach (EventHandler<PingResultEventArgs> del in this.OnResult.GetInvocationList())
-						{
-							try { del.BeginInvoke(this, arg, new AsyncCallback(PingResultCallback), del); }
-							catch (Exception exx) { _log.WriteException(exx); }
-						}
-					}
+					if (_PingTimer != null)
+						_PingTimer.Dispose();
 				}
-				catch (Exception ex)
-				{
-					if (OnException != null)
-					{
-						PingResultEventArgs arg = new PingResultEventArgs(ex);
-						foreach (EventHandler<PingResultEventArgs> del in this.OnException.GetInvocationList())
-						{
-							try { del.BeginInvoke(this, arg, new AsyncCallback(PingResultCallback), del); }
-							catch (Exception exx) { _log.WriteException(exx); }
-						}
-					}
-				}
+				finally { _PingTimer = null; }
+				return;
 			}
-			if (_Times != 0 && _DoneTimes >= _Times)
+			try
 			{
-				if (_PingTimer != null)
+				Interlocked.Increment(ref _DoneTimes);
+				using (Ping pingSender = new Ping())
 				{
-					_PingTimer.Dispose();
-					_PingTimer = null;
-				}
-				if (OnFinished != null)
-				{
-					foreach (EventHandler del in this.OnFinished.GetInvocationList())
+					PingOptions options = new PingOptions(this.TimeToLive, true);
+					string data = "a".PadLeft(this.DataLength, 'a');
+					byte[] buffer = Encoding.ASCII.GetBytes(data);
+					try
 					{
-						try { del.BeginInvoke(this, new EventArgs(), new AsyncCallback(EventCallback) , del); }
-						catch (Exception exx) { _log.WriteException(exx); }
+						PingReply reply = pingSender.Send(this.HostNameOrAddress, this.Timeout, buffer, options);
+						if (OnResult != null)
+						{
+
+							PingResultEventArgs arg = new PingResultEventArgs(reply);
+							foreach (EventHandler<PingResultEventArgs> del in this.OnResult.GetInvocationList())
+							{
+								try { del.BeginInvoke(this, arg, new AsyncCallback(PingResultCallback), del); }
+								catch (Exception exx) { _log.WriteException(exx); }
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						if (OnException != null)
+						{
+							PingResultEventArgs arg = new PingResultEventArgs(ex);
+							foreach (EventHandler<PingResultEventArgs> del in this.OnException.GetInvocationList())
+							{
+								try { del.BeginInvoke(this, arg, new AsyncCallback(PingResultCallback), del); }
+								catch (Exception exx) { _log.WriteException(exx); }
+							}
+						}
+					}
+				}
+				if (_Times != 0 && _DoneTimes >= _Times)
+				{
+					if (_PingTimer != null)
+					{
+						_PingTimer.Dispose();
+						_PingTimer = null;
+					}
+					if (OnFinished != null)
+					{
+						foreach (EventHandler del in this.OnFinished.GetInvocationList())
+						{
+							try { del.BeginInvoke(this, new EventArgs(), new AsyncCallback(EventCallback), del); }
+							catch (Exception exx) { _log.WriteException(exx); }
+						}
 					}
 				}
 			}
+			catch (Exception ex) { }
 		}
 		#endregion
 
