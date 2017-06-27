@@ -168,7 +168,9 @@ namespace CJF.Net.Http
 		#endregion
 
 		#region Public Method : void UploadValuesAndFileAsync(string urlAddress, NameValueCollection values, string fileName)
-		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <summary>非同步方式上傳檔案與資料
+		/// <para>使用 UploadMultiFilesProgressChanged 與 UploadMultiFilesCompleted 事件回覆上傳進度與結果 </para>
+		/// </summary>
 		/// <param name="urlAddress">欲傳送的網址</param>
 		/// <param name="values">參數資料</param>
 		/// <param name="fileName">包含路徑的檔案名稱</param>
@@ -182,7 +184,9 @@ namespace CJF.Net.Http
 		#endregion
 
 		#region Public Method : void UploadValuesAndFileAsync(string urlAddress, NameValueCollection values, string fileName, object userToken)
-		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <summary>非同步方式上傳檔案與資料
+		/// <para>使用 UploadMultiFilesProgressChanged 與 UploadMultiFilesCompleted 事件回覆上傳進度與結果 </para>
+		/// </summary>
 		/// <param name="urlAddress">欲傳送的網址</param>
 		/// <param name="values">參數資料</param>
 		/// <param name="fileName">包含路徑的檔案名稱</param>
@@ -197,7 +201,9 @@ namespace CJF.Net.Http
 		#endregion
 
 		#region Public Method : void UploadValuesAndFileAsync(Uri uri, NameValueCollection values, string fileName)
-		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <summary>非同步方式上傳檔案與資料
+		/// <para>使用 UploadMultiFilesProgressChanged 與 UploadMultiFilesCompleted 事件回覆上傳進度與結果 </para>
+		/// </summary>
 		/// <param name="uri">欲傳送的網址</param>
 		/// <param name="values">參數資料</param>
 		/// <param name="fileName">包含路徑的檔案名稱</param>
@@ -213,7 +219,9 @@ namespace CJF.Net.Http
 		#endregion
 
 		#region Public Method : void UploadValuesAndFileAsync(Uri uri, NameValueCollection values, string fileName, object userToken)
-		/// <summary>非同步方式上傳檔案與資料</summary>
+		/// <summary>非同步方式上傳檔案與資料
+		/// <para>使用 UploadMultiFilesProgressChanged 與 UploadMultiFilesCompleted 事件回覆上傳進度與結果 </para>
+		/// </summary>
 		/// <param name="uri">欲傳送的網址</param>
 		/// <param name="values">參數資料</param>
 		/// <param name="fileName">包含路徑的檔案名稱</param>
@@ -230,7 +238,9 @@ namespace CJF.Net.Http
 		#endregion
 
 		#region Public Method : void UploadMultiFilesAsync(Uri uri, NameValueCollection values, FileData[] files, object userToken)
-		/// <summary>非同步方式上傳一個以上的檔案與資料</summary>
+		/// <summary>非同步方式上傳一個以上的檔案與資料
+		/// <para>使用 UploadMultiFilesProgressChanged 與 UploadMultiFilesCompleted 事件回覆上傳進度與結果 </para>
+		/// </summary>
 		/// <param name="uri">欲傳送的網址</param>
 		/// <param name="values">參數資料</param>
 		/// <param name="files">檔案清單</param>

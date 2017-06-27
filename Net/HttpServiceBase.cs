@@ -833,11 +833,11 @@ namespace CJF.Net.Http
 		}
 		#endregion
 
-		#region Protected Method : void PopulatePostMultiPart(HttpListenerRequest request, out NameValueCollection nvc)
+		#region Protected Virtual Method : void PopulatePostMultiPart(HttpListenerRequest request, out NameValueCollection nvc)
 		/// <summary>拆解 Request 內容</summary>
 		/// <param name="request">欲拆解的 HttpListenerRequest 類別</param>
 		/// <param name="nvc">輸出成 NameValueCollection 類別</param>
-		protected void PopulatePostMultiPart(HttpListenerRequest request, out NameValueCollection nvc)
+		protected virtual void PopulatePostMultiPart(HttpListenerRequest request, out NameValueCollection nvc)
 		{
 			this.ReceivedFiles = new List<ReceivedFileInfo>();
 			nvc = new NameValueCollection();
@@ -916,7 +916,7 @@ namespace CJF.Net.Http
 							line = ms.ReadLine();
 							while (ms.Position < ms.Length && line.IndexOf(split) == -1)
 							{
-								sb.AppendLine(line);
+								sb.Append(line);
 								line = ms.ReadLine();
 							}
 							if (Array.IndexOf<string>(nvc.AllKeys, key) == -1)
