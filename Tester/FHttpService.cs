@@ -79,47 +79,6 @@ namespace Tester
 		}
 		#endregion
 
-		#region Private Method : void btnWebClientUpload_Click(object sender, EventArgs e)
-		private void btnWebClientUpload_Click(object sender, EventArgs e)
-		{
-			Uri uri = new Uri(txtPath.Text);
-			// 準備檔案
-			bool done = false;
-			using (WebClient wc = new WebClient())
-			{
-				wc.Encoding = Encoding.UTF8;
-				wc.Headers.Add(HttpRequestHeader.UserAgent, "tccu");
-				wc.UploadFileCompleted += new UploadFileCompletedEventHandler(delegate(object s, UploadFileCompletedEventArgs se)
-				{
-					if (se.Error != null)
-					{
-						WriteLog(Color.Red, "# 發生錯誤!");
-						WriteLog(Color.Red, se.Error.Message);
-					}
-					else if (se.Cancelled)
-					{
-						WriteLog(Color.Brown, "# 被遠端伺服器取消");
-					}
-					else
-					{
-						WriteLog(Color.Green, "# 上傳完成");
-						WriteLog(Color.Green, "# 自伺服器收到\n{0}", Encoding.UTF8.GetString(se.Result));
-					}
-					done = true;
-				});
-				wc.UploadProgressChanged += new UploadProgressChangedEventHandler(delegate(object s, UploadProgressChangedEventArgs se)
-				{
-					pbPercentage.Value = se.ProgressPercentage;
-				});
-				wc.UploadFileAsync(uri, txtFile1.Text);
-				DateTime now = DateTime.Now;
-				while (!done && DateTime.Now.Subtract(now).TotalSeconds <= 60)
-					Application.DoEvents();
-				pbPercentage.Value = 100;
-			}
-		}
-		#endregion
-
 		#region Private Method : void InitHttpListener()
 		private void InitHttpListener()
 		{
@@ -234,6 +193,50 @@ namespace Tester
 		}
 		#endregion
 
+		#region Private Method : void btnWebClientUpload_Click(object sender, EventArgs e)
+		private void btnWebClientUpload_Click(object sender, EventArgs e)
+		{
+			Uri uri = new Uri(txtPath.Text);
+			// 準備檔案
+			bool done = false;
+			using (WebClient wc = new WebClient())
+			{
+				wc.Encoding = Encoding.UTF8;
+				if (!string.IsNullOrEmpty(txtUserAgent.Text))
+					wc.Headers.Add(HttpRequestHeader.UserAgent, txtUserAgent.Text);
+				else
+					wc.Headers.Add(HttpRequestHeader.UserAgent, "WebClient");
+				wc.UploadFileCompleted += new UploadFileCompletedEventHandler(delegate(object s, UploadFileCompletedEventArgs se)
+				{
+					if (se.Error != null)
+					{
+						WriteLog(Color.Red, "# 發生錯誤!");
+						WriteLog(Color.Red, se.Error.Message);
+					}
+					else if (se.Cancelled)
+					{
+						WriteLog(Color.Brown, "# 被遠端伺服器取消");
+					}
+					else
+					{
+						WriteLog(Color.Green, "# 上傳完成");
+						WriteLog(Color.Green, "# 自伺服器收到：{0}", Encoding.UTF8.GetString(se.Result));
+					}
+					done = true;
+				});
+				wc.UploadProgressChanged += new UploadProgressChangedEventHandler(delegate(object s, UploadProgressChangedEventArgs se)
+				{
+					pbPercentage.Value = se.ProgressPercentage;
+				});
+				wc.UploadFileAsync(uri, txtFile1.Text);
+				DateTime now = DateTime.Now;
+				while (!done && DateTime.Now.Subtract(now).TotalSeconds <= 60)
+					Application.DoEvents();
+				pbPercentage.Value = 100;
+			}
+		}
+		#endregion
+
 		#region Private Method : void btnWebClientPost_Click(object sender, EventArgs e)
 		private void btnWebClientPost_Click(object sender, EventArgs e)
 		{
@@ -243,18 +246,23 @@ namespace Tester
 				using (WebClient wc = new WebClient())
 				{
 					wc.Encoding = Encoding.UTF8;
-					wc.Headers.Add(HttpRequestHeader.UserAgent, "WebClientText");
+					if (!string.IsNullOrEmpty(txtUserAgent.Text))
+						wc.Headers.Add(HttpRequestHeader.UserAgent, txtUserAgent.Text);
+					else
+						wc.Headers.Add(HttpRequestHeader.UserAgent, "WebClient");
 					byte[] res = wc.UploadValues(txtPath.Text, "POST", nvc);
 					WriteLog("# 資料已使用 POST 送出，伺服器回覆：{0}", Encoding.UTF8.GetString(res));
 				}
 			}
 			catch (WebException ex)
 			{
-				WriteLog(Color.Red, "# 資料無法使用 POST 送出，原因：{0}", ex.Message);
+				WriteLog(Color.Red, "# 資料無法使用 POST 送出，原因：");
+				WriteLog(Color.Red, "# {0}", ex.Message);
 			}
 			catch (HttpException ex)
 			{
-				WriteLog(Color.Red, "# 資料無法使用 POST 送出，原因：{0}", ex.Message);
+				WriteLog(Color.Red, "# 資料無法使用 POST 送出，原因：");
+				WriteLog(Color.Red, "# {0}", ex.Message);
 			}
 		}
 		#endregion
@@ -268,18 +276,23 @@ namespace Tester
 				using (WebClient wc = new WebClient())
 				{
 					wc.Encoding = Encoding.UTF8;
-					wc.Headers.Add(HttpRequestHeader.UserAgent, "WebClientText");
+					if (!string.IsNullOrEmpty(txtUserAgent.Text))
+						wc.Headers.Add(HttpRequestHeader.UserAgent, txtUserAgent.Text);
+					else
+						wc.Headers.Add(HttpRequestHeader.UserAgent, "WebClient");
 					byte[] res = wc.UploadValues(txtPath.Text, "GET", nvc);
-					WriteLog("# 資料已使用 GET 送出，伺服器回覆：\n{0}", Encoding.UTF8.GetString(res));
+					WriteLog("# 資料已使用 GET 送出，伺服器回覆：{0}", Encoding.UTF8.GetString(res));
 				}
 			}
 			catch (WebException ex)
 			{
-				WriteLog(Color.Red, "# 資料無法使用 GET 送出，原因：{0}", ex.Message);
+				WriteLog(Color.Red, "# 資料無法使用 GET 送出，原因：");
+				WriteLog(Color.Red, "# {0}", ex.Message);
 			}
 			catch (HttpException ex)
 			{
-				WriteLog(Color.Red, "# 資料無法使用 GET 送出，原因：\n{0}", ex.Message);
+				WriteLog(Color.Red, "# 資料無法使用 GET 送出，原因：");
+				WriteLog(Color.Red, "# {0}", ex.Message);
 			}
 		}
 		#endregion
@@ -293,7 +306,10 @@ namespace Tester
 			using (ExtWebClient wc = new ExtWebClient())
 			{
 				wc.Encoding = Encoding.UTF8;
-				wc.Headers.Add(HttpRequestHeader.UserAgent, "tccu");
+				if (!string.IsNullOrEmpty(txtUserAgent.Text))
+					wc.Headers.Add(HttpRequestHeader.UserAgent, txtUserAgent.Text);
+				else
+					wc.Headers.Add(HttpRequestHeader.UserAgent, "ExtWebClient");
 				wc.UploadMultiFilesCompleted += new EventHandler<UploadMultiFilesCompletedEventArgs>(delegate(object s, UploadMultiFilesCompletedEventArgs se)
 				{
 					if (se.Result == UploadMultiFilesCompletedResult.Failed)
@@ -535,6 +551,7 @@ namespace Tester
 				NameValueCollection nvc = null;
 				this.ReceivedFiles = null;
 				WriteLog("* 伺服器收到來自 {0} 的 POST 要求", this.Context.Request.RemoteEndPoint);
+				WriteLog("* UserAgent   ={0}", request.UserAgent);
 				WriteLog("* Request Path={0}", path);
 				WriteLog("* Query String={0}", ToQueryString(queryString));
 				WriteLog("* Content Type={0}", request.ContentType);
@@ -558,7 +575,7 @@ namespace Tester
 							if (nvc != null)
 							{
 								foreach (string k in nvc.AllKeys)
-									WriteLog("* Key={0}, Value={1}", k, nvc[k]);
+									WriteLog("* Key={0}, Value={1}", k, nvc[k].Replace("\r", "<CR>").Replace("\n", "<LF>"));
 							}
 							if (Array.IndexOf(_AllowSvcNames, svcName) != -1)
 								ResponseString("Success");

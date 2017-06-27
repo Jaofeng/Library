@@ -42,6 +42,8 @@
 			this.txtPath = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.gbForm = new System.Windows.Forms.GroupBox();
+			this.txtUserAgent = new System.Windows.Forms.TextBox();
+			this.label17 = new System.Windows.Forms.Label();
 			this.btnExtWebClientUpload = new System.Windows.Forms.Button();
 			this.btnFile2 = new System.Windows.Forms.Button();
 			this.txtFile2 = new System.Windows.Forms.TextBox();
@@ -95,7 +97,6 @@
 			this.rtbLog.Font = new System.Drawing.Font("細明體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
 			this.rtbLog.Location = new System.Drawing.Point(3, 18);
 			this.rtbLog.Name = "rtbLog";
-			this.rtbLog.ReadOnly = true;
 			this.rtbLog.Size = new System.Drawing.Size(832, 242);
 			this.rtbLog.TabIndex = 0;
 			this.rtbLog.Text = "";
@@ -202,7 +203,7 @@
 			this.txtPath.BackColor = System.Drawing.SystemColors.Window;
 			this.txtPath.Location = new System.Drawing.Point(57, 21);
 			this.txtPath.Name = "txtPath";
-			this.txtPath.Size = new System.Drawing.Size(515, 22);
+			this.txtPath.Size = new System.Drawing.Size(421, 22);
 			this.txtPath.TabIndex = 1;
 			this.txtPath.Text = "http://127.0.0.1:8080/upload";
 			// 
@@ -217,6 +218,8 @@
 			// 
 			// gbForm
 			// 
+			this.gbForm.Controls.Add(this.txtUserAgent);
+			this.gbForm.Controls.Add(this.label17);
 			this.gbForm.Controls.Add(this.btnExtWebClientUpload);
 			this.gbForm.Controls.Add(this.btnFile2);
 			this.gbForm.Controls.Add(this.txtFile2);
@@ -256,6 +259,23 @@
 			this.gbForm.TabStop = false;
 			this.gbForm.Text = "WebClient Post Data and File";
 			// 
+			// txtUserAgent
+			// 
+			this.txtUserAgent.BackColor = System.Drawing.SystemColors.Window;
+			this.txtUserAgent.Location = new System.Drawing.Point(579, 21);
+			this.txtUserAgent.Name = "txtUserAgent";
+			this.txtUserAgent.Size = new System.Drawing.Size(242, 22);
+			this.txtUserAgent.TabIndex = 3;
+			// 
+			// label17
+			// 
+			this.label17.AutoSize = true;
+			this.label17.Location = new System.Drawing.Point(519, 26);
+			this.label17.Name = "label17";
+			this.label17.Size = new System.Drawing.Size(54, 12);
+			this.label17.TabIndex = 2;
+			this.label17.Text = "UserAgent";
+			// 
 			// btnExtWebClientUpload
 			// 
 			this.btnExtWebClientUpload.Location = new System.Drawing.Point(579, 77);
@@ -272,7 +292,7 @@
 			this.btnFile2.Location = new System.Drawing.Point(547, 77);
 			this.btnFile2.Name = "btnFile2";
 			this.btnFile2.Size = new System.Drawing.Size(25, 23);
-			this.btnFile2.TabIndex = 7;
+			this.btnFile2.TabIndex = 9;
 			this.btnFile2.Text = "...";
 			this.btnFile2.UseVisualStyleBackColor = true;
 			this.btnFile2.Click += new System.EventHandler(this.btnFile_Click);
@@ -285,7 +305,7 @@
 			this.txtFile2.Location = new System.Drawing.Point(57, 77);
 			this.txtFile2.Name = "txtFile2";
 			this.txtFile2.Size = new System.Drawing.Size(484, 22);
-			this.txtFile2.TabIndex = 6;
+			this.txtFile2.TabIndex = 8;
 			// 
 			// label7
 			// 
@@ -293,7 +313,7 @@
 			this.label7.Location = new System.Drawing.Point(16, 82);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(35, 12);
-			this.label7.TabIndex = 5;
+			this.label7.TabIndex = 7;
 			this.label7.Text = "檔案2";
 			// 
 			// btnWebClientGet
@@ -301,7 +321,7 @@
 			this.btnWebClientGet.Location = new System.Drawing.Point(579, 133);
 			this.btnWebClientGet.Name = "btnWebClientGet";
 			this.btnWebClientGet.Size = new System.Drawing.Size(243, 23);
-			this.btnWebClientGet.TabIndex = 25;
+			this.btnWebClientGet.TabIndex = 29;
 			this.btnWebClientGet.Text = "使用 WebClient Get 資料";
 			this.btnWebClientGet.UseVisualStyleBackColor = true;
 			this.btnWebClientGet.Click += new System.EventHandler(this.btnWebClientGet_Click);
@@ -311,7 +331,7 @@
 			this.btnWebClientPost.Location = new System.Drawing.Point(579, 106);
 			this.btnWebClientPost.Name = "btnWebClientPost";
 			this.btnWebClientPost.Size = new System.Drawing.Size(243, 23);
-			this.btnWebClientPost.TabIndex = 24;
+			this.btnWebClientPost.TabIndex = 28;
 			this.btnWebClientPost.Text = "使用 WebClient POST 資料";
 			this.btnWebClientPost.UseVisualStyleBackColor = true;
 			this.btnWebClientPost.Click += new System.EventHandler(this.btnWebClientPost_Click);
@@ -322,7 +342,7 @@
 			this.txtVal4.Location = new System.Drawing.Point(484, 133);
 			this.txtVal4.Name = "txtVal4";
 			this.txtVal4.Size = new System.Drawing.Size(88, 22);
-			this.txtVal4.TabIndex = 23;
+			this.txtVal4.TabIndex = 25;
 			// 
 			// pbPercentage
 			// 
@@ -331,7 +351,7 @@
 			this.pbPercentage.Location = new System.Drawing.Point(14, 171);
 			this.pbPercentage.Name = "pbPercentage";
 			this.pbPercentage.Size = new System.Drawing.Size(808, 12);
-			this.pbPercentage.TabIndex = 28;
+			this.pbPercentage.TabIndex = 30;
 			// 
 			// label13
 			// 
@@ -339,7 +359,7 @@
 			this.label13.Location = new System.Drawing.Point(443, 138);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(35, 12);
-			this.label13.TabIndex = 22;
+			this.label13.TabIndex = 24;
 			this.label13.Text = "鍵值4";
 			// 
 			// btnWebClientUpload
@@ -358,7 +378,7 @@
 			this.txtKey4.Location = new System.Drawing.Point(342, 133);
 			this.txtKey4.Name = "txtKey4";
 			this.txtKey4.Size = new System.Drawing.Size(88, 22);
-			this.txtKey4.TabIndex = 21;
+			this.txtKey4.TabIndex = 23;
 			// 
 			// btnFile1
 			// 
@@ -366,7 +386,7 @@
 			this.btnFile1.Location = new System.Drawing.Point(547, 49);
 			this.btnFile1.Name = "btnFile1";
 			this.btnFile1.Size = new System.Drawing.Size(25, 23);
-			this.btnFile1.TabIndex = 4;
+			this.btnFile1.TabIndex = 6;
 			this.btnFile1.Text = "...";
 			this.btnFile1.UseVisualStyleBackColor = true;
 			this.btnFile1.Click += new System.EventHandler(this.btnFile_Click);
@@ -377,7 +397,7 @@
 			this.label14.Location = new System.Drawing.Point(301, 138);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(35, 12);
-			this.label14.TabIndex = 20;
+			this.label14.TabIndex = 22;
 			this.label14.Text = "鍵名4";
 			// 
 			// txtVal2
@@ -386,7 +406,7 @@
 			this.txtVal2.Location = new System.Drawing.Point(484, 105);
 			this.txtVal2.Name = "txtVal2";
 			this.txtVal2.Size = new System.Drawing.Size(88, 22);
-			this.txtVal2.TabIndex = 15;
+			this.txtVal2.TabIndex = 17;
 			// 
 			// label15
 			// 
@@ -394,7 +414,7 @@
 			this.label15.Location = new System.Drawing.Point(443, 110);
 			this.label15.Name = "label15";
 			this.label15.Size = new System.Drawing.Size(35, 12);
-			this.label15.TabIndex = 14;
+			this.label15.TabIndex = 16;
 			this.label15.Text = "鍵值2";
 			// 
 			// txtFile1
@@ -405,7 +425,7 @@
 			this.txtFile1.Location = new System.Drawing.Point(57, 49);
 			this.txtFile1.Name = "txtFile1";
 			this.txtFile1.Size = new System.Drawing.Size(484, 22);
-			this.txtFile1.TabIndex = 3;
+			this.txtFile1.TabIndex = 5;
 			// 
 			// txtKey2
 			// 
@@ -413,7 +433,7 @@
 			this.txtKey2.Location = new System.Drawing.Point(342, 105);
 			this.txtKey2.Name = "txtKey2";
 			this.txtKey2.Size = new System.Drawing.Size(88, 22);
-			this.txtKey2.TabIndex = 13;
+			this.txtKey2.TabIndex = 15;
 			// 
 			// label3
 			// 
@@ -421,7 +441,7 @@
 			this.label3.Location = new System.Drawing.Point(16, 54);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(35, 12);
-			this.label3.TabIndex = 2;
+			this.label3.TabIndex = 4;
 			this.label3.Text = "檔案1";
 			// 
 			// label16
@@ -430,7 +450,7 @@
 			this.label16.Location = new System.Drawing.Point(301, 110);
 			this.label16.Name = "label16";
 			this.label16.Size = new System.Drawing.Size(35, 12);
-			this.label16.TabIndex = 12;
+			this.label16.TabIndex = 14;
 			this.label16.Text = "鍵名2";
 			// 
 			// txtKey1
@@ -439,7 +459,7 @@
 			this.txtKey1.Location = new System.Drawing.Point(57, 105);
 			this.txtKey1.Name = "txtKey1";
 			this.txtKey1.Size = new System.Drawing.Size(88, 22);
-			this.txtKey1.TabIndex = 9;
+			this.txtKey1.TabIndex = 11;
 			// 
 			// txtVal3
 			// 
@@ -447,7 +467,7 @@
 			this.txtVal3.Location = new System.Drawing.Point(199, 133);
 			this.txtVal3.Name = "txtVal3";
 			this.txtVal3.Size = new System.Drawing.Size(88, 22);
-			this.txtVal3.TabIndex = 19;
+			this.txtVal3.TabIndex = 21;
 			// 
 			// label8
 			// 
@@ -455,7 +475,7 @@
 			this.label8.Location = new System.Drawing.Point(16, 110);
 			this.label8.Name = "label8";
 			this.label8.Size = new System.Drawing.Size(35, 12);
-			this.label8.TabIndex = 8;
+			this.label8.TabIndex = 10;
 			this.label8.Text = "鍵名1";
 			// 
 			// label11
@@ -464,7 +484,7 @@
 			this.label11.Location = new System.Drawing.Point(158, 138);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(35, 12);
-			this.label11.TabIndex = 18;
+			this.label11.TabIndex = 20;
 			this.label11.Text = "鍵值3";
 			// 
 			// label10
@@ -473,7 +493,7 @@
 			this.label10.Location = new System.Drawing.Point(158, 110);
 			this.label10.Name = "label10";
 			this.label10.Size = new System.Drawing.Size(35, 12);
-			this.label10.TabIndex = 10;
+			this.label10.TabIndex = 12;
 			this.label10.Text = "鍵值1";
 			// 
 			// txtKey3
@@ -482,7 +502,7 @@
 			this.txtKey3.Location = new System.Drawing.Point(57, 133);
 			this.txtKey3.Name = "txtKey3";
 			this.txtKey3.Size = new System.Drawing.Size(88, 22);
-			this.txtKey3.TabIndex = 17;
+			this.txtKey3.TabIndex = 19;
 			// 
 			// txtVal1
 			// 
@@ -490,7 +510,7 @@
 			this.txtVal1.Location = new System.Drawing.Point(199, 105);
 			this.txtVal1.Name = "txtVal1";
 			this.txtVal1.Size = new System.Drawing.Size(88, 22);
-			this.txtVal1.TabIndex = 11;
+			this.txtVal1.TabIndex = 13;
 			// 
 			// label12
 			// 
@@ -498,7 +518,7 @@
 			this.label12.Location = new System.Drawing.Point(16, 138);
 			this.label12.Name = "label12";
 			this.label12.Size = new System.Drawing.Size(35, 12);
-			this.label12.TabIndex = 16;
+			this.label12.TabIndex = 18;
 			this.label12.Text = "鍵名3";
 			// 
 			// label5
@@ -588,5 +608,7 @@
 		private System.Windows.Forms.Button btnExtWebClientUpload;
 		private System.Windows.Forms.TextBox txtSvcNames;
 		private System.Windows.Forms.Label label9;
+		private System.Windows.Forms.TextBox txtUserAgent;
+		private System.Windows.Forms.Label label17;
 	}
 }
