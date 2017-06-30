@@ -111,16 +111,20 @@ namespace Tester
 		private void WebRequestCallback(IAsyncResult ar)
 		{
 			if (_HttpListener == null) return;
-			HttpListenerContext ctx = null;
-			ctx = _HttpListener.EndGetContext(ar);
-			_HttpListener.BeginGetContext(new AsyncCallback(WebRequestCallback), _HttpListener);
-			HttpService http = new HttpService(ctx, txtSvcNames.Text);
-			http.OnPopupMessage += new HttpService.PopupMessageHandler(delegate(object sender, string msg)
-				{
-					Task.Factory.StartNew(() => WriteLog(Color.Blue, msg));
-				});
-			//http.OnReciveAPI += new HttpService.APIHandler(HttpService_OnReciveAPI);
-			http.ProcessRequest();
+			try
+			{
+				HttpListenerContext ctx = null;
+				ctx = _HttpListener.EndGetContext(ar);
+				_HttpListener.BeginGetContext(new AsyncCallback(WebRequestCallback), _HttpListener);
+				HttpService http = new HttpService(ctx, txtSvcNames.Text);
+				http.OnPopupMessage += new HttpService.PopupMessageHandler(delegate(object sender, string msg)
+					{
+						Task.Factory.StartNew(() => WriteLog(Color.Blue, msg));
+					});
+				//http.OnReciveAPI += new HttpService.APIHandler(HttpService_OnReciveAPI);
+				http.ProcessRequest();
+			}
+			catch { }
 		}
 		#endregion
 
@@ -585,8 +589,8 @@ namespace Tester
 							{
 								foreach (ReceivedFileInfo rfi in this.ReceivedFiles)
 								{
-									if (File.Exists(rfi.TempFile))
-										File.Delete(rfi.TempFile);
+									if (File.Exists(rfi.FullPath))
+										File.Delete(rfi.FullPath);
 								}
 							}
 							break;

@@ -23,7 +23,7 @@ namespace CJF.Net.Http
 		/// <summary>原始檔案名稱</summary>
 		public string FileName;
 		/// <summary>包含完整路徑的暫存檔名</summary>
-		public string TempFile;
+		public string FullPath;
 		/// <summary>檔案種類</summary>
 		public string ContentType;
 		/// <summary>檔案長度</summary>
@@ -44,8 +44,11 @@ namespace CJF.Net.Http
 				if (this.ReadByte() == 13 && this.ReadByte() == 10)
 					break;
 			}
-			string result = Encoding.UTF8.GetString(this.ToArray(), (int)oldPos, (int)(this.Position - oldPos));
-			return result.Trim("\r\n".ToCharArray());
+			byte[] buf = new byte[(int)(this.Position - oldPos - 2)];
+			this.Position = oldPos;
+			this.Read(buf, 0, buf.Length);
+			this.Position += 2;
+			return Encoding.UTF8.GetString(buf);
 		}
 	}
 	#endregion
@@ -841,98 +844,109 @@ namespace CJF.Net.Http
 		{
 			this.ReceivedFiles = new List<ReceivedFileInfo>();
 			nvc = new NameValueCollection();
-			int boundary_index = request.ContentType.IndexOf("boundary=") + 9;
-			string split = request.ContentType.Substring(boundary_index, request.ContentType.Length - boundary_index);
-			byte[] splitBytes = Encoding.UTF8.GetBytes(split);
-			string line = string.Empty;
-			int no = 0;
-			string[] arr1 = null;
-			string[] arr2 = null;
-			byte[] buff = new byte[64 * 1024];
-			int readed = 0;
-			MyMemoryStream ms = new MyMemoryStream();
-			while ((readed = request.InputStream.Read(buff, 0, buff.Length)) > 0)
-				ms.Write(buff, 0, readed);
-			byte[] buffer = ms.ToArray();
-			ms.Position = 0;
-			while (ms.Position < ms.Length)
+			using (MyMemoryStream ms = new MyMemoryStream())
 			{
-				line = ms.ReadLine();
-				if (line.IndexOf(split) != -1)
+				int boundary_index = request.ContentType.IndexOf("boundary=") + 9;
+				string boundary = request.ContentType.Substring(boundary_index, request.ContentType.Length - boundary_index);
+				byte[] boundaryBytes = Encoding.UTF8.GetBytes(boundary);
+				string line = string.Empty;
+				int no = 0;
+				string[] arr1 = null, arr2 = null;
+				byte[] buff = new byte[64 * 1024];
+				int read = 0;
+				while ((read = request.InputStream.Read(buff, 0, buff.Length)) > 0)
+					ms.Write(buff, 0, read);
+				ms.Position = 0;
+				while (ms.Position < ms.Length)
 				{
-					no = 0;
-					continue;
-				}
-				if (no == 0)
-				{
-					if (line.StartsWith("Content-Disposition"))
+					line = ms.ReadLine();
+					if (line.IndexOf(boundary) != -1)
 					{
-						arr1 = line.Split(';');
-						if (arr1[0].Split(':')[1].Trim() != "form-data")
-							continue;
-						arr2 = arr1[1].Trim().Split('=');
-						if (arr2[0].ToLower() != "name")
-							continue;
-						string key = arr2[1].Trim('"');
-						if (line.IndexOf("filename=", StringComparison.OrdinalIgnoreCase) != -1)
+						no = 0;
+						continue;
+					}
+					if (no == 0)
+					{
+						if (line.StartsWith("Content-Disposition"))
 						{
-							line = ms.ReadLine();	// ContentType
-							if (!line.StartsWith("Content-Type"))
+							arr1 = line.Split(';');
+							if (arr1[0].Split(':')[1].Trim() != "form-data")
 								continue;
-							string ct = line.Split(':')[1].Trim();
-							string fn = arr1[2].Trim().Split('=')[1].Trim('"');
-							if (nvc.AllKeys.Contains<string>(key))
-								nvc[key] += ';' + fn;
-							else
-								nvc.Add(key, fn);
-							line = ms.ReadLine();	// 捨棄空行
+							arr2 = arr1[1].Trim().Split('=');
+							if (arr2[0].ToLower() != "name")
+								continue;
+							string key = arr2[1].Trim('"');
+							if (line.IndexOf("filename=", StringComparison.OrdinalIgnoreCase) != -1)
+							{
+								line = ms.ReadLine();	// ContentType
+								if (!line.StartsWith("Content-Type"))
+									continue;
+								string ct = line.Split(':')[1].Trim();
+								string fn = arr1[2].Trim().Split('=')[1].Trim('"');
+								if (nvc.AllKeys.Contains<string>(key))
+									nvc[key] += ';' + fn;
+								else
+									nvc.Add(key, fn);
+								line = ms.ReadLine();	// 捨棄空行
 
-							int length = 0;
-							int idx = ConvUtils.IndexOfBytes(buffer, splitBytes, (int)ms.Position);
-							byte[] buf = null;
-							if (idx != -1)
-							{
-								buf = new byte[idx - ms.Position - 4];
-								length = ms.Read(buf, 0, buf.Length);
-								string tmp = Path.GetTempFileName();
-								File.WriteAllBytes(tmp, buf);
-								this.ReceivedFiles.Add(new ReceivedFileInfo()
+								int idx = ConvUtils.IndexOfBytes(ms.ToArray(), boundaryBytes, (int)ms.Position);
+								if (idx != -1)
 								{
-									FieldKey = key,
-									FileName = fn,
-									ContentType = ct,
-									Length = buf.Length,
-									TempFile = tmp
-								});
-								ms.Position += splitBytes.Length + 6;
-								no = 0;
-								continue;
+									string tmp = Path.GetTempFileName();
+									using (FileStream fs = File.Create(tmp))
+									{
+										long total = idx - ms.Position - 4;
+										int readLen = buff.Length;
+										while (total > 0 && (read = ms.Read(buff, 0, readLen)) > 0)
+										{
+											fs.Write(buff, 0, read);
+											total -= read;
+											if (total < readLen)
+												readLen = (int)total;
+										}
+										fs.Close();
+									}
+									this.ReceivedFiles.Add(new ReceivedFileInfo()
+									{
+										FieldKey = key,
+										FileName = fn,
+										ContentType = ct,
+										Length = new FileInfo(tmp).Length,
+										FullPath = tmp
+									});
+									ms.Position += boundaryBytes.Length + 6;
+									no = 0;
+									continue;
+								}
 							}
-						}
-						else
-						{
-							StringBuilder sb = new StringBuilder();
-							line = ms.ReadLine();	// 捨棄空行
-							line = ms.ReadLine();
-							while (ms.Position < ms.Length && line.IndexOf(split) == -1)
-							{
-								sb.Append(line);
-								line = ms.ReadLine();
-							}
-							if (Array.IndexOf<string>(nvc.AllKeys, key) == -1)
-								nvc.Add(key, sb.ToString());
 							else
-								nvc[key] += ';' + sb.ToString();
-							if (line.IndexOf(split) != -1)
 							{
-								no = 0;
-								continue;
+								StringBuilder sb = new StringBuilder();
+								line = ms.ReadLine();	// 捨棄空行
+								line = ms.ReadLine();
+								while (ms.Position < ms.Length && line.IndexOf(boundary) == -1)
+								{
+									sb.Append(line);
+									line = ms.ReadLine();
+								}
+								if (Array.IndexOf<string>(nvc.AllKeys, key) == -1)
+									nvc.Add(key, sb.ToString());
+								else
+									nvc[key] += ';' + sb.ToString();
+								if (line.IndexOf(boundary) != -1)
+								{
+									no = 0;
+									continue;
+								}
 							}
 						}
 					}
+					no++;
 				}
-				no++;
+				ms.Close();
+				buff = null;
 			}
+			GC.Collect();
 		}
 		#endregion
 

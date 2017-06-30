@@ -66,12 +66,18 @@
 			this.groupBox4 = new System.Windows.Forms.GroupBox();
 			this.txtLog = new System.Windows.Forms.TextBox();
 			this.cbLogLevel = new System.Windows.Forms.ComboBox();
-			this.button10 = new System.Windows.Forms.Button();
+			this.btnSaveLog = new System.Windows.Forms.Button();
 			this.button11 = new System.Windows.Forms.Button();
+			this.groupBox5 = new System.Windows.Forms.GroupBox();
+			this.btnFile = new System.Windows.Forms.Button();
+			this.txtHexStr = new System.Windows.Forms.TextBox();
+			this.btnSearchHex = new System.Windows.Forms.Button();
+			this.txtFile = new System.Windows.Forms.TextBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
 			this.groupBox4.SuspendLayout();
+			this.groupBox5.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -450,7 +456,7 @@
 			// 
 			this.groupBox4.Controls.Add(this.txtLog);
 			this.groupBox4.Controls.Add(this.cbLogLevel);
-			this.groupBox4.Controls.Add(this.button10);
+			this.groupBox4.Controls.Add(this.btnSaveLog);
 			this.groupBox4.Location = new System.Drawing.Point(261, 302);
 			this.groupBox4.Name = "groupBox4";
 			this.groupBox4.Size = new System.Drawing.Size(455, 83);
@@ -480,15 +486,15 @@
 			this.cbLogLevel.Size = new System.Drawing.Size(92, 20);
 			this.cbLogLevel.TabIndex = 0;
 			// 
-			// button10
+			// btnSaveLog
 			// 
-			this.button10.Location = new System.Drawing.Point(363, 49);
-			this.button10.Name = "button10";
-			this.button10.Size = new System.Drawing.Size(75, 23);
-			this.button10.TabIndex = 11;
-			this.button10.Text = "Save";
-			this.button10.UseVisualStyleBackColor = true;
-			this.button10.Click += new System.EventHandler(this.button10_Click);
+			this.btnSaveLog.Location = new System.Drawing.Point(363, 49);
+			this.btnSaveLog.Name = "btnSaveLog";
+			this.btnSaveLog.Size = new System.Drawing.Size(75, 23);
+			this.btnSaveLog.TabIndex = 11;
+			this.btnSaveLog.Text = "Save";
+			this.btnSaveLog.UseVisualStyleBackColor = true;
+			this.btnSaveLog.Click += new System.EventHandler(this.btnSaveLog_Click);
 			// 
 			// button11
 			// 
@@ -500,11 +506,61 @@
 			this.button11.UseVisualStyleBackColor = true;
 			this.button11.Click += new System.EventHandler(this.button11_Click);
 			// 
+			// groupBox5
+			// 
+			this.groupBox5.Controls.Add(this.btnFile);
+			this.groupBox5.Controls.Add(this.txtHexStr);
+			this.groupBox5.Controls.Add(this.btnSearchHex);
+			this.groupBox5.Controls.Add(this.txtFile);
+			this.groupBox5.Location = new System.Drawing.Point(261, 392);
+			this.groupBox5.Name = "groupBox5";
+			this.groupBox5.Size = new System.Drawing.Size(455, 84);
+			this.groupBox5.TabIndex = 22;
+			this.groupBox5.TabStop = false;
+			this.groupBox5.Text = "ConvUtils.IndexOfBytes Test";
+			// 
+			// btnFile
+			// 
+			this.btnFile.Location = new System.Drawing.Point(424, 21);
+			this.btnFile.Name = "btnFile";
+			this.btnFile.Size = new System.Drawing.Size(25, 23);
+			this.btnFile.TabIndex = 12;
+			this.btnFile.Text = "...";
+			this.btnFile.UseVisualStyleBackColor = true;
+			this.btnFile.Click += new System.EventHandler(this.btnFile_Click);
+			// 
+			// txtHexStr
+			// 
+			this.txtHexStr.Location = new System.Drawing.Point(9, 49);
+			this.txtHexStr.Name = "txtHexStr";
+			this.txtHexStr.Size = new System.Drawing.Size(359, 22);
+			this.txtHexStr.TabIndex = 2;
+			this.txtHexStr.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
+			// 
+			// btnSearchHex
+			// 
+			this.btnSearchHex.Location = new System.Drawing.Point(374, 50);
+			this.btnSearchHex.Name = "btnSearchHex";
+			this.btnSearchHex.Size = new System.Drawing.Size(75, 23);
+			this.btnSearchHex.TabIndex = 11;
+			this.btnSearchHex.Text = "Search Next";
+			this.btnSearchHex.UseVisualStyleBackColor = true;
+			this.btnSearchHex.Click += new System.EventHandler(this.btnSearchHex_Click);
+			// 
+			// txtFile
+			// 
+			this.txtFile.Location = new System.Drawing.Point(9, 21);
+			this.txtFile.Name = "txtFile";
+			this.txtFile.Size = new System.Drawing.Size(409, 22);
+			this.txtFile.TabIndex = 2;
+			this.txtFile.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
+			// 
 			// MainEntry
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(737, 402);
+			this.ClientSize = new System.Drawing.Size(737, 526);
+			this.Controls.Add(this.groupBox5);
 			this.Controls.Add(this.groupBox4);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.groupBox2);
@@ -533,6 +589,8 @@
 			this.groupBox3.PerformLayout();
 			this.groupBox4.ResumeLayout(false);
 			this.groupBox4.PerformLayout();
+			this.groupBox5.ResumeLayout(false);
+			this.groupBox5.PerformLayout();
 			this.ResumeLayout(false);
 
 		}
@@ -577,7 +635,12 @@
 		private System.Windows.Forms.GroupBox groupBox4;
 		private System.Windows.Forms.TextBox txtLog;
 		private System.Windows.Forms.ComboBox cbLogLevel;
-		private System.Windows.Forms.Button button10;
+		private System.Windows.Forms.Button btnSaveLog;
 		private System.Windows.Forms.Button button11;
+		private System.Windows.Forms.GroupBox groupBox5;
+		private System.Windows.Forms.Button btnFile;
+		private System.Windows.Forms.TextBox txtHexStr;
+		private System.Windows.Forms.Button btnSearchHex;
+		private System.Windows.Forms.TextBox txtFile;
 	}
 }

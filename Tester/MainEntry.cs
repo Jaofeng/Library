@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using CJF.Utility;
@@ -126,10 +128,10 @@ namespace Tester
 			labCrc16TimeT.Text = watch.ElapsedTicks.ToString() + " Ticks";
 		}
 
-		private void button10_Click(object sender, EventArgs e)
+		private void btnSaveLog_Click(object sender, EventArgs e)
 		{
 			LogManager.LogLevel lv = LogManager.LogLevel.Info;
-			if (!Enum.TryParse<LogManager.LogLevel>(cbLogLevel.SelectedItem.ToString(),true, out lv))
+			if (!Enum.TryParse<LogManager.LogLevel>(cbLogLevel.SelectedItem.ToString(), true, out lv))
 				return;
 			LogManager.WriteLog(lv, txtLog.Text);
 		}
@@ -138,6 +140,73 @@ namespace Tester
 		{
 			FHttpService fp = new FHttpService();
 			fp.Show();
+		}
+
+		private void btnFile_Click(object sender, EventArgs e)
+		{
+			using (OpenFileDialog ofd = new OpenFileDialog())
+			{
+				ofd.Filter = "所有檔案(*.*)|*.*";
+				ofd.RestoreDirectory = true;
+				ofd.AutoUpgradeEnabled = true;
+				ofd.CheckFileExists = true;
+				ofd.CheckPathExists = true;
+				ofd.Multiselect = false;
+				ofd.DefaultExt = ".zip";
+				ofd.Title = "請選擇欲搜尋內容的檔案";
+				if (string.IsNullOrEmpty(txtFile.Text))
+					ofd.FileName = string.Empty;
+				else
+					ofd.FileName = Path.GetFileName(txtFile.Text);
+				DialogResult dr = ofd.ShowDialog(this);
+				if (dr != DialogResult.OK)
+					return;
+				txtFile.Text = ofd.FileName;
+			}
+		}
+
+		private void btnSearchHex_Click(object sender, EventArgs e)
+		{
+			if (!File.Exists(txtFile.Text))
+			{
+				MessageBox.Show("檔案不存在!!");
+				return;
+			}
+			if (string.IsNullOrEmpty(txtHexStr.Text))
+			{
+				MessageBox.Show("請輸入欲搜尋的 16 進位陣列字串!!");
+				return;
+			}
+			this.UseWaitCursor = true;
+			Application.DoEvents();
+			byte[] buf = File.ReadAllBytes(txtFile.Text);
+			byte[] sch = ConvUtils.HexStringToBytes(txtHexStr.Text);
+			int idx = 0, start = 0;
+			if (btnSearchHex.Tag != null)
+				start = Convert.ToInt32(btnSearchHex.Tag) + 1;
+			string msg = string.Empty;
+			Stopwatch w = new Stopwatch();
+			w.Start();
+			idx = ConvUtils.IndexOfBytes(buf, sch, start);
+			w.Stop();
+			if (idx == -1)
+			{
+				msg = string.Format("找不到欲搜尋的 16 進位陣列字串!!\n耗時：{0}ms\n\n", w.ElapsedMilliseconds);
+				btnSearchHex.Tag = null;
+			}
+			else
+			{
+				msg = string.Format("欲搜尋的 16 進位陣列字串的索引值為 {0:X8}\n耗時：{1}ms\n\n", idx, w.ElapsedMilliseconds);
+				btnSearchHex.Tag = idx;
+			}
+			this.UseWaitCursor = false;
+			Application.DoEvents();
+			MessageBox.Show(msg);
+		}
+
+		private void txtSearch_TextChanged(object sender, EventArgs e)
+		{
+			btnSearchHex.Tag = null;
 		}
 	}
 }
