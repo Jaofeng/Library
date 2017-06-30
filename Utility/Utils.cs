@@ -1000,10 +1000,15 @@ namespace CJF.Utility
 		{
 			if (source == null || source.Length == 0 || pattern == null || pattern.Length == 0)
 				return -1;
-			for (int i = startIndex; i < source.Length; i++)
+			int idx = Array.IndexOf<byte>(source, pattern[0], startIndex);
+			while (idx != -1)
 			{
-				if (!IsMatch(source, i, pattern)) continue;
-				return i;
+				if (!IsMatch(source, idx, pattern))
+				{
+					idx = Array.IndexOf<byte>(source, pattern[0], idx + 1);
+					continue;
+				}
+				return idx;
 			}
 			return -1;
 		}
