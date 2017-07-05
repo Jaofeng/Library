@@ -897,6 +897,8 @@ namespace CJF.Net.Http
 									{
 										long total = idx - ms.Position - 4;
 										int readLen = buff.Length;
+										if (total < readLen)
+											readLen = (int)total;
 										while (total > 0 && (read = ms.Read(buff, 0, readLen)) > 0)
 										{
 											fs.Write(buff, 0, read);
