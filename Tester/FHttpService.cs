@@ -231,6 +231,7 @@ namespace Tester
 				wc.UploadProgressChanged += new UploadProgressChangedEventHandler(delegate(object s, UploadProgressChangedEventArgs se)
 				{
 					pbPercentage.Value = se.ProgressPercentage;
+					Application.DoEvents();
 				});
 				wc.UploadFileAsync(uri, txtFile1.Text);
 				DateTime now = DateTime.Now;
@@ -331,24 +332,31 @@ namespace Tester
 				});
 				wc.UploadMultiFilesProgressChanged += new EventHandler<UploadMultiFilesProgressChangedEventArgs>(delegate(object s, UploadMultiFilesProgressChangedEventArgs se)
 				{
-					this.Invoke(new MethodInvoker(() => pbPercentage.Value = se.ProgressPercentage));
+					this.Invoke(new MethodInvoker(() => { pbPercentage.Value = se.ProgressPercentage; Application.DoEvents(); }));
 				});
 				NameValueCollection nvc = GetNameValueCollection();
 				List<ExtWebClient.FileData> files = new List<ExtWebClient.FileData>();
+				CJF.Utility.CRC.Crc16 crc = new CJF.Utility.CRC.Crc16();
 				if (!string.IsNullOrEmpty(txtFile1.Text) && File.Exists(txtFile1.Text))
+				{
 					files.Add(new ExtWebClient.FileData()
 					{
 						ContentType = ConvUtils.GetContentType(txtFile1.Text),
 						FileName = txtFile1.Text,
 						KeyName = "File1"
 					});
+					nvc.Add("File1CRC", crc.ComputeChecksum(txtFile1.Text).ToString("X"));
+				}
 				if (!string.IsNullOrEmpty(txtFile2.Text) && File.Exists(txtFile2.Text))
+				{
 					files.Add(new ExtWebClient.FileData()
 					{
 						ContentType = ConvUtils.GetContentType(txtFile2.Text),
 						FileName = txtFile2.Text,
 						KeyName = "File2"
 					});
+					nvc.Add("File2CRC", crc.ComputeChecksum(txtFile2.Text).ToString("X"));
+				}
 				wc.UploadMultiFilesAsync(uri, nvc, files.ToArray(), null);
 				DateTime now = DateTime.Now;
 				while (!done && DateTime.Now.Subtract(now).TotalSeconds <= 60)
@@ -567,13 +575,24 @@ namespace Tester
 							base.PopulatePostMultiPart(request, out nvc);
 							string pageName = path.Replace("/", "\\").ToLower().TrimEnd('\\');
 							string[] seg = this.Context.Request.Url.Segments;
-							string svcName = string.Empty, last = string.Empty, file = string.Empty;
+							string svcName = string.Empty, last = string.Empty, file = string.Empty, msg = string.Empty;
 							if (seg.Length >= 2)
 								svcName = seg[1].TrimEnd('/').ToLower();
+							CJF.Utility.CRC.Crc16 crc = new CJF.Utility.CRC.Crc16();
+							ushort c1 = 0, c2 = 0;
 							if (this.ReceivedFiles != null && this.ReceivedFiles.Count != 0)
 							{
 								for (int i = 0; i < this.ReceivedFiles.Count; i++)
-									WriteLog("* Received Files[{0}]={1}, Key={2}, ContentType={3}, {4}bytes", i, this.ReceivedFiles[i].FileName, this.ReceivedFiles[i].FieldKey, this.ReceivedFiles[i].ContentType, this.ReceivedFiles[i].Length);
+								{
+									msg = string.Format("* Received Files[{0}]={1}, Key={2}, ContentType={3}, {4}bytes", i, this.ReceivedFiles[i].FileName, this.ReceivedFiles[i].FieldKey, this.ReceivedFiles[i].ContentType, this.ReceivedFiles[i].Length);
+									if (!string.IsNullOrEmpty(nvc[string.Format("File{0}CRC", i + 1)]))
+									{
+										c1 = crc.ComputeChecksum(this.ReceivedFiles[i].FullPath);
+										c2 = Convert.ToUInt16(nvc[string.Format("File{0}CRC", i + 1)], 16);
+										msg += ", CRC is " + (c1 == c2 ? "Success" : "Fail");
+									}
+									WriteLog(msg);
+								}
 							}
 							WriteLog("* SvcName={0}", svcName);
 							if (nvc != null)
