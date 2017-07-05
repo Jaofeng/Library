@@ -179,25 +179,53 @@ namespace Tester
 			}
 			this.UseWaitCursor = true;
 			Application.DoEvents();
-			byte[] buf = File.ReadAllBytes(txtFile.Text);
+			string msg = string.Empty;
+
 			byte[] sch = ConvUtils.HexStringToBytes(txtHexStr.Text);
 			int idx = 0, start = 0;
 			if (btnSearchHex.Tag != null)
 				start = Convert.ToInt32(btnSearchHex.Tag) + 1;
-			string msg = string.Empty;
 			Stopwatch w = new Stopwatch();
 			w.Start();
-			idx = ConvUtils.IndexOfBytes(buf, sch, start);
-			w.Stop();
-			if (idx == -1)
+			if (!rbFindIndexes.Checked)
 			{
-				msg = string.Format("找不到欲搜尋的 16 進位陣列字串!!\n耗時：{0}ms\n\n", w.ElapsedMilliseconds);
-				btnSearchHex.Tag = null;
+				if (rbIndexOfBytes.Checked)
+				{
+					byte[] buf = File.ReadAllBytes(txtFile.Text);
+					idx = ConvUtils.IndexOfBytes(buf, sch, start);
+				}
+				else if (rbFindIndex.Checked)
+				{
+					idx = ConvUtils.IndexOfBytesInFile(txtFile.Text, sch, start);
+				}
+				w.Stop();
+				if (idx == -1)
+				{
+					msg = string.Format("找不到欲搜尋的 16 進位陣列字串!!\n耗時：{0}ms / {1}ticks\n\n", w.ElapsedMilliseconds, w.ElapsedTicks);
+					btnSearchHex.Tag = null;
+				}
+				else
+				{
+					msg = string.Format("欲搜尋的 16 進位陣列字串的索引值為 {0:X8}\n耗時：{1}ms / {2}ticks\n\n", idx, w.ElapsedMilliseconds, w.ElapsedTicks);
+					btnSearchHex.Tag = idx;
+				}
 			}
 			else
 			{
-				msg = string.Format("欲搜尋的 16 進位陣列字串的索引值為 {0:X8}\n耗時：{1}ms\n\n", idx, w.ElapsedMilliseconds);
-				btnSearchHex.Tag = idx;
+				int[] idxs = ConvUtils.IndexesOfBytesInFile(txtFile.Text, sch);
+				w.Stop();
+				if (idxs.Length == 0)
+				{
+					msg = string.Format("找不到欲搜尋的 16 進位陣列字串!!\n耗時：{0}ms / {1}ticks\n\n", w.ElapsedMilliseconds, w.ElapsedTicks);
+					btnSearchHex.Tag = null;
+				}
+				else
+				{
+					msg = string.Format("搜尋 16 進位陣列字串耗時：{0}ms / {1}ticks, 索引值為：\n", w.ElapsedMilliseconds, w.ElapsedTicks);
+					foreach (int ii in idxs)
+						msg += string.Format("{0:X8}\n", ii);
+					btnSearchHex.Tag = null;
+				}
 			}
 			this.UseWaitCursor = false;
 			Application.DoEvents();
@@ -205,6 +233,11 @@ namespace Tester
 		}
 
 		private void txtSearch_TextChanged(object sender, EventArgs e)
+		{
+			btnSearchHex.Tag = null;
+		}
+
+		private void rbFunc_CheckedChanged(object sender, EventArgs e)
 		{
 			btnSearchHex.Tag = null;
 		}

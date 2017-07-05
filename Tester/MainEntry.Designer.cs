@@ -73,6 +73,9 @@
 			this.txtHexStr = new System.Windows.Forms.TextBox();
 			this.btnSearchHex = new System.Windows.Forms.Button();
 			this.txtFile = new System.Windows.Forms.TextBox();
+			this.rbIndexOfBytes = new System.Windows.Forms.RadioButton();
+			this.rbFindIndex = new System.Windows.Forms.RadioButton();
+			this.rbFindIndexes = new System.Windows.Forms.RadioButton();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -508,20 +511,23 @@
 			// 
 			// groupBox5
 			// 
+			this.groupBox5.Controls.Add(this.rbFindIndexes);
+			this.groupBox5.Controls.Add(this.rbFindIndex);
+			this.groupBox5.Controls.Add(this.rbIndexOfBytes);
 			this.groupBox5.Controls.Add(this.btnFile);
 			this.groupBox5.Controls.Add(this.txtHexStr);
 			this.groupBox5.Controls.Add(this.btnSearchHex);
 			this.groupBox5.Controls.Add(this.txtFile);
 			this.groupBox5.Location = new System.Drawing.Point(261, 392);
 			this.groupBox5.Name = "groupBox5";
-			this.groupBox5.Size = new System.Drawing.Size(455, 84);
+			this.groupBox5.Size = new System.Drawing.Size(455, 106);
 			this.groupBox5.TabIndex = 22;
 			this.groupBox5.TabStop = false;
-			this.groupBox5.Text = "ConvUtils.IndexOfBytes Test";
+			this.groupBox5.Text = "Byte Array Search";
 			// 
 			// btnFile
 			// 
-			this.btnFile.Location = new System.Drawing.Point(424, 21);
+			this.btnFile.Location = new System.Drawing.Point(424, 44);
 			this.btnFile.Name = "btnFile";
 			this.btnFile.Size = new System.Drawing.Size(25, 23);
 			this.btnFile.TabIndex = 12;
@@ -531,7 +537,7 @@
 			// 
 			// txtHexStr
 			// 
-			this.txtHexStr.Location = new System.Drawing.Point(9, 49);
+			this.txtHexStr.Location = new System.Drawing.Point(9, 72);
 			this.txtHexStr.Name = "txtHexStr";
 			this.txtHexStr.Size = new System.Drawing.Size(359, 22);
 			this.txtHexStr.TabIndex = 2;
@@ -539,7 +545,7 @@
 			// 
 			// btnSearchHex
 			// 
-			this.btnSearchHex.Location = new System.Drawing.Point(374, 50);
+			this.btnSearchHex.Location = new System.Drawing.Point(374, 73);
 			this.btnSearchHex.Name = "btnSearchHex";
 			this.btnSearchHex.Size = new System.Drawing.Size(75, 23);
 			this.btnSearchHex.TabIndex = 11;
@@ -549,11 +555,47 @@
 			// 
 			// txtFile
 			// 
-			this.txtFile.Location = new System.Drawing.Point(9, 21);
+			this.txtFile.Location = new System.Drawing.Point(9, 44);
 			this.txtFile.Name = "txtFile";
 			this.txtFile.Size = new System.Drawing.Size(409, 22);
 			this.txtFile.TabIndex = 2;
 			this.txtFile.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
+			// 
+			// rbIndexOfBytes
+			// 
+			this.rbIndexOfBytes.AutoSize = true;
+			this.rbIndexOfBytes.Location = new System.Drawing.Point(9, 22);
+			this.rbIndexOfBytes.Name = "rbIndexOfBytes";
+			this.rbIndexOfBytes.Size = new System.Drawing.Size(88, 16);
+			this.rbIndexOfBytes.TabIndex = 13;
+			this.rbIndexOfBytes.TabStop = true;
+			this.rbIndexOfBytes.Text = "IndexOfBytes";
+			this.rbIndexOfBytes.UseVisualStyleBackColor = true;
+			this.rbIndexOfBytes.CheckedChanged += new System.EventHandler(this.rbFunc_CheckedChanged);
+			// 
+			// rbFindIndex
+			// 
+			this.rbFindIndex.AutoSize = true;
+			this.rbFindIndex.Location = new System.Drawing.Point(103, 22);
+			this.rbFindIndex.Name = "rbFindIndex";
+			this.rbFindIndex.Size = new System.Drawing.Size(115, 16);
+			this.rbFindIndex.TabIndex = 13;
+			this.rbFindIndex.TabStop = true;
+			this.rbFindIndex.Text = "IndexOfBytesInFile";
+			this.rbFindIndex.UseVisualStyleBackColor = true;
+			this.rbFindIndex.CheckedChanged += new System.EventHandler(this.rbFunc_CheckedChanged);
+			// 
+			// rbFindIndexes
+			// 
+			this.rbFindIndexes.AutoSize = true;
+			this.rbFindIndexes.Location = new System.Drawing.Point(224, 22);
+			this.rbFindIndexes.Name = "rbFindIndexes";
+			this.rbFindIndexes.Size = new System.Drawing.Size(124, 16);
+			this.rbFindIndexes.TabIndex = 13;
+			this.rbFindIndexes.TabStop = true;
+			this.rbFindIndexes.Text = "IndexesOfBytesInFile";
+			this.rbFindIndexes.UseVisualStyleBackColor = true;
+			this.rbFindIndexes.CheckedChanged += new System.EventHandler(this.rbFunc_CheckedChanged);
 			// 
 			// MainEntry
 			// 
@@ -642,5 +684,8 @@
 		private System.Windows.Forms.TextBox txtHexStr;
 		private System.Windows.Forms.Button btnSearchHex;
 		private System.Windows.Forms.TextBox txtFile;
+		private System.Windows.Forms.RadioButton rbFindIndex;
+		private System.Windows.Forms.RadioButton rbIndexOfBytes;
+		private System.Windows.Forms.RadioButton rbFindIndexes;
 	}
 }
