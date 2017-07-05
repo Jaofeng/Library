@@ -155,7 +155,7 @@ namespace CJF.Net.Http
 		protected virtual void OnUploadMultiFilesProgressChanged(UploadMultiFilesProgressChangedEventArgs e)
 		{
 			if (this.UploadMultiFilesProgressChanged != null)
-				this.UploadMultiFilesProgressChanged(this, e);
+				this.UploadMultiFilesProgressChanged.BeginInvoke(this, e, null, null);
 		}
 		#endregion
 
@@ -163,7 +163,7 @@ namespace CJF.Net.Http
 		protected virtual void OnUploadMultiFilesCompleted(UploadMultiFilesCompletedEventArgs e)
 		{
 			if (this.UploadMultiFilesCompleted != null)
-				this.UploadMultiFilesCompleted(this, e);
+				this.UploadMultiFilesCompleted.BeginInvoke(this, e, null, null);
 		}
 		#endregion
 
