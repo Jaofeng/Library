@@ -991,7 +991,9 @@ namespace CJF.Utility
 		#endregion
 
 		#region Public Static Method : int IndexOfBytes(byte[] source, byte[] pattern, int startIndex = 0)
-		/// <summary>尋找位元組陣列中的特定陣列值</summary>
+		/// <summary>尋找位元組陣列中的特定陣列值
+		/// <para>請注意：此函示需要較大的記憶體空間(source陣列的大小)</para>
+		/// </summary>
 		/// <param name="source">原始陣列</param>
 		/// <param name="pattern">欲搜尋的陣列</param>
 		/// <param name="startIndex">起始位置</param>
@@ -1011,6 +1013,184 @@ namespace CJF.Utility
 				return idx;
 			}
 			return -1;
+		}
+		#endregion
+
+		#region Public Static Method : int IndexOfBytesInFile(string fileName, byte[] pattern, int startIndex = 0)
+		/// <summary>搜尋位元組陣列在檔案中的索引值
+		/// <para>請注意：此函示比 ConvUtils.IndexOfBytes 較為節省記憶體，但每次呼叫都開啟檔案，如檔案系統較弱的儲存裝置(如CF)，不建議使用</para>
+		/// </summary>
+		/// <param name="fileName">被搜尋的檔案名稱，包含完整路徑</param>
+		/// <param name="pattern">欲搜尋的位元組陣列</param>
+		/// <param name="startIndex">開始索引值，預設值為 0</param>
+		/// <returns>0 &lt;= 索引值；-1 = 沒找到</returns>
+		public static int IndexOfBytesInFile(string fileName, byte[] pattern, int startIndex = 0)
+		{
+			if (!File.Exists(fileName))
+				throw new FileNotFoundException();
+			byte[] buf = new byte[64 * 1024];
+			int readed = 0, idx = -1, page = 0;
+			bool exists = false;
+			using (FileStream fs = File.OpenRead(fileName))
+			{
+				// 解區段
+				if (startIndex != 0)
+				{
+					page = startIndex / buf.Length;
+					idx = startIndex % buf.Length - 1;
+					fs.Seek(page * buf.Length, SeekOrigin.Begin);
+				}
+				// 讀取區段開始搜尋
+				while ((readed = fs.Read(buf, 0, buf.Length)) > 0)
+				{
+					// 搜尋第一個位元組在此區段的索引值
+					idx = Array.IndexOf<byte>(buf, pattern[0], idx + 1, readed - (idx + 1));
+					while (idx != -1)
+					{
+						// 此區段中含有欲搜尋陣列的第一個位元組
+						if (buf.Length - pattern.Length >= idx)
+						{
+							// 該索引值與搜尋長度仍此區段範圍內
+							if (IsMatch(buf, idx, pattern))
+								return idx + page * buf.Length;
+							else
+								idx = Array.IndexOf<byte>(buf, pattern[0], idx + 1, readed - (idx + 1));
+						}
+						else
+						{
+							// 該索引值與搜尋長度超過此區段範圍
+							exists = true;
+							int check = buf.Length - idx;
+							for (int i = 0; i < check; i++)
+							{
+								if (!buf[idx + i].Equals(pattern[i]))
+								{
+									exists = false;
+									break;
+								}
+							}
+							if (exists)
+							{
+								// 剩餘的數量與檢查的前幾個位元組相同
+								// 讀取下一區段繼續檢查
+								if ((readed = fs.Read(buf, 0, buf.Length)) > 0)
+								{
+									// 還有下一個區段
+									for (int i = 0; i < pattern.Length - check; i++)
+									{
+										if (!buf[i].Equals(pattern[i + check]))
+										{
+											exists = false;
+											break;
+										}
+									}
+									if (exists)
+									{
+										// 下一區段的前幾個位元組與剩餘的位元組相同
+										return idx + page * buf.Length;
+									}
+									else
+									{
+										idx = Array.IndexOf<byte>(buf, pattern[0], pattern.Length - check, readed - (pattern.Length - check));
+										page++;
+									}
+								}
+								else
+								{
+									// 沒有下一區段
+									return -1;
+								}
+
+							}
+							else
+								idx = -1;
+						}
+					}
+					page++;
+				}
+				fs.Close();
+			}
+			return -1;
+		}
+		#endregion
+
+		#region Public Static Method : int[] IndexesOfBytesInFile(string fileName, byte[] pattern)
+		/// <summary>搜尋位元組陣列在檔案中的所有索引值位置清單
+		/// <para>此函示比 ConvUtils.IndexOfBytes 較為節省記憶體，且僅於搜尋時開啟檔案</para>
+		/// </summary>
+		/// <param name="fileName">被搜尋的檔案名稱，包含完整路徑</param>
+		/// <param name="pattern">欲搜尋的位元組陣列</param>
+		/// <returns>0 &lt;= 索引值；-1 = 沒找到</returns>
+		public static int[] IndexesOfBytesInFile(string fileName, byte[] pattern)
+		{
+			System.Collections.Generic.List<int> res = new System.Collections.Generic.List<int>();
+			using (FileStream fs = File.OpenRead(fileName))
+			{
+				byte[] buf = new byte[64 * 1024];
+				int readed = 0, idx = -1, page = 0;
+				bool exists = false;
+				// 讀取區段開始搜尋
+				fs.Position = 0;
+				while ((readed = fs.Read(buf, 0, buf.Length)) > 0)
+				{
+					// 搜尋第一個位元組在此區段的索引值
+					idx = Array.IndexOf<byte>(buf, pattern[0], idx + 1, readed - (idx + 1));
+					while (idx != -1)
+					{
+						// 此區段中含有欲搜尋陣列的第一個位元組
+						if (buf.Length - pattern.Length >= idx)
+						{
+							// 該索引值與搜尋長度仍此區段範圍內
+							if (IsMatch(buf, idx, pattern))
+								res.Add(idx + page * buf.Length);
+							idx = Array.IndexOf<byte>(buf, pattern[0], idx + 1, readed - (idx + 1));
+						}
+						else
+						{
+							// 該索引值與搜尋長度超過此區段範圍
+							exists = true;
+							int check = buf.Length - idx;
+							for (int i = 0; i < check; i++)
+							{
+								if (!buf[idx + i].Equals(pattern[i]))
+								{
+									exists = false;
+									break;
+								}
+							}
+							if (exists)
+							{
+								// 剩餘的數量與檢查的前幾個位元組相同
+								// 讀取下一區段繼續檢查
+								if ((readed = fs.Read(buf, 0, buf.Length)) > 0)
+								{
+									// 還有下一個區段
+									for (int i = 0; i < pattern.Length - check; i++)
+									{
+										if (!buf[i].Equals(pattern[i + check]))
+										{
+											exists = false;
+											break;
+										}
+									}
+									if (exists)
+									{
+										// 下一區段的前幾個位元組與剩餘的位元組相同
+										res.Add(idx + page * buf.Length);
+									}
+									idx = Array.IndexOf<byte>(buf, pattern[0], pattern.Length - check, readed - (pattern.Length - check));
+									page++;
+								}
+							}
+							else
+								idx = -1;
+						}
+					}
+					page++;
+				}
+				fs.Close();
+			}
+			return res.ToArray();
 		}
 		#endregion
 
