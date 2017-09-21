@@ -100,14 +100,14 @@ namespace CJF.Net.Telnet
 			m_WaitForSend = new ConcurrentDictionary<EndPoint, byte[]>();
 			m_ServerStarted = false;
 			m_Server = new AsyncServer(m_MaxConnections, 1024);
-			m_Server.OnClientClosed += new EventHandler<SocketServerEventArgs>(Server_OnClientClosed);
-			m_Server.OnClientClosing += new EventHandler<SocketServerEventArgs>(Server_OnClientClosing);
-			m_Server.OnClientConnected += new EventHandler<SocketServerEventArgs>(Server_OnClientConnected);
-			m_Server.OnDataReceived += new EventHandler<SocketServerEventArgs>(Server_OnDataReceived);
-			m_Server.OnDataSended += new EventHandler<SocketServerEventArgs>(Server_OnDataSended);
-			m_Server.OnException += new EventHandler<SocketServerEventArgs>(Server_OnException);
-			m_Server.OnSendedFail += new EventHandler<SocketServerEventArgs>(Server_OnSendedFail);
-			m_Server.OnStarted += new EventHandler<SocketServerEventArgs>(Server_OnStarted);
+			m_Server.ClientClosed += new EventHandler<SocketServerEventArgs>(Server_OnClientClosed);
+			m_Server.ClientClosing += new EventHandler<SocketServerEventArgs>(Server_OnClientClosing);
+			m_Server.ClientConnected += new EventHandler<SocketServerEventArgs>(Server_OnClientConnected);
+			m_Server.DataReceived += new EventHandler<SocketServerEventArgs>(Server_OnDataReceived);
+			m_Server.DataSended += new EventHandler<SocketServerEventArgs>(Server_OnDataSended);
+			m_Server.Exception += new EventHandler<SocketServerEventArgs>(Server_OnException);
+			m_Server.SendedFail += new EventHandler<SocketServerEventArgs>(Server_OnSendedFail);
+			m_Server.Started += new EventHandler<SocketServerEventArgs>(Server_OnStarted);
 			this.DefaultEndChar = TelnetServer.CommandEndCharType.None;
 			this.FilterCommands = true;
 			this.PopupCommands = false;
@@ -1043,10 +1043,16 @@ namespace CJF.Net.Telnet
 	#endregion
 
 	#region Public Struct : WindowSize
+	/// <summary>Console 視窗大小資料結構</summary>
 	public struct WindowSize
 	{
+		/// <summary>寬度</summary>
 		public int Width;
+		/// <summary>高度</summary>
 		public int Height;
+		/// <summary>建立一個 WindowSize 資料結構</summary>
+		/// <param name="w">寬度</param>
+		/// <param name="h">高度</param>
 		public WindowSize(int w, int h)
 		{
 			this.Width = w;

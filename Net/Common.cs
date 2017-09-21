@@ -361,32 +361,31 @@ namespace CJF.Net
 	#region Class : AsyncUserToken
 	class AsyncUserToken : IDisposable
 	{
-		bool _IsDisposed = false;
 		List<byte> m_Received = null;
-		int m_CurrentIndex = 0;
-		Guid m_Token = Guid.Empty;
-		object m_ExtraInfo = null;
 
 		internal AsyncUserToken(Socket s, int bufferSize, object extraInfo)
 		{
-			_IsDisposed = false;
+			this.IsDisposed = false;
 			this.Client = s;
 			this.BufferSize = bufferSize;
+			this.TokenKey = Guid.NewGuid();
+			this.ExtraInfo = extraInfo;
 			m_Received = new List<byte>(bufferSize);
-			m_Token = Guid.NewGuid();
-			m_ExtraInfo = extraInfo;
 		}
 		public AsyncUserToken(Socket s, int bufferSize) : this(s, bufferSize, null) { }
 		~AsyncUserToken() { Dispose(false); }
 
 		public Socket Client { get; private set; }
 		public int BufferSize { get; private set; }
-		public int CurrentIndex { get { return m_CurrentIndex; } }
+		/// <summary>取得索引值</summary>
+		public int CurrentIndex { get; private set; }
+		/// <summary>取得自遠端收到的資料</summary>
 		public byte[] ReceivedData { get { return m_Received.ToArray(); } }
-		public Guid TokenKey { get { return m_Token; } }
+		/// <summary></summary>
+		public Guid TokenKey { get; private set; }
 		public int Capacity { get { return m_Received.Capacity; } }
-		public bool IsDisposed { get { return _IsDisposed; } }
-		public object ExtraInfo { get { return m_ExtraInfo; } }
+		public bool IsDisposed { get; private set; }
+		public object ExtraInfo { get; private set; }
 
 		#region Public Method : void SetData(SocketAsyncEventArgs args)
 		/// <summary>將接收到的資料儲存製暫存區中</summary>
@@ -394,15 +393,15 @@ namespace CJF.Net
 		public void SetData(SocketAsyncEventArgs args)
 		{
 			Int32 count = args.BytesTransferred;
-			if ((m_CurrentIndex + count) > this.BufferSize)
+			if ((this.CurrentIndex + count) > this.BufferSize)
 			{
 				throw new ArgumentOutOfRangeException("count",
-					String.Format(CultureInfo.CurrentCulture, "Adding {0} bytes on buffer which has {1} bytes, the listener buffer will overflow.", count, this.m_CurrentIndex));
+					String.Format(CultureInfo.CurrentCulture, "Adding {0} bytes on buffer which has {1} bytes, the listener buffer will overflow.", count, this.CurrentIndex));
 			}
 			byte[] buffer = new byte[count];
 			Array.Copy(args.Buffer, args.Offset, buffer, 0, count);
 			m_Received.AddRange(buffer);
-			m_CurrentIndex += count;
+			this.CurrentIndex += count;
 		}
 		#endregion
 
@@ -411,7 +410,7 @@ namespace CJF.Net
 		public void ClearBuffer()
 		{
 			m_Received.Clear();
-			m_CurrentIndex = 0;
+			this.CurrentIndex = 0;
 		}
 		#endregion
 
@@ -424,14 +423,14 @@ namespace CJF.Net
 
 		private void Dispose(bool disposing)
 		{
-			if (_IsDisposed) return;
+			if (this.IsDisposed) return;
 			if (disposing)
 			{
 				this.Client = null;
 				if (m_Received != null)
 					m_Received = null;
 			}
-			_IsDisposed = true;
+			this.IsDisposed = true;
 		}
 		#endregion
 	}
