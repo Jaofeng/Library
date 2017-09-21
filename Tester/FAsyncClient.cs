@@ -21,12 +21,12 @@ namespace Tester
 			_Client = new AsyncClient(txtIP.Text, Convert.ToInt32(txtPort.Text));
 			try
 			{
-				_Client.OnConnected += new EventHandler<AsyncClientEventArgs>(Client_OnConnected);
-				_Client.OnDataReceived += new EventHandler<AsyncClientEventArgs>(Client_OnDataReceived);
-				_Client.OnDataSended += new EventHandler<AsyncClientEventArgs>(Client_OnDataSended);
-				_Client.OnClosing += new EventHandler<AsyncClientEventArgs>(Client_OnClosing);
-				_Client.OnClosed += new EventHandler<AsyncClientEventArgs>(Client_OnClosed);
-				_Client.OnException += new EventHandler<AsyncClientEventArgs>(Client_OnException);
+				_Client.Connected += new EventHandler<AsyncClientEventArgs>(Client_OnConnected);
+				_Client.DataReceived += new EventHandler<AsyncClientEventArgs>(Client_OnDataReceived);
+				_Client.DataSended += new EventHandler<AsyncClientEventArgs>(Client_OnDataSended);
+				_Client.Closing += new EventHandler<AsyncClientEventArgs>(Client_OnClosing);
+				_Client.Closed += new EventHandler<AsyncClientEventArgs>(Client_OnClosed);
+				_Client.Exception += new EventHandler<AsyncClientEventArgs>(Client_OnException);
 				_Client.ConnectTimeout = 3000;
 				_Client.Connect();
 			}
@@ -149,7 +149,7 @@ namespace Tester
 			if (e.KeyCode != Keys.Enter)
 				return;
 			e.SuppressKeyPress = false;
-			if (_Client == null || !_Client.Connected) return;
+			if (_Client == null || !_Client.IsConnected) return;
 			if (chkHexString.Checked)
 				_Client.SendData(ConvUtils.HexStringToBytes(txtSendMsg.Text));
 			else

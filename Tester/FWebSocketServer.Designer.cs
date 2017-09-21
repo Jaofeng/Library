@@ -1,6 +1,6 @@
 ﻿namespace Tester
 {
-	partial class FAsyncServer
+	partial class FWebSocketServer
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -36,8 +36,6 @@
 			this.btnStop = new System.Windows.Forms.Button();
 			this.label3 = new System.Windows.Forms.Label();
 			this.txtMaxConnect = new System.Windows.Forms.TextBox();
-			this.label4 = new System.Windows.Forms.Label();
-			this.txtBuffer = new System.Windows.Forms.TextBox();
 			this.label5 = new System.Windows.Forms.Label();
 			this.txtSendMsg = new System.Windows.Forms.TextBox();
 			this.rtbConsole = new System.Windows.Forms.RichTextBox();
@@ -60,6 +58,7 @@
 			this.txtIP.Name = "txtIP";
 			this.txtIP.Size = new System.Drawing.Size(88, 22);
 			this.txtIP.TabIndex = 1;
+			this.txtIP.Text = "192.168.127.100";
 			// 
 			// label2
 			// 
@@ -76,11 +75,12 @@
 			this.txtPort.Name = "txtPort";
 			this.txtPort.Size = new System.Drawing.Size(60, 22);
 			this.txtPort.TabIndex = 3;
+			this.txtPort.Text = "8089";
 			// 
 			// btnStart
 			// 
 			this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnStart.Location = new System.Drawing.Point(614, 12);
+			this.btnStart.Location = new System.Drawing.Point(466, 12);
 			this.btnStart.Name = "btnStart";
 			this.btnStart.Size = new System.Drawing.Size(75, 23);
 			this.btnStart.TabIndex = 8;
@@ -92,7 +92,7 @@
 			// 
 			this.btnStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnStop.Enabled = false;
-			this.btnStop.Location = new System.Drawing.Point(695, 12);
+			this.btnStop.Location = new System.Drawing.Point(547, 12);
 			this.btnStop.Name = "btnStop";
 			this.btnStop.Size = new System.Drawing.Size(75, 23);
 			this.btnStop.TabIndex = 9;
@@ -117,23 +117,6 @@
 			this.txtMaxConnect.TabIndex = 5;
 			this.txtMaxConnect.Text = "10";
 			// 
-			// label4
-			// 
-			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(474, 17);
-			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(65, 12);
-			this.label4.TabIndex = 6;
-			this.label4.Text = "緩衝區大小";
-			// 
-			// txtBuffer
-			// 
-			this.txtBuffer.Location = new System.Drawing.Point(545, 12);
-			this.txtBuffer.Name = "txtBuffer";
-			this.txtBuffer.Size = new System.Drawing.Size(60, 22);
-			this.txtBuffer.TabIndex = 7;
-			this.txtBuffer.Text = "1000";
-			// 
 			// label5
 			// 
 			this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -150,7 +133,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtSendMsg.Location = new System.Drawing.Point(69, 303);
 			this.txtSendMsg.Name = "txtSendMsg";
-			this.txtSendMsg.Size = new System.Drawing.Size(609, 22);
+			this.txtSendMsg.Size = new System.Drawing.Size(461, 22);
 			this.txtSendMsg.TabIndex = 13;
 			this.txtSendMsg.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSendMsg_KeyDown);
 			// 
@@ -164,7 +147,7 @@
 			this.rtbConsole.Font = new System.Drawing.Font("Consolas", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.rtbConsole.Location = new System.Drawing.Point(12, 50);
 			this.rtbConsole.Name = "rtbConsole";
-			this.rtbConsole.Size = new System.Drawing.Size(758, 238);
+			this.rtbConsole.Size = new System.Drawing.Size(610, 238);
 			this.rtbConsole.TabIndex = 10;
 			this.rtbConsole.Text = "";
 			// 
@@ -172,25 +155,23 @@
 			// 
 			this.chkHexString.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.chkHexString.AutoSize = true;
-			this.chkHexString.Location = new System.Drawing.Point(685, 306);
+			this.chkHexString.Location = new System.Drawing.Point(537, 306);
 			this.chkHexString.Name = "chkHexString";
 			this.chkHexString.Size = new System.Drawing.Size(84, 16);
 			this.chkHexString.TabIndex = 11;
 			this.chkHexString.Text = "16進位字串";
 			this.chkHexString.UseVisualStyleBackColor = true;
 			// 
-			// FAsyncServer
+			// FWebSocketServer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(782, 337);
+			this.ClientSize = new System.Drawing.Size(634, 337);
 			this.Controls.Add(this.chkHexString);
 			this.Controls.Add(this.rtbConsole);
 			this.Controls.Add(this.btnStop);
 			this.Controls.Add(this.btnStart);
-			this.Controls.Add(this.txtBuffer);
 			this.Controls.Add(this.txtMaxConnect);
-			this.Controls.Add(this.label4);
 			this.Controls.Add(this.txtSendMsg);
 			this.Controls.Add(this.txtPort);
 			this.Controls.Add(this.label3);
@@ -198,8 +179,8 @@
 			this.Controls.Add(this.txtIP);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
-			this.Name = "FAsyncServer";
-			this.Text = "AsyncServer 伺服端測試程式";
+			this.Name = "FWebSocketServer";
+			this.Text = "WebSocket Server 伺服端測試程式";
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -215,8 +196,6 @@
 		private System.Windows.Forms.Button btnStop;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.TextBox txtMaxConnect;
-		private System.Windows.Forms.Label label4;
-		private System.Windows.Forms.TextBox txtBuffer;
 		private System.Windows.Forms.Label label5;
 		private System.Windows.Forms.TextBox txtSendMsg;
 		private System.Windows.Forms.RichTextBox rtbConsole;

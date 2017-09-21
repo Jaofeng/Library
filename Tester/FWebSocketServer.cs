@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Net;
+using System.Net.Sockets;
+using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 using CJF.Net;
@@ -8,12 +12,25 @@ using CJF.Utility;
 
 namespace Tester
 {
-	public partial class FAsyncServer : Form
+	public partial class FWebSocketServer : Form
 	{
-		AsyncServer _Server = null;
-		public FAsyncServer()
+		WebSocketServer _Server = null;
+
+		/// <summary>SHA1 加密類別</summary>
+		SHA1 m_sha = null;
+		/// <summary>WebSocket 專用 GUID</summary>
+		static readonly String GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
+
+		struct WebClientInfo
+		{
+			public bool ShankHands;
+		}
+
+		public FWebSocketServer()
 		{
 			InitializeComponent();
+			m_sha = SHA1CryptoServiceProvider.Create();
+			Process.Start(System.IO.Path.Combine(Environment.CurrentDirectory, "web", "Test.htm"));
 		}
 
 		#region WriteLog
@@ -69,20 +86,17 @@ namespace Tester
 		{
 			WriteLog("用戶端 {0} 已連線", e.RemoteEndPoint);
 			WriteLog("M:接線池剩餘：{0}", _Server.PoolSurplus);
-			e.Client.ExtraInfo = DateTime.Now;
 		}
 		#endregion
 
 		void Server_OnDataReceived(object sender, SocketServerEventArgs e)
 		{
-			string data = Encoding.Default.GetString(e.Data);
+			string data = Encoding.UTF8.GetString(e.Data);
 			WriteLog("收到資料 {0} Bytes", e.Data.Length);
 			if (chkHexString.Checked)
 				WriteLog("Hex:{0}", ConvUtils.Byte2HexString(e.Data));
 			else
 				WriteLog(" > :{0}", data);
-			if (data.Equals("close", StringComparison.OrdinalIgnoreCase))
-				e.Client.Close();
 		}
 
 		void Server_OnDataSended(object sender, SocketServerEventArgs e)
@@ -92,8 +106,6 @@ namespace Tester
 				WriteLog("Hex:{0}", ConvUtils.Byte2HexString(e.Data));
 			else
 				WriteLog(" > :{0}", Encoding.Default.GetString(e.Data));
-			AsyncClient ac = e.Client;
-			WriteLog("ExtraInfo:{0}", ac.ExtraInfo);
 		}
 
 		#region Button Events
@@ -101,7 +113,7 @@ namespace Tester
 		{
 			if (_Server == null)
 			{
-				_Server = new AsyncServer(Convert.ToInt32(txtMaxConnect.Text), Convert.ToInt32(txtBuffer.Text));
+				_Server = new WebSocketServer(Convert.ToInt32(txtMaxConnect.Text));
 				_Server.ClientConnected += new EventHandler<SocketServerEventArgs>(Server_OnClientConnected);
 				_Server.ClientClosing += new EventHandler<SocketServerEventArgs>(Server_OnClientClosing);
 				_Server.ClientClosed += new EventHandler<SocketServerEventArgs>(Server_OnClientClosed);
@@ -109,6 +121,7 @@ namespace Tester
 				_Server.DataSended += new EventHandler<SocketServerEventArgs>(Server_OnDataSended);
 				_Server.Started += new EventHandler<SocketServerEventArgs>(Server_OnStarted);
 				_Server.Shutdowned += new EventHandler<SocketServerEventArgs>(Server_OnShutdown);
+				_Server.AppendService("/echo");
 			}
 			_Server.Start(new IPEndPoint(IPAddress.Parse(txtIP.Text), Convert.ToInt32(txtPort.Text)));
 			btnStart.Enabled = false;
@@ -140,7 +153,7 @@ namespace Tester
 		{
 			if (e.KeyCode != Keys.Enter)
 				return;
-			AsyncClient[] acs = _Server.Clients;
+			WebSocketClient[] acs = _Server.Clients;
 			for (int i = 0; i < acs.Length; i++)
 			{
 				if (chkHexString.Checked)

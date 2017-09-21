@@ -531,7 +531,7 @@ namespace Tester
 				else if (seg.Length >= 2)
 					urlFolder = seg[1].TrimEnd('/').ToLower();
 				urlFile = seg[seg.Length - 1];
-				localFile = Path.Combine("Web", pageName);
+				localFile = Path.Combine(this.RootPath, pageName);
 				string ip = this.Context.Request.RemoteEndPoint.Address.ToString();
 				//_log.Write(LogManager.LogLevel.Debug, "{0} GET /{1}{2}", this.Context.Request.RemoteEndPoint, path, ToQueryString(queryString));
 				WriteLog("* 伺服器收到來自 {0} 的 GET 要求", this.Context.Request.RemoteEndPoint);

@@ -241,5 +241,27 @@ namespace Tester
 		{
 			btnSearchHex.Tag = null;
 		}
+
+		private void btnEncrypt_Click(object sender, EventArgs e)
+		{
+			txtTarget.Text = Security.Encrypt(txtSource.Text, txtKey.Text, txtIV.Text);
+		}
+
+		private void btnDecrypt_Click(object sender, EventArgs e)
+		{
+			txtTarget.Text = Security.Decrypt(txtSource.Text, txtKey.Text, txtIV.Text);
+		}
+
+		private void button10_Click(object sender, EventArgs e)
+		{
+			fModbusTcpMaster fp = new fModbusTcpMaster();
+			fp.Show();
+		}
+
+		private void button12_Click(object sender, EventArgs e)
+		{
+			FWebSocketServer fp = new FWebSocketServer();
+			fp.Show();
+		}
 	}
 }

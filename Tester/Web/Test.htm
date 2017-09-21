@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" content="text/html" charset="utf-8" />
+		<script type="text/javascript" src="jquery.min.js"></script>
+		<script type="text/javascript" src="jquery-ui.min.js"></script>
+  	</head>
+	<body>
+	<div class="PageLocation">
+		<table cellspacing="0" cellpadding="0" border="0" width="100%" height="100%">
+			<tr><td>WebSocket Test</td>
+			<td align="right"></td></tr>
+		</table>
+	</div>
+	<input type="input" id="txtIP" value="192.168.127.100:8089" /><input type="input" id="txtPath" value="echo" size="10" /><button id='btnConnect'><span>連線</span></button><br />
+	<input type="input" id="txtMsg" /><button id='btnSend'>傳送</span></button>
+	<button id='btnDisconnect'><span>斷線</span></button><br />
+	<textarea id="Log" rows="10" cols="80" />
+	<div id="MsgCell" class="load" />
+	</body>
+	<script type="text/javascript">
+	var ws = null;
+
+	$(document).ready(function () {
+		$('input[type="submit"], button').button();
+		$('#btnConnect').click(function () {
+			WebSocketTest();
+		});
+		$('#btnSend').click(function () {
+			// readyState
+			// 常數			值	描述
+			// CONNECTING	0	連線尚未打開。
+			// OPEN			1	連線已打開，可以進行通訊。
+			// CLOSING		2	連線正在進行關閉程序。
+			// CLOSED		3	連線已關閉／連線不能打開。
+//			if (ws == null || ws.readyState != 1) {
+//				writeLog('# Connection is not create...')
+//			} else {
+				try {
+					ws.send($('#txtMsg').val());
+					writeLog('# Message is sent...');
+				} catch (e) { log(e); }
+//			}
+		});
+		$('#btnDisconnect').click(function () {
+			if (ws != null && ws.readyState == 1)
+				ws.close();
+		});
+
+	});
+	function writeLog(txt) {
+		if ($('#Log').text().length == 0)
+			$('#Log').text(txt);
+		else
+			$('#Log').text($('#Log').text().trim() + '\r\n' + txt);
+	}
+
+	function WebSocketTest() {
+		if ("WebSocket" in window) {
+			// Let us open a web socket
+			ws = new WebSocket('ws://' + $('#txtIP').val() +'/' + $('#txtPath').val());
+			ws.onopen = function() {
+				// Web Socket is connected, send data using send()
+				writeLog(" # Connection is opened");
+			};
+
+			ws.onmessage = function (evt) { 
+				var msg = evt.data;
+				writeLog('# > : ' + msg);
+			};
+
+			ws.onclose = function(evt) { 
+				// websocket is closed.
+				writeLog("# Connection is closed, Code : " + evt.code); 
+			};
+			ws.onerror = function(evt) {
+				writeLog('# Error! See CloseCode...');
+			}
+			window.onbeforeunload = function(evt) {
+				ws.close();
+			};
+		} else {
+			// The browser doesn't support WebSocket
+			writeLog("WebSocket NOT supported by your Browser!");
+		}
+	}	
+	
+	</script>
+</html>
