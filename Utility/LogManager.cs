@@ -16,20 +16,21 @@ namespace CJF.Utility
 	{
 		#region Public Enum : LogLevel
 		/// <summary>紀錄層級列舉</summary>
-		public enum LogLevel : uint
+		[Flags]
+		public enum LogLevel : byte
 		{
 			/// <summary>除錯用，所有訊息皆會紀錄</summary>
-			Debug = 0,
+			Debug = 0x01,
 			/// <summary>特別儲存資訊用，預設值</summary>
-			Info = 1,
+			Info = 0x02,
 			/// <summary>警告訊息</summary>
-			Warn = 2,
+			Warn = 0x04,
 			/// <summary>錯誤訊息 Exception</summary>
-			Error = 3,
+			Error = 0x08,
 			/// <summary>致命錯誤訊息</summary>
-			Fatal = 4
-			///// <summary>所有訊息</summary>
-			//All = 5
+			Fatal = 0x10,
+			/// <summary>所有訊息</summary>
+			All = Debug | Info | Warn | Error | Fatal
 		}
 		#endregion
 
@@ -51,7 +52,8 @@ namespace CJF.Utility
 			switch (lv)
 			{
 				case LogLevel.Fatal:
-					_GlobalLogger.Fatal(msg); break;
+					_GlobalLogger.Fatal(msg);
+					break;
 				case LogLevel.Error:
 					_GlobalLogger.Error(msg); break;
 				case LogLevel.Warn:
@@ -434,23 +436,21 @@ namespace CJF.Utility
 
 		#region LogManager Methods
 		private ILog _PrivateLogger;
+		/// <summary>設定或取得記錄層級</summary>
+		public LogLevel Level { get; set; }
 		/// <summary>建立 LogManager 類別</summary>
 		/// <param name="source">類別型別</param>
-		public LogManager(Type source)
-		{
-			_PrivateLogger = log4net.LogManager.GetLogger(source);
-			this.TokenValue = "";
-		}
+		public LogManager(Type source) : this(source, "") { }
 		/// <summary>
 		/// 建立含自訂欄位的 LogManager 類別
 		/// </summary>
 		/// <param name="source">類別型別</param>
 		/// <param name="tokenValue">自訂欄位值</param>
 		public LogManager(Type source, string tokenValue)
-			: this(source)
 		{
 			_PrivateLogger = log4net.LogManager.GetLogger(source);
 			this.TokenValue = tokenValue;
+			this.Level = LogLevel.All;
 		}
 		/// <summary>
 		/// 建立私用的LogManager類別
@@ -460,18 +460,14 @@ namespace CJF.Utility
 		{
 			_PrivateLogger = log4net.LogManager.GetLogger(logName);
 			this.TokenValue = "";
+			this.Level = LogLevel.All;
 		}
 		/// <summary>
 		/// 建立私用的LogManager類別
 		/// </summary>
 		/// <param name="configFile">log4net 參數存放位置</param>
 		/// <param name="appender">私用鍵值</param>
-		public LogManager(string configFile, string appender)
-		{
-			log4net.Config.XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo(configFile));
-			_PrivateLogger = log4net.LogManager.GetLogger(appender);
-			this.TokenValue = "";
-		}
+		public LogManager(string configFile, string appender) : this(configFile, appender, "") { }
 		/// <summary>
 		/// 建立私用的LogManager類別
 		/// </summary>
@@ -483,6 +479,7 @@ namespace CJF.Utility
 			log4net.Config.XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo(configFile));
 			_PrivateLogger = log4net.LogManager.GetLogger(appender);
 			this.TokenValue = tokenValue;
+			this.Level = LogLevel.All;
 		}
 		/// <summary>設定或取得自訂欄位值</summary>
 		public string TokenValue { get; set; }
@@ -503,15 +500,25 @@ namespace CJF.Utility
 			switch (lv)
 			{
 				case LogLevel.Fatal:
-					_PrivateLogger.Fatal(msg); break;
+					if (this.Level.HasFlag(LogLevel.Fatal))
+						_PrivateLogger.Fatal(msg);
+					break;
 				case LogLevel.Error:
-					_PrivateLogger.Error(msg); break;
+					if (this.Level.HasFlag(LogLevel.Error))
+						_PrivateLogger.Error(msg);
+					break;
 				case LogLevel.Warn:
-					_PrivateLogger.Warn(msg); break;
+					if (this.Level.HasFlag(LogLevel.Warn))
+						_PrivateLogger.Warn(msg);
+					break;
 				case LogLevel.Debug:
-					_PrivateLogger.Debug(msg); break;
+					if (this.Level.HasFlag(LogLevel.Debug))
+						_PrivateLogger.Debug(msg);
+					break;
 				default:
-					_PrivateLogger.Info(msg); break;
+					if (this.Level.HasFlag(LogLevel.Info))
+						_PrivateLogger.Info(msg);
+					break;
 			}
 		}
 		/// <summary>記錄事件，使用LogLevel.Info級別記錄訊息</summary>
@@ -531,15 +538,25 @@ namespace CJF.Utility
 			switch (lv)
 			{
 				case LogLevel.Fatal:
-					_PrivateLogger.FatalFormat(format, arg0); break;
+					if (this.Level.HasFlag(LogLevel.Fatal))
+						_PrivateLogger.FatalFormat(format, arg0);
+					break;
 				case LogLevel.Error:
-					_PrivateLogger.ErrorFormat(format, arg0); break;
+					if (this.Level.HasFlag(LogLevel.Error))
+						_PrivateLogger.ErrorFormat(format, arg0);
+					break;
 				case LogLevel.Warn:
-					_PrivateLogger.WarnFormat(format, arg0); break;
+					if (this.Level.HasFlag(LogLevel.Warn))
+						_PrivateLogger.WarnFormat(format, arg0);
+					break;
 				case LogLevel.Debug:
-					_PrivateLogger.DebugFormat(format, arg0); break;
+					if (this.Level.HasFlag(LogLevel.Debug))
+						_PrivateLogger.DebugFormat(format, arg0);
+					break;
 				default:
-					_PrivateLogger.InfoFormat(format, arg0); break;
+					if (this.Level.HasFlag(LogLevel.Info))
+						_PrivateLogger.InfoFormat(format, arg0);
+					break;
 			}
 		}
 		/// <summary>記錄事件，使用LogLevel.Info級別記錄訊息</summary>
@@ -561,15 +578,25 @@ namespace CJF.Utility
 			switch (lv)
 			{
 				case LogLevel.Fatal:
-					_PrivateLogger.FatalFormat(format, arg0, arg1); break;
+					if (this.Level.HasFlag(LogLevel.Fatal))
+						_PrivateLogger.FatalFormat(format, arg0, arg1);
+					break;
 				case LogLevel.Error:
-					_PrivateLogger.ErrorFormat(format, arg0, arg1); break;
+					if (this.Level.HasFlag(LogLevel.Error))
+						_PrivateLogger.ErrorFormat(format, arg0, arg1);
+					break;
 				case LogLevel.Warn:
-					_PrivateLogger.WarnFormat(format, arg0, arg1); break;
+					if (this.Level.HasFlag(LogLevel.Warn))
+						_PrivateLogger.WarnFormat(format, arg0, arg1);
+					break;
 				case LogLevel.Debug:
-					_PrivateLogger.DebugFormat(format, arg0, arg1); break;
+					if (this.Level.HasFlag(LogLevel.Debug))
+						_PrivateLogger.DebugFormat(format, arg0, arg1);
+					break;
 				default:
-					_PrivateLogger.InfoFormat(format, arg0, arg1); break;
+					if (this.Level.HasFlag(LogLevel.Info))
+						_PrivateLogger.InfoFormat(format, arg0, arg1);
+					break;
 			}
 		}
 		/// <summary>記錄事件，使用LogLevel.Info級別記錄訊息</summary>
@@ -593,15 +620,25 @@ namespace CJF.Utility
 			switch (lv)
 			{
 				case LogLevel.Fatal:
-					_PrivateLogger.FatalFormat(format, arg0, arg1, arg2); break;
+					if (this.Level.HasFlag(LogLevel.Fatal))
+						_PrivateLogger.FatalFormat(format, arg0, arg1, arg2);
+					break;
 				case LogLevel.Error:
-					_PrivateLogger.ErrorFormat(format, arg0, arg1, arg2); break;
+					if (this.Level.HasFlag(LogLevel.Error))
+						_PrivateLogger.ErrorFormat(format, arg0, arg1, arg2);
+					break;
 				case LogLevel.Warn:
-					_PrivateLogger.WarnFormat(format, arg0, arg1, arg2); break;
+					if (this.Level.HasFlag(LogLevel.Warn))
+						_PrivateLogger.WarnFormat(format, arg0, arg1, arg2);
+					break;
 				case LogLevel.Debug:
-					_PrivateLogger.DebugFormat(format, arg0, arg1, arg2); break;
+					if (this.Level.HasFlag(LogLevel.Debug))
+						_PrivateLogger.DebugFormat(format, arg0, arg1, arg2);
+					break;
 				default:
-					_PrivateLogger.InfoFormat(format, arg0, arg1, arg2); break;
+					if (this.Level.HasFlag(LogLevel.Info))
+						_PrivateLogger.InfoFormat(format, arg0, arg1, arg2);
+					break;
 			}
 		}
 		/// <summary>記錄事件，使用LogLevel.Info級別記錄訊息</summary>
@@ -621,15 +658,25 @@ namespace CJF.Utility
 			switch (lv)
 			{
 				case LogLevel.Fatal:
-					_PrivateLogger.FatalFormat(format, args); break;
+					if (this.Level.HasFlag(LogLevel.Fatal))
+						_PrivateLogger.FatalFormat(format, args);
+					break;
 				case LogLevel.Error:
-					_PrivateLogger.ErrorFormat(format, args); break;
+					if (this.Level.HasFlag(LogLevel.Error))
+						_PrivateLogger.ErrorFormat(format, args);
+					break;
 				case LogLevel.Warn:
-					_PrivateLogger.WarnFormat(format, args); break;
+					if (this.Level.HasFlag(LogLevel.Warn))
+						_PrivateLogger.WarnFormat(format, args);
+					break;
 				case LogLevel.Debug:
-					_PrivateLogger.DebugFormat(format, args); break;
+					if (this.Level.HasFlag(LogLevel.Debug))
+						_PrivateLogger.DebugFormat(format, args);
+					break;
 				default:
-					_PrivateLogger.InfoFormat(format, args); break;
+					if (this.Level.HasFlag(LogLevel.Info))
+						_PrivateLogger.InfoFormat(format, args);
+					break;
 			}
 		}
 		#endregion
@@ -640,6 +687,7 @@ namespace CJF.Utility
 		/// <param name="sendMail">是否寄發信件</param>
 		public void WriteException(string sessionKey, Exception ex, bool sendMail)
 		{
+			if (!this.Level.HasFlag(LogLevel.Error)) return;
 			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			LogException(_PrivateLogger, sessionKey, ex, sendMail);
 		}
@@ -648,6 +696,7 @@ namespace CJF.Utility
 		/// <param name="ex">錯誤類別</param>
 		public void WriteException(string sessionKey, Exception ex)
 		{
+			if (!this.Level.HasFlag(LogLevel.Error)) return;
 			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			LogException(_PrivateLogger, sessionKey, ex);
 		}
@@ -656,6 +705,7 @@ namespace CJF.Utility
 		/// <param name="sendMail">是否寄發信件</param>
 		public void WriteException(Exception ex, bool sendMail)
 		{
+			if (!this.Level.HasFlag(LogLevel.Error)) return;
 			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			LogException(_PrivateLogger, "ERR", ex, sendMail);
 		}
@@ -663,6 +713,7 @@ namespace CJF.Utility
 		/// <param name="ex">錯誤類別</param>
 		public void WriteException(Exception ex)
 		{
+			if (!this.Level.HasFlag(LogLevel.Error)) return;
 			log4net.LogicalThreadContext.Properties["TokenValue"] = this.TokenValue;
 			LogException(_PrivateLogger, "ERR", ex);
 		}
