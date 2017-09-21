@@ -240,7 +240,7 @@ namespace CJF.Net
 					}
 				}
 			}
-			catch (Exception ex) { }
+			catch { }
 		}
 		#endregion
 

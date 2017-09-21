@@ -80,6 +80,7 @@
     <Compile Include="AsyncClient.cs" />
     <Compile Include="TcpManager.cs" />
     <Compile Include="MulticastSocket.cs" />
+    <Compile Include="WebSocket.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

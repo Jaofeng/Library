@@ -152,6 +152,8 @@ namespace CJF.Net.Http
 		#endregion
 
 		#region Protected Virtual Method : void OnUploadMultiFilesProgressChanged(UploadMultiFilesProgessChangedEventArgs e)
+		/// <summary>多檔上傳進度變更</summary>
+		/// <param name="e"></param>
 		protected virtual void OnUploadMultiFilesProgressChanged(UploadMultiFilesProgressChangedEventArgs e)
 		{
 			if (this.UploadMultiFilesProgressChanged != null)
@@ -160,6 +162,8 @@ namespace CJF.Net.Http
 		#endregion
 
 		#region Protected Virtual Method : void OnUploadMultiFilesCompleted(UploadMultiFilesCompletedEventArgs e)
+		/// <summary>當多檔上傳成功時</summary>
+		/// <param name="e"></param>
 		protected virtual void OnUploadMultiFilesCompleted(UploadMultiFilesCompletedEventArgs e)
 		{
 			if (this.UploadMultiFilesCompleted != null)
@@ -248,7 +252,7 @@ namespace CJF.Net.Http
 		/// <exception cref="ArgumentNullException">uri 不得為空值。</exception>
 		/// <exception cref="ArgumentException">values 與 files 不可同時為空值。</exception>
 		/// <exception cref="FileNotFoundException">找不到檔案</exception>
-		/// <see cref="http://stackoverflow.com/questions/11048258/uploadfile-with-post-values-by-webclient"/>
+		/// <remarks>可參閱：http://stackoverflow.com/questions/11048258/uploadfile-with-post-values-by-webclient</remarks>
 		public void UploadMultiFilesAsync(Uri uri, NameValueCollection values, FileData[] files, object userToken)
 		{
 			if (uri == null)

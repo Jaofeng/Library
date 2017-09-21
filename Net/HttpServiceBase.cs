@@ -57,6 +57,9 @@ namespace CJF.Net.Http
 	[Serializable]
 	public class HttpServiceBase : IDisposable
 	{
+		/// <summary>網頁預設根目錄</summary>
+		const string ROOT_PATH = "Web";
+
 		LogManager _log = new LogManager(typeof(HttpServiceBase));
 		bool isDisposed = false;
 		bool _SendMail = false;
@@ -70,14 +73,21 @@ namespace CJF.Net.Http
 		public List<ReceivedFileInfo> ReceivedFiles { get; protected set; }
 		/// <summary>設定或取得。當錯誤發生時，除記錄至事件檔外，是否發送Mail</summary>
 		public bool SendMailWhenException { get { return _SendMail; } set { _SendMail = value; } }
+		/// <summary>網頁根目錄。絕對路徑或相對路徑皆可。
+		/// <para>預設值：Web</para></summary>
+		public string RootPath { get; set; }
 
 		#region Construct Method : HttpService(HttpListenerContext context)
 		/// <summary></summary>
-		public HttpServiceBase() { }
+		public HttpServiceBase()
+		{
+			this.RootPath = ROOT_PATH;
+		}
 		/// <summary></summary>
 		/// <param name="context"></param>
 		public HttpServiceBase(HttpListenerContext context)
 		{
+			this.RootPath = ROOT_PATH;
 			this.Context = context;
 		}
 		/// <summary></summary>
@@ -137,7 +147,7 @@ namespace CJF.Net.Http
 		protected virtual void HttpHeadMethod(string path, NameValueCollection queryString)
 		{
 			string file = path.Replace("/", "\\").ToLower();
-			file = Path.Combine("Web", file);
+			file = Path.Combine(this.RootPath, file);
 			ResponseHead(file);
 		}
 		#endregion
@@ -149,7 +159,7 @@ namespace CJF.Net.Http
 		protected virtual void HttpGetMethod(string path, NameValueCollection queryString)
 		{
 			string file = path.Replace("/", "\\").ToLower();
-			file = Path.Combine("Web", file);
+			file = Path.Combine(this.RootPath, file);
 			ResponseFile(file);
 		}
 		#endregion

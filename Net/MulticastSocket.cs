@@ -455,9 +455,9 @@ namespace CJF.Net.Multicast
 				}
 				if (e.SocketError == SocketError.Success)
 				{
+					if (e.UserToken == null) return;
 					AsyncUserToken token = e.UserToken as AsyncUserToken;
-					if (token == null || token.IsDisposed)
-						return;
+					if (token.IsDisposed) return;
 					Socket s = token.Client;
 					int count = e.BytesTransferred;
 					Interlocked.Add(ref m_ReceiveByteCount, count);
@@ -472,7 +472,7 @@ namespace CJF.Net.Multicast
 						token.ClearBuffer();
 					}
 					token.SetData(e);
-					if (s.Available == 0)
+					if (s != null && s.Available == 0)
 					{
 						rec.AddRange(token.ReceivedData);
 						token.ClearBuffer();
