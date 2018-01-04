@@ -90,6 +90,26 @@ namespace CJF.Net
 			}
 		}
 		#endregion
+
+		#region Protected Override Method : void OnDataSended(byte[] buffer, object extraInfo = null)
+		/// <summary>產生 DataSended 事件</summary>
+		/// <param name="buffer">已發送的資料內容</param>
+		/// <param name="extraInfo">額外資訊</param>
+		protected override void OnDataSended(byte[] buffer, object extraInfo = null)
+		{
+			int head = 0;
+			if (buffer.Length < 126)
+				head = 2;
+			else if (buffer.Length <= 65535)
+				head = 4;
+			else
+				head = 10;
+			byte[] buf = new byte[buffer.Length - head];
+			Array.Copy(buffer, head, buf, 0, buf.Length);
+
+			base.OnDataSended(buf, extraInfo);
+		}
+		#endregion
 	}
 	#endregion
 
@@ -514,8 +534,15 @@ namespace CJF.Net
 					if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.BytesOfSendQueue] != null)
 						m_Counters[ServerCounterType.BytesOfSendQueue].IncrementBy(-count);
 
-					byte[] buffer = new byte[count];
-					Array.Copy(e.Buffer, buffer, count);
+					int head = 0;
+					if (count < 126)
+						head = 2;
+					else if (count <= 65535)
+						head = 4;
+					else
+						head = 10;
+					byte[] buffer = new byte[count - head];
+					Array.Copy(e.Buffer, head, buffer, 0, buffer.Length);
 
 					base.OnDataSended(ac, buffer);
 				}
@@ -636,13 +663,13 @@ namespace CJF.Net
 				// Send Back "Bad Request" : Status Code : 400
 				socket.Send(Encoding.UTF8.GetBytes("HTTP/1.1 400 Bad Request\r\n\r\n"));
 
-				#region 三秒後強制斷線
+				#region 一秒後強制斷線
 				System.Threading.Tasks.Task.Factory.StartNew(o =>
 				{
 					try
 					{
 						Socket acc = (Socket)o;
-						Thread.Sleep(3000);
+						Thread.Sleep(1000);
 						if (acc != null)
 						{
 							acc.Close();
