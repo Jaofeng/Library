@@ -151,17 +151,20 @@ namespace Tester
 
 		private void txtSendMsg_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode != Keys.Enter)
-				return;
-			WebSocketClient[] acs = _Server.Clients;
-			for (int i = 0; i < acs.Length; i++)
+			if (e.KeyCode == Keys.Enter)
 			{
-				if (chkHexString.Checked)
-					acs[i].SendData(ConvUtils.HexStringToBytes(txtSendMsg.Text));
-				else
-					acs[i].SendData(txtSendMsg.Text);
+				WebSocketClient[] acs = _Server.Clients;
+				for (int i = 0; i < acs.Length; i++)
+				{
+					if (chkHexString.Checked)
+						acs[i].SendData(ConvUtils.HexStringToBytes(txtSendMsg.Text));
+					else
+						acs[i].SendData(txtSendMsg.Text);
+				}
+				txtSendMsg.SelectAll();
+				e.SuppressKeyPress = true;
+				e.Handled = false;
 			}
-			txtSendMsg.SelectAll();
 		}
 	}
 }

@@ -456,28 +456,45 @@ namespace CJF.Utility
 		/// 建立私用的LogManager類別
 		/// </summary>
 		/// <param name="logName">記錄器名稱</param>
-		public LogManager(string logName)
+		public LogManager(string logName) : this(logName, "") { }
+		/// <summary>
+		/// 建立含自訂欄位的 LogManager 類別
+		/// </summary>
+		/// <param name="logName">記錄器名稱</param>
+		/// <param name="tokenValue">自訂欄位值</param>
+		public LogManager(string logName, string tokenValue)
 		{
 			_PrivateLogger = log4net.LogManager.GetLogger(logName);
-			this.TokenValue = "";
+			this.TokenValue = tokenValue;
 			this.Level = LogLevel.All;
 		}
-		/// <summary>
-		/// 建立私用的LogManager類別
-		/// </summary>
+		/// <summary>建立私用的LogManager類別</summary>
 		/// <param name="configFile">log4net 參數存放位置</param>
-		/// <param name="appender">私用鍵值</param>
-		public LogManager(string configFile, string appender) : this(configFile, appender, "") { }
-		/// <summary>
-		/// 建立私用的LogManager類別
-		/// </summary>
+		/// <param name="source">類別型別</param>
+		public LogManager(System.IO.FileInfo configFile, Type source) : this(configFile, source, "") { }
+		/// <summary>建立私用的LogManager類別</summary>
 		/// <param name="configFile">log4net 參數存放位置</param>
-		/// <param name="appender">私用鍵值</param>
+		/// <param name="source">類別型別</param>
 		/// <param name="tokenValue">自訂欄位值</param>
-		public LogManager(string configFile, string appender, string tokenValue)
+		public LogManager(System.IO.FileInfo configFile, Type source, string tokenValue)
 		{
-			log4net.Config.XmlConfigurator.ConfigureAndWatch(new System.IO.FileInfo(configFile));
-			_PrivateLogger = log4net.LogManager.GetLogger(appender);
+			log4net.Config.XmlConfigurator.ConfigureAndWatch(configFile);
+			_PrivateLogger = log4net.LogManager.GetLogger(source);
+			this.TokenValue = tokenValue;
+			this.Level = LogLevel.All;
+		}
+		/// <summary>建立私用的LogManager類別</summary>
+		/// <param name="configFile">log4net 參數存放位置</param>
+		/// <param name="logName">私用鍵值</param>
+		public LogManager(System.IO.FileInfo configFile, string logName) : this(configFile, logName, "") { }
+		/// <summary>建立私用的LogManager類別</summary>
+		/// <param name="configFile">log4net 參數存放位置</param>
+		/// <param name="logName">私用鍵值</param>
+		/// <param name="tokenValue">自訂欄位值</param>
+		public LogManager(System.IO.FileInfo configFile, string logName, string tokenValue)
+		{
+			log4net.Config.XmlConfigurator.ConfigureAndWatch(configFile);
+			_PrivateLogger = log4net.LogManager.GetLogger(logName);
 			this.TokenValue = tokenValue;
 			this.Level = LogLevel.All;
 		}
