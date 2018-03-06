@@ -12,8 +12,28 @@ namespace Tester
 		{
 			Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
-			MainEntry main = new MainEntry();
-			Application.Run(main);
+			if (args == null || args.Length == 0)
+			{
+				MainEntry main = new MainEntry();
+				Application.Run(main);
+			}
+			else
+			{
+				Form f = null;
+				switch (args[0].ToLower())
+				{
+					case "-as":
+						if (args.Length >= 3)
+							f = new FAsyncServer(args[1], int.Parse(args[2]));
+						else
+							f = new FAsyncServer();
+						break;
+					default:
+						break;
+				}
+				if (f != null)
+					Application.Run(f);
+			}
 		}
 	}
 }

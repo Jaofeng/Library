@@ -11,9 +11,17 @@ namespace Tester
 	public partial class FAsyncServer : Form
 	{
 		AsyncServer _Server = null;
+		bool _AutoStart = false;
 		public FAsyncServer()
 		{
 			InitializeComponent();
+		}
+		public FAsyncServer(string ip, int port)
+		{
+			InitializeComponent();
+			txtIP.Text = ip;
+			txtPort.Text = port.ToString();
+			_AutoStart = true;
 		}
 
 		#region WriteLog
@@ -149,6 +157,12 @@ namespace Tester
 					acs[i].SendData(txtSendMsg.Text);
 			}
 			txtSendMsg.SelectAll();
+		}
+
+		private void FAsyncServer_Shown(object sender, EventArgs e)
+		{
+			if (_AutoStart)
+				btnStart_Click(btnStart, null);
 		}
 	}
 }

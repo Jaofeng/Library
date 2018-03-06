@@ -200,6 +200,7 @@
 			this.Controls.Add(this.label1);
 			this.Name = "FAsyncServer";
 			this.Text = "AsyncServer 伺服端測試程式";
+			this.Shown += new System.EventHandler(this.FAsyncServer_Shown);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
