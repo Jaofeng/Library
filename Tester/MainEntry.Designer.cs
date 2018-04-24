@@ -221,10 +221,11 @@
 			this.cbDateType.FormattingEnabled = true;
 			this.cbDateType.Items.AddRange(new object[] {
             "Int",
+            "UInt",
             "Short",
+            "UShort",
             "Long",
-            "Double",
-            "Float"});
+            "ULong"});
 			this.cbDateType.Location = new System.Drawing.Point(107, 21);
 			this.cbDateType.Name = "cbDateType";
 			this.cbDateType.Size = new System.Drawing.Size(75, 20);

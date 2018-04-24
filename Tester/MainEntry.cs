@@ -64,19 +64,28 @@ namespace Tester
 			switch (cbDateType.SelectedItem.ToString())
 			{
 				case "Short":
-					txtGetBytesResult.Text = ConvUtils.Byte2HexString(ConvUtils.GetBytes(short.Parse(txtGetBytes.Text), chkBigEndian.Checked));
+					txtGetBytesResult.Text = ConvUtils.GetBytes(short.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text += " ; " + short.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					break;
 				case "Int":
-					txtGetBytesResult.Text = ConvUtils.Byte2HexString(ConvUtils.GetBytes(int.Parse(txtGetBytes.Text), chkBigEndian.Checked));
+					txtGetBytesResult.Text = ConvUtils.GetBytes(int.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text += " ; " + int.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					break;
 				case "Long":
-					txtGetBytesResult.Text = ConvUtils.Byte2HexString(ConvUtils.GetBytes(long.Parse(txtGetBytes.Text), chkBigEndian.Checked));
+					txtGetBytesResult.Text = ConvUtils.GetBytes(long.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text += " ; " + long.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					break;
-				case "Double":
-					txtGetBytesResult.Text = ConvUtils.Byte2HexString(ConvUtils.GetBytes(double.Parse(txtGetBytes.Text), chkBigEndian.Checked));
+				case "UShort":
+					txtGetBytesResult.Text = ConvUtils.GetBytes(ushort.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text += " ; " + ushort.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					break;
-				case "Float":
-					txtGetBytesResult.Text = ConvUtils.Byte2HexString(ConvUtils.GetBytes(float.Parse(txtGetBytes.Text), chkBigEndian.Checked));
+				case "UInt":
+					txtGetBytesResult.Text = ConvUtils.GetBytes(uint.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text += " ; " + uint.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
+					break;
+				case "ULong":
+					txtGetBytesResult.Text = ConvUtils.GetBytes(ulong.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text += " ; " + ulong.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					break;
 				default:
 					MessageBox.Show("No Support");
