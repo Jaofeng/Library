@@ -40,24 +40,18 @@ namespace CJF.Net
 		#endregion
 
 		#region Events
-		/// <summary>當伺服器啟動時觸發</summary>
-		public event EventHandler<AsyncUdpEventArgs> OnStarted;
-		//public event AsyncUdpClientStatusHandler OnStarted;
-		/// <summary>當伺服器關閉時觸發</summary>
-		public event EventHandler<AsyncUdpEventArgs> OnShutdown;
-		//public event AsyncUdpClientStatusHandler OnShutdown;
+		/// <summary>開始監聽通訊埠時觸發</summary>
+		public event EventHandler<AsyncUdpEventArgs> MonitorStarted;
+		/// <summary>停止監聽通訊埠時觸發</summary>
+		public event EventHandler<AsyncUdpEventArgs> MonitorStoped;
 		/// <summary>當資料送出後觸發的事件</summary>
-		public event EventHandler<AsyncUdpEventArgs> OnDataSended;
-		//public event AsyncUdpClientDataTransHandler OnDataSended;
+		public event EventHandler<AsyncUdpEventArgs> DataSended;
 		/// <summary>當接收到資料時觸發的事件, 勿忘處理黏包的狀況</summary>
-		public event EventHandler<AsyncUdpEventArgs> OnDataReceived;
-		//public event AsyncUdpClientDataTransHandler OnDataReceived;
+		public event EventHandler<AsyncUdpEventArgs> DataReceived;
 		/// <summary>當連線發生錯誤時觸發</summary>
-		public event EventHandler<AsyncUdpEventArgs> OnException;
-		//public event AsyncUdpClientExceptionHandler OnException;
+		public event EventHandler<AsyncUdpEventArgs> Exception;
 		/// <summary>當每秒傳送計數器值變更時產生</summary>
-		public event EventHandler<DataTransEventArgs> OnCounterChanged;
-		//public event AsyncTransferCounterHandler OnCounterChanged;
+		public event EventHandler<DataTransEventArgs> CounterChanged;
 		#endregion
 
 		#region Construct Method : AsyncUDP(int receiveBufferSize)
@@ -138,8 +132,8 @@ namespace CJF.Net
 		#endregion
 
 		#region Public Method : void Start(IPEndPoint localEndPoint)
-		/// <summary>開始伺服器並等待連線請求</summary>
-		/// <param name="localEndPoint">本地傾聽通訊埠</param>
+		/// <summary>開始監聽資料傳入</summary>
+		/// <param name="localEndPoint">欲監聽的本地傾聽通訊埠</param>
 		public void Start(EndPoint localEndPoint)
 		{
 			if (m_UdpSocket == null)
@@ -157,55 +151,7 @@ namespace CJF.Net
 			}
 			catch (Exception ex)
 			{
-				#region 產生事件 - OnException
-				if (this.OnException != null)
-				{
-					if (localEndPoint != null && localEndPoint != null)
-					{
-						AsyncUdpEventArgs auea = new AsyncUdpEventArgs(m_UdpSocket.Handle, localEndPoint, null, null, ex);
-						switch (this.UseAsyncCallback)
-						{
-							case EventCallbackMode.BeginInvoke:
-								#region 非同步呼叫 - BeginInvoke
-								{
-									foreach (EventHandler<AsyncUdpEventArgs> del in this.OnException.GetInvocationList())
-									{
-										try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
-										catch (Exception exx) { _log.WriteException(exx); }
-									}
-									break;
-								}
-								#endregion
-							case EventCallbackMode.Invoke:
-								#region 同步呼叫 - DynamicInvoke
-								{
-									foreach (Delegate del in this.OnException.GetInvocationList())
-									{
-										try { del.DynamicInvoke(this, auea); }
-										catch (Exception exx) { _log.WriteException(exx); }
-									}
-									break;
-								}
-								#endregion
-							case EventCallbackMode.Thread:
-								#region 建立執行緒 - Thread
-								{
-									foreach (Delegate del in this.OnException.GetInvocationList())
-									{
-										try
-										{
-											EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
-											ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
-										}
-										catch (Exception exx) { _log.WriteException(exx); }
-									}
-									break;
-								}
-								#endregion
-						}
-					}
-				}
-				#endregion
+				this.OnException(ex, localEndPoint);
 				return;
 			}
 			m_LocalEndPoint = localEndPoint;
@@ -219,52 +165,7 @@ namespace CJF.Net
 
 			m_ServerStarted = true;
 
-			#region 產生事件 - OnStarted
-			if (this.OnStarted != null)
-			{
-				AsyncUdpEventArgs auea = new AsyncUdpEventArgs(m_Handle, this.LocalEndPort, null);
-				switch (this.UseAsyncCallback)
-				{
-					case EventCallbackMode.BeginInvoke:
-						#region 非同步作法 - BeginInvoke
-						{
-							foreach (EventHandler<AsyncUdpEventArgs> del in this.OnStarted.GetInvocationList())
-							{
-								try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
-								catch (Exception ex) { _log.WriteException(ex); }
-							}
-							break;
-						}
-						#endregion
-					case EventCallbackMode.Invoke:
-						#region 同步作法 - DynamicInvoke
-						{
-							foreach (Delegate del in this.OnStarted.GetInvocationList())
-							{
-								try { del.DynamicInvoke(this, auea); }
-								catch (Exception ex) { _log.WriteException(ex); }
-							}
-							break;
-						}
-						#endregion
-					case EventCallbackMode.Thread:
-						#region 建立執行緒 - Thread
-						{
-							foreach (Delegate del in this.OnStarted.GetInvocationList())
-							{
-								try
-								{
-									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
-									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
-								}
-								catch (Exception ex) { _log.WriteException(ex); }
-							}
-							break;
-						}
-						#endregion
-				}
-			}
-			#endregion
+			this.OnMonitorStarted(m_Handle, this.LocalEndPort);
 
 			if (!m_UdpSocket.ReceiveFromAsync(m_ReadEventArgs))
 				this.ProcessReceive(m_ReadEventArgs);
@@ -312,58 +213,12 @@ namespace CJF.Net
 			}
 			m_UdpSocket = null;
 			m_ServerStarted = false;
-
-			#region 產生事件 - OnShutdown
-			if (this.OnShutdown != null)
-			{
-				AsyncUdpEventArgs auea = new AsyncUdpEventArgs(m_Handle, this.LocalEndPort, null);
-				switch (this.UseAsyncCallback)
-				{
-					case EventCallbackMode.BeginInvoke:
-						#region 非同步作法 - BeginInvoke
-						{
-							foreach (EventHandler<AsyncUdpEventArgs> del in this.OnShutdown.GetInvocationList())
-							{
-								try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
-								catch (Exception ex) { _log.WriteException(ex); }
-							}
-							break;
-						}
-						#endregion
-					case EventCallbackMode.Invoke:
-						#region 同步作法 - DynamicInvoke
-						{
-							foreach (Delegate del in this.OnShutdown.GetInvocationList())
-							{
-								try { del.DynamicInvoke(this, auea); }
-								catch (Exception ex) { _log.WriteException(ex); }
-							}
-							break;
-						}
-						#endregion
-					case EventCallbackMode.Thread:
-						#region 建立執行緒 - Thread
-						{
-							foreach (Delegate del in this.OnShutdown.GetInvocationList())
-							{
-								try
-								{
-									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
-									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
-								}
-								catch (Exception ex) { _log.WriteException(ex); }
-							}
-							break;
-						}
-						#endregion
-				}
-			}
-			#endregion
+			this.OnMonitorStoped(m_Handle, this.LocalEndPort);
 		}
 		#endregion
 
 		#region Public Method : SendData(EndPoint remoteEndPoint, byte[] data, object extraInfo)
-		/// <summary>傳送資料到用戶端</summary>
+		/// <summary>使用傳送資料到用戶端</summary>
 		/// <param name="remoteEndPoint">接收對象的通訊埠位置</param>
 		/// <param name="data">欲發送的資料</param>
 		/// <param name="extraInfo">欲傳遞的額外資訊</param>
@@ -450,6 +305,48 @@ namespace CJF.Net
 		}
 		#endregion
 
+		#region Public Static Method : bool Broadcast(int port, byte[] data)
+		/// <summary>使用非同步方式廣播資料到網路上</summary>
+		/// <param name="port">接收端的通訊埠號</param>
+		/// <param name="data">欲發送的資料</param>
+		/// <returns>發送成功或失敗</returns>
+		/// <exception cref="System.InvalidOperationException">通訊埠正在使用中。</exception>
+		public static bool Broadcast(int port, byte[] data)
+		{
+			const int BUFFER_SIZE = 512;
+			Exception e = null;
+			try
+			{
+				using (Socket udp = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp))
+				{
+					udp.ReceiveBufferSize = BUFFER_SIZE;
+					udp.SendBufferSize = BUFFER_SIZE;
+					udp.EnableBroadcast = true;
+					udp.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.Broadcast, true);
+					udp.DontFragment = true;
+					udp.MulticastLoopback = false;
+					using (SocketAsyncEventArgs arg = new SocketAsyncEventArgs())
+					{
+						arg.RemoteEndPoint = new IPEndPoint(IPAddress.Broadcast, port);
+						arg.UserToken = new AsyncUserToken(udp, BUFFER_SIZE);
+						arg.DisconnectReuseSocket = true;
+						//arg.Completed += new EventHandler<SocketAsyncEventArgs>(delegate(object sender, SocketAsyncEventArgs e)
+						//    {
+						//    });
+						arg.SetBuffer(data, 0, data.Length);
+						try { udp.SendToAsync(arg); }
+						catch (InvalidOperationException ex) { e = ex; }
+					}
+				}
+			}
+			catch (Exception) { return false; }
+			if (e != null)
+				throw e;
+			else
+				return true;
+		}
+		#endregion
+
 		#region Properties
 		/// <summary>取得伺服器連線物件</summary>
 		public Socket Socket { get { return m_UdpSocket; } }
@@ -520,52 +417,7 @@ namespace CJF.Net
 			long wBytes = Interlocked.Read(ref m_WaittingSend);
 			Interlocked.Exchange(ref m_WaittingSend, 0);
 
-			#region 產生事件 - OnCounterChanged
-			if (this.OnCounterChanged != null)
-			{
-				DataTransEventArgs dtea = new DataTransEventArgs(sBytes, rBytes, wBytes);
-				switch (this.UseAsyncCallback)
-				{
-					case EventCallbackMode.BeginInvoke:
-						#region 非同步呼叫 - BeginInvoke
-						{
-							foreach (EventHandler<DataTransEventArgs> del in this.OnCounterChanged.GetInvocationList())
-							{
-								try { del.BeginInvoke(this, dtea, new AsyncCallback(TransferCounterCallback), del); }
-								catch (Exception ex) { _log.WriteException(ex); }
-							}
-							break;
-						}
-						#endregion
-					case EventCallbackMode.Invoke:
-						#region 同步呼叫 - DynamicInvoke
-						{
-							foreach (Delegate del in this.OnCounterChanged.GetInvocationList())
-							{
-								try { del.DynamicInvoke(this, dtea); }
-								catch (Exception ex) { _log.WriteException(ex); }
-							}
-							break;
-						}
-						#endregion
-					case EventCallbackMode.Thread:
-						#region 建立執行緒 - Thread
-						{
-							foreach (Delegate del in this.OnCounterChanged.GetInvocationList())
-							{
-								try
-								{
-									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, dtea } };
-									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
-								}
-								catch (Exception ex) { _log.WriteException(ex); }
-							}
-							break;
-						}
-						#endregion
-				}
-			}
-			#endregion
+			this.OnCounterChanged(sBytes, rBytes, wBytes);
 		}
 		#endregion
 
@@ -619,18 +471,20 @@ namespace CJF.Net
 					if (m_Counters[ServerCounterType.RateOfReceivedBytes] != null)
 						m_Counters[ServerCounterType.RateOfReceivedBytes].IncrementBy(count);
 					List<byte> rec = new List<byte>();
-					string rip = ((IPEndPoint)s.RemoteEndPoint).ToString();
 					bool isSameRemote = true;
+					string rip = null;
+					if (e.RemoteEndPoint != null)
+						rip = ((IPEndPoint)e.RemoteEndPoint).ToString();
 					if ((token.CurrentIndex + count) > token.BufferSize)
 					{
 						rec.AddRange(token.ReceivedData);
 						token.ClearBuffer();
 					}
 					token.SetData(e);
-					if (s.Available == 0)
+					if (rip != null && s.Available == 0)
 					{
 						// 檢查前一封包與本封包來源是否相同 By Jaofeng Chen @ 2013/06/12
-						isSameRemote = rip.CompareTo(((IPEndPoint)s.RemoteEndPoint).ToString()) == 0;
+						isSameRemote = rip.CompareTo(((IPEndPoint)e.RemoteEndPoint).ToString()) == 0;
 						if (isSameRemote)
 						{
 							// 相同，則加到前一封包後面 By Jaofeng Chen @ 2013/06/12
@@ -639,52 +493,7 @@ namespace CJF.Net
 						}
 					}
 
-					#region 產生事件 - OnDataReceived
-					if (rec.Count != 0 && this.OnDataReceived != null)
-					{
-						AsyncUdpEventArgs auea = new AsyncUdpEventArgs(s.Handle, s.LocalEndPoint, e.RemoteEndPoint, rec.ToArray());
-						switch (this.UseAsyncCallback)
-						{
-							case EventCallbackMode.BeginInvoke:
-								#region 非同步呼叫 - BeginInvoke
-								{
-									foreach (EventHandler<AsyncUdpEventArgs> del in this.OnDataReceived.GetInvocationList())
-									{
-										try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
-										catch (Exception ex) { _log.WriteException(ex); }
-									}
-									break;
-								}
-								#endregion
-							case EventCallbackMode.Invoke:
-								#region 同步呼叫 - DynamicInvoke
-								{
-									foreach (Delegate del in this.OnDataReceived.GetInvocationList())
-									{
-										try { del.DynamicInvoke(this, auea); }
-										catch (Exception ex) { _log.WriteException(ex); }
-									}
-									break;
-								}
-								#endregion
-							case EventCallbackMode.Thread:
-								#region 建立執行緒 - Thread
-								{
-									foreach (Delegate del in this.OnDataReceived.GetInvocationList())
-									{
-										try
-										{
-											EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
-											ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
-										}
-										catch (Exception ex) { _log.WriteException(ex); }
-									}
-									break;
-								}
-								#endregion
-						}
-					}
-					#endregion
+					this.OnDataReceived(rec.ToArray(), s.Handle, s.LocalEndPoint, e.RemoteEndPoint);
 
 					if (m_Debug.HasFlag(SocketDebugType.Receive))
 					{
@@ -744,59 +553,7 @@ namespace CJF.Net
 							m_Counters[ServerCounterType.BytesOfSendQueue].IncrementBy(-count);
 						byte[] buffer = new byte[count];
 						Array.Copy(e.Buffer, buffer, count);
-
-						#region 產生事件 - OnDataSended
-						if (this.OnDataSended != null)
-						{
-							try
-							{
-								AsyncUdpEventArgs auea = new AsyncUdpEventArgs(m_UdpSocket.Handle, m_UdpSocket.LocalEndPoint, e.RemoteEndPoint, buffer);
-								auea.SetExtraInfo(e.UserToken);
-								switch (this.UseAsyncCallback)
-								{
-									case EventCallbackMode.BeginInvoke:
-										#region 非同步呼叫 - BeginInvoke
-										{
-											foreach (EventHandler<AsyncUdpEventArgs> del in this.OnDataSended.GetInvocationList())
-											{
-												try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
-												catch (Exception ex) { _log.WriteException(ex); }
-											}
-											break;
-										}
-										#endregion
-									case EventCallbackMode.Invoke:
-										#region 同步呼叫 - DynamicInvoke
-										{
-											foreach (Delegate del in this.OnDataSended.GetInvocationList())
-											{
-												try { del.DynamicInvoke(this, auea); }
-												catch (Exception ex) { _log.WriteException(ex); }
-											}
-											break;
-										}
-										#endregion
-									case EventCallbackMode.Thread:
-										#region 建立執行緒 - Thread
-										{
-											foreach (Delegate del in this.OnDataSended.GetInvocationList())
-											{
-												try
-												{
-													EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
-													ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
-												}
-												catch (Exception ex) { _log.WriteException(ex); }
-											}
-											break;
-										}
-										#endregion
-								}
-							}
-							catch (Exception ex) { _log.WriteException(ex); }
-						}
-						#endregion
-
+						this.OnDataSended(buffer, e.RemoteEndPoint, e.UserToken);
 						e.Dispose();
 						e = null;
 					}
@@ -836,57 +593,9 @@ namespace CJF.Net
 					handle = m_UdpSocket.Handle;
 				}
 
-				#region 產生事件 - OnException
-				if (this.OnException != null)
-				{
-					SocketException se = new SocketException((Int32)e.SocketError);
-					Exception ex = new Exception(string.Format("客戶端連線({1})發生錯誤:{0},狀態:{2}", (int)e.SocketError, localEp, e.LastOperation), se);
-					if (localEp != null && remoteEp != null)
-					{
-						AsyncUdpEventArgs auea = new AsyncUdpEventArgs(handle, localEp, remoteEp, null, ex);
-						switch (this.UseAsyncCallback)
-						{
-							case EventCallbackMode.BeginInvoke:
-								#region 非同步呼叫 - BeginInvoke
-								{
-									foreach (EventHandler<AsyncUdpEventArgs> del in this.OnException.GetInvocationList())
-									{
-										try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
-										catch (Exception exx) { _log.WriteException(exx); }
-									}
-									break;
-								}
-								#endregion
-							case EventCallbackMode.Invoke:
-								#region 同步呼叫 - DynamicInvoke
-								{
-									foreach (Delegate del in this.OnException.GetInvocationList())
-									{
-										try { del.DynamicInvoke(this, auea); }
-										catch (Exception exx) { _log.WriteException(exx); }
-									}
-									break;
-								}
-								#endregion
-							case EventCallbackMode.Thread:
-								#region 建立執行緒 - Thread
-								{
-									foreach (Delegate del in this.OnException.GetInvocationList())
-									{
-										try
-										{
-											EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
-											ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
-										}
-										catch (Exception exx) { _log.WriteException(exx); }
-									}
-									break;
-								}
-								#endregion
-						}
-					}
-				}
-				#endregion
+				SocketException se = new SocketException((Int32)e.SocketError);
+				Exception ex = new Exception(string.Format("客戶端連線({1})發生錯誤:{0},狀態:{2}", (int)e.SocketError, localEp, e.LastOperation), se);
+				this.OnException(ex, localEp, remoteEp);
 
 				try
 				{
@@ -981,6 +690,341 @@ namespace CJF.Net
 				catch { }
 			}
 			m_IsDisposed = true;
+		}
+		#endregion
+
+		#region Protected Virtual Method : void OnMonitorStarted(IntPtr handle, EndPoint local, object extraInfo = null)
+		/// <summary>產生 MonitorStarted 事件</summary>
+		/// <param name="handle">產生事件的 Socket 控制碼</param>
+		/// <param name="local">本地端點資訊</param>
+		/// <param name="extraInfo">額外資訊</param>
+		protected virtual void OnMonitorStarted(IntPtr handle, EndPoint local, object extraInfo = null)
+		{
+			if (this.MonitorStarted != null)
+			{
+				AsyncUdpEventArgs auea = new AsyncUdpEventArgs(handle, local, null);
+				auea.SetExtraInfo(extraInfo);
+				switch (this.UseAsyncCallback)
+				{
+					case EventCallbackMode.BeginInvoke:
+						#region 非同步作法 - BeginInvoke
+						{
+							foreach (EventHandler<AsyncUdpEventArgs> del in this.MonitorStarted.GetInvocationList())
+							{
+								try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+					case EventCallbackMode.Invoke:
+						#region 同步作法 - DynamicInvoke
+						{
+							foreach (Delegate del in this.MonitorStarted.GetInvocationList())
+							{
+								try { del.DynamicInvoke(this, auea); }
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+					case EventCallbackMode.Thread:
+						#region 建立執行緒 - Thread
+						{
+							foreach (Delegate del in this.MonitorStarted.GetInvocationList())
+							{
+								try
+								{
+									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
+									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
+								}
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+				}
+			}
+		}
+		#endregion
+
+		#region Protected Virtual Method : void OnMonitorStoped(IntPtr handle, EndPoint local, object extraInfo = null)
+		/// <summary>產生 MonitorStoped 事件</summary>
+		/// <param name="handle">產生事件的 Socket 控制碼</param>
+		/// <param name="local">本地端點資訊</param>
+		/// <param name="extraInfo">額外資訊</param>
+		protected virtual void OnMonitorStoped(IntPtr handle, EndPoint local, object extraInfo = null)
+		{
+			if (this.MonitorStoped != null)
+			{
+				AsyncUdpEventArgs auea = new AsyncUdpEventArgs(handle, local, null);
+				auea.SetExtraInfo(extraInfo);
+				switch (this.UseAsyncCallback)
+				{
+					case EventCallbackMode.BeginInvoke:
+						#region 非同步作法 - BeginInvoke
+						{
+							foreach (EventHandler<AsyncUdpEventArgs> del in this.MonitorStoped.GetInvocationList())
+							{
+								try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+					case EventCallbackMode.Invoke:
+						#region 同步作法 - DynamicInvoke
+						{
+							foreach (Delegate del in this.MonitorStoped.GetInvocationList())
+							{
+								try { del.DynamicInvoke(this, auea); }
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+					case EventCallbackMode.Thread:
+						#region 建立執行緒 - Thread
+						{
+							foreach (Delegate del in this.MonitorStoped.GetInvocationList())
+							{
+								try
+								{
+									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
+									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
+								}
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+				}
+			}
+		}
+		#endregion
+
+		#region Protected Virtual Method : void OnDataReceived(byte[] buffer, IntPtr handle, EndPoint local, EndPoint remote, object extraInfo = null)
+		/// <summary>產生 DataReceived 事件</summary>
+		/// <param name="buffer">已收到的資料內容</param>
+		/// <param name="handle">本端 Socket 控制碼</param>
+		/// <param name="local">本地位址資訊</param>
+		/// <param name="remote">遠端位址資訊</param>
+		/// <param name="extraInfo">額外資訊</param>
+		protected virtual void OnDataReceived(byte[] buffer, IntPtr handle, EndPoint local, EndPoint remote, object extraInfo = null)
+		{
+			if (buffer.Length > 0 && this.DataReceived != null)
+			{
+				AsyncUdpEventArgs auea = new AsyncUdpEventArgs(handle, local, remote, buffer);
+				switch (this.UseAsyncCallback)
+				{
+					case EventCallbackMode.BeginInvoke:
+						#region 非同步呼叫 - BeginInvoke
+						{
+							foreach (EventHandler<AsyncUdpEventArgs> del in this.DataReceived.GetInvocationList())
+							{
+								try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+					case EventCallbackMode.Invoke:
+						#region 同步呼叫 - DynamicInvoke
+						{
+							foreach (Delegate del in this.DataReceived.GetInvocationList())
+							{
+								try { del.DynamicInvoke(this, auea); }
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+					case EventCallbackMode.Thread:
+						#region 建立執行緒 - Thread
+						{
+							foreach (Delegate del in this.DataReceived.GetInvocationList())
+							{
+								try
+								{
+									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
+									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
+								}
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+				}
+			}
+		}
+		#endregion
+
+		#region Protected Virtual Method : void OnDataSended(byte[] buffer, EndPoint remote, object extraInfo = null)
+		/// <summary>產生 DataSended 事件</summary>
+		/// <param name="buffer">已傳送的資料內容</param>
+		/// <param name="remote">遠端端點資訊</param>
+		/// <param name="extraInfo">額外資訊</param>
+		protected virtual void OnDataSended(byte[] buffer, EndPoint remote, object extraInfo = null)
+		{
+			if (this.DataSended != null)
+			{
+				try
+				{
+					AsyncUdpEventArgs auea = new AsyncUdpEventArgs(m_UdpSocket.Handle, m_UdpSocket.LocalEndPoint, remote, buffer);
+					auea.SetExtraInfo(extraInfo);
+					switch (this.UseAsyncCallback)
+					{
+						case EventCallbackMode.BeginInvoke:
+							#region 非同步呼叫 - BeginInvoke
+							{
+								foreach (EventHandler<AsyncUdpEventArgs> del in this.DataSended.GetInvocationList())
+								{
+									try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
+									catch (Exception ex) { _log.WriteException(ex); }
+								}
+								break;
+							}
+							#endregion
+						case EventCallbackMode.Invoke:
+							#region 同步呼叫 - DynamicInvoke
+							{
+								foreach (Delegate del in this.DataSended.GetInvocationList())
+								{
+									try { del.DynamicInvoke(this, auea); }
+									catch (Exception ex) { _log.WriteException(ex); }
+								}
+								break;
+							}
+							#endregion
+						case EventCallbackMode.Thread:
+							#region 建立執行緒 - Thread
+							{
+								foreach (Delegate del in this.DataSended.GetInvocationList())
+								{
+									try
+									{
+										EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
+										ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
+									}
+									catch (Exception ex) { _log.WriteException(ex); }
+								}
+								break;
+							}
+							#endregion
+					}
+				}
+				catch (Exception ex) { _log.WriteException(ex); }
+			}
+		}
+		#endregion
+
+		#region Protected Virtual Method : void OnException(Exception ex, EndPoint local = null, EndPoint remote = null, object extraInfo = null)
+		/// <summary>產生 Exception 事件</summary>
+		/// <param name="ex">錯誤原因</param>
+		/// <param name="local">本地端點資訊</param>
+		/// <param name="remote">遠端端點資訊</param>
+		/// <param name="extraInfo">額外資訊</param>
+		protected virtual void OnException(Exception ex, EndPoint local = null, EndPoint remote = null, object extraInfo = null)
+		{
+			if (this.Exception != null)
+			{
+				AsyncUdpEventArgs auea = new AsyncUdpEventArgs(m_UdpSocket.Handle, local, remote, null, ex);
+				auea.SetExtraInfo(extraInfo);
+				switch (this.UseAsyncCallback)
+				{
+					case EventCallbackMode.BeginInvoke:
+						#region 非同步呼叫 - BeginInvoke
+						{
+							foreach (EventHandler<AsyncUdpEventArgs> del in this.Exception.GetInvocationList())
+							{
+								try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
+								catch (Exception exx) { _log.WriteException(exx); }
+							}
+							break;
+						}
+						#endregion
+					case EventCallbackMode.Invoke:
+						#region 同步呼叫 - DynamicInvoke
+						{
+							foreach (Delegate del in this.Exception.GetInvocationList())
+							{
+								try { del.DynamicInvoke(this, auea); }
+								catch (Exception exx) { _log.WriteException(exx); }
+							}
+							break;
+						}
+						#endregion
+					case EventCallbackMode.Thread:
+						#region 建立執行緒 - Thread
+						{
+							foreach (Delegate del in this.Exception.GetInvocationList())
+							{
+								try
+								{
+									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
+									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
+								}
+								catch (Exception exx) { _log.WriteException(exx); }
+							}
+							break;
+						}
+						#endregion
+				}
+			}
+		}
+		#endregion
+
+		#region Protected Virtual Method : void OnCounterChanged(long sBytes, long rBytes, long wBytes)
+		/// <summary>產生 CounterChanged 事件</summary>
+		/// <param name="sBytes">已發送的 Bytes</param>
+		/// <param name="rBytes">已接收的 Bytes</param>
+		/// <param name="wBytes">等待發送的 Bytes</param>
+		protected virtual void OnCounterChanged(long sBytes, long rBytes, long wBytes)
+		{
+			if (this.CounterChanged != null)
+			{
+				DataTransEventArgs dtea = new DataTransEventArgs(sBytes, rBytes, wBytes);
+				switch (this.UseAsyncCallback)
+				{
+					case EventCallbackMode.BeginInvoke:
+						#region 非同步呼叫 - BeginInvoke
+						{
+							foreach (EventHandler<DataTransEventArgs> del in this.CounterChanged.GetInvocationList())
+							{
+								try { del.BeginInvoke(this, dtea, new AsyncCallback(TransferCounterCallback), del); }
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+					case EventCallbackMode.Invoke:
+						#region 同步呼叫 - DynamicInvoke
+						{
+							foreach (Delegate del in this.CounterChanged.GetInvocationList())
+							{
+								try { del.DynamicInvoke(this, dtea); }
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+					case EventCallbackMode.Thread:
+						#region 建立執行緒 - Thread
+						{
+							foreach (Delegate del in this.CounterChanged.GetInvocationList())
+							{
+								try
+								{
+									EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, dtea } };
+									ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
+								}
+								catch (Exception ex) { _log.WriteException(ex); }
+							}
+							break;
+						}
+						#endregion
+				}
+			}
 		}
 		#endregion
 	}
