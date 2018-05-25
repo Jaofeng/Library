@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using CJF.Net;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace Tester
 {
@@ -86,7 +87,7 @@ namespace Tester
 			string data = Encoding.Default.GetString(e.Data);
 			WriteLog("收到資料 {0} Bytes", e.Data.Length);
 			if (chkHexString.Checked)
-				WriteLog("Hex:{0}", ConvUtils.Byte2HexString(e.Data));
+				WriteLog("Hex:{0}", e.Data.ToHexString());
 			else
 				WriteLog(" > :{0}", data);
 			if (data.Equals("close", StringComparison.OrdinalIgnoreCase))
@@ -97,7 +98,7 @@ namespace Tester
 		{
 			WriteLog("送出資料 {0} Bytes", e.Data.Length);
 			if (chkHexString.Checked)
-				WriteLog("Hex:{0}", ConvUtils.Byte2HexString(e.Data));
+				WriteLog("Hex:{0}", e.Data.ToHexString());
 			else
 				WriteLog(" > :{0}", Encoding.Default.GetString(e.Data));
 			AsyncClient ac = e.Client;
@@ -152,7 +153,7 @@ namespace Tester
 			for (int i = 0; i < acs.Length; i++)
 			{
 				if (chkHexString.Checked)
-					acs[i].SendData(ConvUtils.HexStringToBytes(txtSendMsg.Text));
+					acs[i].SendData(txtSendMsg.Text.ToByteArray());
 				else
 					acs[i].SendData(txtSendMsg.Text);
 			}

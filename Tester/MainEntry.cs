@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using CJF.Utility;
 using CJF.Utility.CRC;
+using CJF.Utility.Extensions;
 
 namespace Tester
 {
@@ -64,27 +65,27 @@ namespace Tester
 			switch (cbDateType.SelectedItem.ToString())
 			{
 				case "Short":
-					txtGetBytesResult.Text = ConvUtils.GetBytes(short.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text = short.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					txtGetBytesResult.Text += " ; " + short.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					break;
 				case "Int":
-					txtGetBytesResult.Text = ConvUtils.GetBytes(int.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text = int.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					txtGetBytesResult.Text += " ; " + int.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					break;
 				case "Long":
-					txtGetBytesResult.Text = ConvUtils.GetBytes(long.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text = long.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					txtGetBytesResult.Text += " ; " + long.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					break;
 				case "UShort":
-					txtGetBytesResult.Text = ConvUtils.GetBytes(ushort.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text = ushort.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					txtGetBytesResult.Text += " ; " + ushort.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					break;
 				case "UInt":
-					txtGetBytesResult.Text = ConvUtils.GetBytes(uint.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text = uint.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					txtGetBytesResult.Text += " ; " + uint.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					break;
 				case "ULong":
-					txtGetBytesResult.Text = ConvUtils.GetBytes(ulong.Parse(txtGetBytes.Text), chkBigEndian.Checked).ToHexString();
+					txtGetBytesResult.Text = ulong.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					txtGetBytesResult.Text += " ; " + ulong.Parse(txtGetBytes.Text).GetBytes(chkBigEndian.Checked).ToHexString();
 					break;
 				default:
@@ -118,23 +119,23 @@ namespace Tester
 			Encoding enc = Encoding.GetEncoding(950);
 			byte[] source = enc.GetBytes(txtCrcSource.Text);
 			watch.Start();
-			Crc16 normal = new Crc16();
-			labCrc16ResN.Text = normal.ComputeChecksum(source).ToString("X");
-			labCrc16ByteN.Text = ConvUtils.Byte2HexString(normal.ComputeChecksumBytes(source));
+			Crc16 crc = new Crc16();
+			labCrc16Res.Text = Crc16.Compute(source).ToString("X");
+			labCrc16Byte.Text = crc.ComputeHash(source).ToHexString();
 			watch.Stop();
-			labCrc16TimeN.Text = watch.ElapsedTicks.ToString() + " Ticks";
-			watch.Restart();
-			Crc16Ccitt ccitt = new Crc16Ccitt(InitialCrcValue.Zeros);
-			labCrc16ResC.Text = ccitt.ComputeChecksum(source).ToString("X");
-			labCrc16ByteC.Text = ConvUtils.Byte2HexString(ccitt.ComputeChecksumBytes(source));
+			labCrc16Time.Text = watch.ElapsedTicks.ToString() + " Ticks";
+			watch.Start();
+			Crc16 modbus = new Crc16(Crc16.DefaultPolynomial, Crc16.ModbusSeed);
+			labCrc16ResM.Text = Crc16.Compute(source, Crc16.DefaultPolynomial, Crc16.ModbusSeed).ToString("X");
+			labCrc16ByteM.Text = modbus.ComputeHash(source).ToHexString();
 			watch.Stop();
-			labCrc16TimeC.Text = watch.ElapsedTicks.ToString() + " Ticks";
-			watch.Restart();
-			Crc16Table table = new Crc16Table(InitialCrcValue.Zeros);
-			labCrc16ResT.Text = table.ComputeChecksum(source).ToString("X");
-			labCrc16ByteT.Text = ConvUtils.Byte2HexString(table.ComputeChecksumBytes(source));
+			labCrc16TimeM.Text = watch.ElapsedTicks.ToString() + " Ticks";
+			watch.Start();
+			Crc32 crc32 = new Crc32();
+			labCrc32Res.Text = Crc32.Compute(source).ToString("X");
+			labCrc32Byte.Text = crc32.ComputeHash(source).ToHexString();
 			watch.Stop();
-			labCrc16TimeT.Text = watch.ElapsedTicks.ToString() + " Ticks";
+			labCrc32Time.Text = watch.ElapsedTicks.ToString() + " Ticks";
 		}
 
 		private void btnSaveLog_Click(object sender, EventArgs e)
@@ -190,7 +191,7 @@ namespace Tester
 			Application.DoEvents();
 			string msg = string.Empty;
 
-			byte[] sch = ConvUtils.HexStringToBytes(txtHexStr.Text);
+			byte[] sch = txtHexStr.Text.ToByteArray();
 			int idx = 0, start = 0;
 			if (btnSearchHex.Tag != null)
 				start = Convert.ToInt32(btnSearchHex.Tag) + 1;
@@ -201,7 +202,7 @@ namespace Tester
 				if (rbIndexOfBytes.Checked)
 				{
 					byte[] buf = File.ReadAllBytes(txtFile.Text);
-					idx = ConvUtils.IndexOfBytes(buf, sch, start);
+					idx = buf.IndexOfBytes(sch, start);
 				}
 				else if (rbFindIndex.Checked)
 				{
@@ -271,6 +272,15 @@ namespace Tester
 		{
 			FWebSocketServer fp = new FWebSocketServer();
 			fp.Show();
+		}
+
+		private void btnXor_Click(object sender, EventArgs e)
+		{
+			byte[] code = txtXor.Text.ToByteArray();
+			if (code.Length == 1)
+				txtXorResult.Text = txtXorSource.Text.ToByteArray().Xor(code[0]).ToHexString();
+			else
+				txtXorResult.Text = txtXorSource.Text.ToByteArray().Xor(code).ToHexString();
 		}
 	}
 }

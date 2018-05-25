@@ -15,6 +15,7 @@ using System.Web;
 using System.Xml;
 using CJF.Net.Http;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace Tester
 {
@@ -345,7 +346,7 @@ namespace Tester
 						FileName = txtFile1.Text,
 						KeyName = "File1"
 					});
-					nvc.Add("File1CRC", crc.ComputeChecksum(txtFile1.Text).ToString("X"));
+					nvc.Add("File1CRC", crc.ComputeHash(File.ReadAllBytes(txtFile1.Text)).ToHexString(""));
 				}
 				if (!string.IsNullOrEmpty(txtFile2.Text) && File.Exists(txtFile2.Text))
 				{
@@ -355,7 +356,7 @@ namespace Tester
 						FileName = txtFile2.Text,
 						KeyName = "File2"
 					});
-					nvc.Add("File2CRC", crc.ComputeChecksum(txtFile2.Text).ToString("X"));
+					nvc.Add("File2CRC", crc.ComputeHash(File.ReadAllBytes(txtFile2.Text)).ToHexString(""));
 				}
 				wc.UploadMultiFilesAsync(uri, nvc, files.ToArray(), null);
 				DateTime now = DateTime.Now;
@@ -578,7 +579,6 @@ namespace Tester
 							string svcName = string.Empty, last = string.Empty, file = string.Empty, msg = string.Empty;
 							if (seg.Length >= 2)
 								svcName = seg[1].TrimEnd('/').ToLower();
-							CJF.Utility.CRC.Crc16 crc = new CJF.Utility.CRC.Crc16();
 							ushort c1 = 0, c2 = 0;
 							if (this.ReceivedFiles != null && this.ReceivedFiles.Count != 0)
 							{
@@ -587,7 +587,7 @@ namespace Tester
 									msg = string.Format("* Received Files[{0}]={1}, Key={2}, ContentType={3}, {4}bytes", i, this.ReceivedFiles[i].FileName, this.ReceivedFiles[i].FieldKey, this.ReceivedFiles[i].ContentType, this.ReceivedFiles[i].Length);
 									if (!string.IsNullOrEmpty(nvc[string.Format("File{0}CRC", i + 1)]))
 									{
-										c1 = crc.ComputeChecksum(this.ReceivedFiles[i].FullPath);
+										c1 = CJF.Utility.CRC.Crc16.Compute(File.ReadAllBytes(this.ReceivedFiles[i].FullPath));
 										c2 = Convert.ToUInt16(nvc[string.Format("File{0}CRC", i + 1)], 16);
 										msg += ", CRC is " + (c1 == c2 ? "Success" : "Fail");
 									}

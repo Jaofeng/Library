@@ -5,6 +5,7 @@ using System.Text;
 using System.Windows.Forms;
 using CJF.Net;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace Tester
 {
@@ -15,10 +16,12 @@ namespace Tester
 		{
 			InitializeComponent();
 			_Server = new AsyncUDP(Convert.ToInt32(txtBuffer.Text));
-			_Server.OnDataReceived += new EventHandler<AsyncUdpEventArgs>(Server_OnDataReceived);
-			_Server.OnStarted += new EventHandler<AsyncUdpEventArgs>(Server_OnStarted);
-			_Server.OnShutdown += new EventHandler<AsyncUdpEventArgs>(Server_OnShutdown);
-			_Server.OnException += new EventHandler<AsyncUdpEventArgs>(Server_OnException);
+			_Server.DataReceived += new EventHandler<AsyncUdpEventArgs>(Server_OnDataReceived);
+			_Server.MonitorStarted += new EventHandler<AsyncUdpEventArgs>(Server_OnStarted);
+			_Server.MonitorStoped += new EventHandler<AsyncUdpEventArgs>(Server_OnShutdown);
+			_Server.Exception += new EventHandler<AsyncUdpEventArgs>(Server_OnException);
+			foreach (IPAddress ipa in TcpManager.GetHostIP())
+				cboIP.Items.Add(ipa.ToString());
 		}
 
 		#region WriteLog
@@ -65,16 +68,16 @@ namespace Tester
 
 		void Server_OnDataReceived(object sender, AsyncUdpEventArgs e)
 		{
-			WriteLog("收到資料 {0} Bytes", e.Data.Length);
+			WriteLog("收到資料 {0} Bytes 來自 {1}", e.Data.Length, e.RemoteEndPoint);
 			WriteLog(" > : {0}", Encoding.Default.GetString(e.Data));
-			WriteLog("Hex: {0}", ConvUtils.Byte2HexString(e.Data));
+			WriteLog("Hex: {0}", e.Data.ToHexString());
 		}
 
 		#region Button Events
 		private void btnStart_Click(object sender, EventArgs e)
 		{
 			btnStart.Enabled = false;
-			_Server.Start(new IPEndPoint(IPAddress.Parse(txtIP.Text), Convert.ToInt32(txtPort.Text)));
+			_Server.Start(new IPEndPoint(IPAddress.Parse(cboIP.Text), Convert.ToInt32(txtPort.Text)));
 			if (_Server.IsStarted)
 				btnStop.Enabled = true;
 			else
@@ -96,11 +99,11 @@ namespace Tester
 			string[] arr = txtSendTo.Text.Split(':');
 			byte[] buf = null;
 			if (chkHexString.Checked)
-				buf = ConvUtils.HexStringToBytes(txtSendMsg.Text);
+				buf = txtSendMsg.Text.ToByteArray();
 			else
 				buf = Encoding.Default.GetBytes(txtSendMsg.Text);
 			if (chkBroadcast.Checked)
-				_Server.BroadcastData(Convert.ToInt32(arr[1]), buf);
+				AsyncUDP.Broadcast(Convert.ToInt32(arr[1]), buf);
 			else
 				_Server.SendData(new IPEndPoint(IPAddress.Parse(arr[0]), Convert.ToInt32(arr[1])), buf);
 			txtSendMsg.SelectAll();
@@ -109,6 +112,12 @@ namespace Tester
 		private void chkBroadcast_CheckedChanged(object sender, EventArgs e)
 		{
 			_Server.EnableBroadcast = chkBroadcast.Checked;
+		}
+
+		private void cboIP_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (string.IsNullOrEmpty(txtSendTo.Text))
+				txtSendTo.Text = string.Format("{0}:{1}", cboIP.Text, txtPort.Text);
 		}
 	}
 }

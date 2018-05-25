@@ -8,6 +8,7 @@ using System.Threading;
 using System.Net.NetworkInformation;
 using System.Management;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace CJF.Net
 {
@@ -924,7 +925,7 @@ namespace CJF.Net
 						ProcessSend(this, arg);
 					success = true;
 				}
-				catch (ObjectDisposedException) { _log.Write(LogManager.LogLevel.Warn, "Send Fail(ObjectDisposed):{0}", ConvUtils.Byte2HexString(data)); }
+				catch (ObjectDisposedException) { _log.Write(LogManager.LogLevel.Warn, "Send Fail(ObjectDisposed):{0}", data.ToHexString()); }
 				catch (SocketException se) { sex = se; }
 				catch (Exception ex) { _log.WriteException(ex); }
 				if (!success)

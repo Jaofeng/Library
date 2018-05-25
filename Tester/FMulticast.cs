@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using CJF.Net;
 using CJF.Net.Multicast;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace Tester
 {
@@ -65,7 +66,7 @@ namespace Tester
 		{
 			WriteLog("收到資料({0}->{1}) {2} Bytes", e.RemoteEndPoint, e.LocalEndPoint, e.Data.Length);
 			WriteLog(" > : {0}", Encoding.Default.GetString(e.Data));
-			WriteLog("Hex: {0}", ConvUtils.Byte2HexString(e.Data));
+			WriteLog("Hex: {0}", e.Data.ToHexString());
 		}
 
 		#region Button Events
@@ -111,7 +112,7 @@ namespace Tester
 			}
 			byte[] buf = null;
 			if (chkHexString.Checked)
-				buf = ConvUtils.HexStringToBytes(txtSendMsg.Text);
+				buf = txtSendMsg.Text.ToByteArray();
 			else
 				buf = Encoding.Default.GetBytes(txtSendMsg.Text);
 			_Sender.SendData(buf);
@@ -123,7 +124,7 @@ namespace Tester
 		{
 			WriteLog("發送資料 {0} Bytes", e.Data.Length);
 			WriteLog(" < : {0}", Encoding.Default.GetString(e.Data));
-			WriteLog("Hex: {0}", ConvUtils.Byte2HexString(e.Data));
+			WriteLog("Hex: {0}", e.Data.ToHexString());
 		}
 
 		private void FMulticast_FormClosed(object sender, FormClosedEventArgs e)

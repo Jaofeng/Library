@@ -9,6 +9,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace CJF.Net.Http
 {
@@ -899,7 +900,7 @@ namespace CJF.Net.Http
 									nvc.Add(key, fn);
 								line = ms.ReadLine();	// 捨棄空行
 
-								int idx = ConvUtils.IndexOfBytes(ms.ToArray(), boundaryBytes, (int)ms.Position);
+								int idx = ms.ToArray().IndexOfBytes(boundaryBytes, (int)ms.Position);
 								if (idx != -1)
 								{
 									string tmp = Path.GetTempFileName();

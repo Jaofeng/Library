@@ -9,6 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace CJF.Net.Telnet
 {
@@ -751,7 +752,7 @@ namespace CJF.Net.Telnet
 								switch (data[idx])
 								{
 									case 0x1F:	// Set Windows Size
-										tcs.WindowSize = new WindowSize(ConvUtils.ToInt16(data, idx + 1, true), ConvUtils.ToInt16(data, idx + 3, true));
+										tcs.WindowSize = new WindowSize(data.ToInt16(idx + 1, true), data.ToInt16(idx + 3, true));
 										idx += 5;
 										break;
 									case 0x18:	// Terminal Type(24)

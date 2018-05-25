@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace CJF.Modbus
 {
@@ -81,10 +82,10 @@ namespace CJF.Modbus
 		{
 			if (data.Length > 260)
 				throw new ArgumentOutOfRangeException("data", "傳入的資料陣列長度不得大於 260Bytes。");
-			if (ConvUtils.ToUInt16(data, 4, true) != data.Length - 6)
+			if (data.ToUInt16(4, true) != data.Length - 6)
 				throw new ModbusException(ModbusException.ErrorCodes.LengthError);
-			this.TransactionID = ConvUtils.ToUInt16(data, 0, true);
-			this.Identifier = ConvUtils.ToUInt16(data, 2, true);
+			this.TransactionID = data.ToUInt16(0, true);
+			this.Identifier = data.ToUInt16(2, true);
 			byte[] msg = new byte[data.Length - 6];
 			_Message = new MessageFormat(msg);
 		}
@@ -107,9 +108,9 @@ namespace CJF.Modbus
 		{
 			List<byte> buf = new List<byte>();
 			byte[] msg = _Message.ToArray();
-			buf.AddRange(ConvUtils.GetBytes(TransactionID, true));
-			buf.AddRange(ConvUtils.GetBytes(Identifier, true));
-			buf.AddRange(ConvUtils.GetBytes(msg.Length, true));
+			buf.AddRange(TransactionID.GetBytes(true));
+			buf.AddRange(Identifier.GetBytes(true));
+			buf.AddRange(msg.Length.GetBytes(true));
 			buf.AddRange(msg);
 			return buf.ToArray();
 		}

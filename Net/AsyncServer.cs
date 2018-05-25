@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace CJF.Net
 {
@@ -1238,7 +1239,7 @@ namespace CJF.Net
 						{
 							Debug.Print("Unknow Socket Connect!!");
 							_log.Write(LogManager.LogLevel.Debug, "Unknow Socket:{0}", rep);
-							_log.Write(LogManager.LogLevel.Debug, "Data:{0}", ConvUtils.Byte2HexString(rec.ToArray()));
+							_log.Write(LogManager.LogLevel.Debug, "Data:{0}", rec.ToArray().ToHexString());
 							this.CloseClientSocket(e);
 							return;
 						}

@@ -4,6 +4,7 @@ using System.Text;
 using System.Windows.Forms;
 using CJF.Net;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace Tester
 {
@@ -113,14 +114,14 @@ namespace Tester
 		{
 			WriteLog("已發送 {0} Bytes 至伺服器", e.Data.Length);
 			WriteLog(" < :{0}", Encoding.Default.GetString(e.Data));
-			WriteLog("Hex:{0}", ConvUtils.Byte2HexString(e.Data));
+			WriteLog("Hex:{0}", e.Data.ToHexString());
 		}
 
 		void Client_OnDataReceived(object sender, AsyncClientEventArgs e)
 		{
 			WriteLog("從伺服器收到 {0} Bytes", e.Data.Length);
 			WriteLog(" > :{0}", Encoding.Default.GetString(e.Data));
-			WriteLog("Hex:{0}", ConvUtils.Byte2HexString(e.Data));
+			WriteLog("Hex:{0}", e.Data.ToHexString());
 		}
 
 		void Client_OnConnected(object sender, AsyncClientEventArgs e)
@@ -151,7 +152,7 @@ namespace Tester
 			e.SuppressKeyPress = false;
 			if (_Client == null || !_Client.IsConnected) return;
 			if (chkHexString.Checked)
-				_Client.SendData(ConvUtils.HexStringToBytes(txtSendMsg.Text));
+				_Client.SendData(txtSendMsg.Text.ToByteArray());
 			else
 			{
 				string str = txtSendMsg.Text;

@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading;
 using CJF.Net;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace CJF.Modbus
 {
@@ -122,7 +123,7 @@ namespace CJF.Modbus
 			byte[] tmp = new byte[e.Data.Length];
 			Array.Copy(e.Data, tmp, tmp.Length);
 			_log.Write(LogManager.LogLevel.Debug, "Received {0} bytes.", tmp.Length);
-			_log.Write(LogManager.LogLevel.Debug, "Data:{0}", ConvUtils.Byte2HexString(tmp));
+			_log.Write(LogManager.LogLevel.Debug, "Data:{0}", tmp.ToHexString());
 		}
 
 		#region Private Method : void Remote_OnDataSended(object sender, AsyncClientEventArgs e)
@@ -132,7 +133,7 @@ namespace CJF.Modbus
 			byte[] tmp = new byte[e.Data.Length];
 			Array.Copy(e.Data, tmp, tmp.Length);
 			_log.Write(LogManager.LogLevel.Debug, "Sended {0} bytes.", tmp.Length);
-			_log.Write(LogManager.LogLevel.Debug, "Data:{0}", ConvUtils.Byte2HexString(tmp));
+			_log.Write(LogManager.LogLevel.Debug, "Data:{0}", tmp.ToHexString());
 		}
 		#endregion
 
@@ -143,7 +144,7 @@ namespace CJF.Modbus
 			byte[] tmp = new byte[e.Data.Length];
 			Array.Copy(e.Data, tmp, tmp.Length);
 			_log.Write(LogManager.LogLevel.Debug, "Send fail, {0} bytes.", tmp.Length);
-			_log.Write(LogManager.LogLevel.Debug, "Data:{0}", ConvUtils.Byte2HexString(tmp));
+			_log.Write(LogManager.LogLevel.Debug, "Data:{0}", tmp.ToHexString());
 		}
 		#endregion
 

@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using CJF.Net;
 using CJF.Net.Telnet;
 using CJF.Utility;
+using CJF.Utility.Extensions;
 
 namespace Tester
 {
@@ -112,14 +113,14 @@ namespace Tester
 		{
 			TelnetServer svr = (TelnetServer)sender;
 			string data = Encoding.Default.GetString(e.Data);
-			WriteLog("[{0}] > ({2:D3}){1}", e.RemoteEndPoint, ConvUtils.Byte2HexString(e.Data), e.Data.Length);
+			WriteLog("[{0}] > ({2:D3}){1}", e.RemoteEndPoint, e.Data.ToHexString(), e.Data.Length);
 			if (data.Equals("close", StringComparison.OrdinalIgnoreCase))
 				e.Client.Close();
 					}
 
 		void Server_OnDataSended(object sender, SocketServerEventArgs e)
 		{
-			WriteLog("[{0}] < ({2:D3}){1}", e.RemoteEndPoint, ConvUtils.Byte2HexString(e.Data), e.Data.Length);
+			WriteLog("[{0}] < ({2:D3}){1}", e.RemoteEndPoint, e.Data.ToHexString(), e.Data.Length);
 		}
 
 		#region Button Events
@@ -223,7 +224,7 @@ namespace Tester
 				for (int i = 0; i < acs.Length; i++)
 				{
 					if (chkHexString.Checked)
-						acs[i].SendData(ConvUtils.HexStringToBytes(txtSendMsg.Text));
+						acs[i].SendData(txtSendMsg.Text.ToByteArray());
 					else
 						acs[i].SendData(txtSendMsg.Text);
 				}
@@ -237,7 +238,7 @@ namespace Tester
 					if (ac != null)
 					{
 						if (chkHexString.Checked)
-							ac.SendData(ConvUtils.HexStringToBytes(txtSendMsg.Text));
+							ac.SendData(txtSendMsg.Text.ToByteArray());
 						else
 							ac.SendData(txtSendMsg.Text);
 					}

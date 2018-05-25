@@ -29,7 +29,6 @@
 		private void InitializeComponent()
 		{
 			this.label1 = new System.Windows.Forms.Label();
-			this.txtIP = new System.Windows.Forms.TextBox();
 			this.label2 = new System.Windows.Forms.Label();
 			this.txtPort = new System.Windows.Forms.TextBox();
 			this.btnStart = new System.Windows.Forms.Button();
@@ -42,6 +41,7 @@
 			this.txtSendTo = new System.Windows.Forms.TextBox();
 			this.chkBroadcast = new System.Windows.Forms.CheckBox();
 			this.chkHexString = new System.Windows.Forms.CheckBox();
+			this.cboIP = new System.Windows.Forms.ComboBox();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -53,29 +53,22 @@
 			this.label1.TabIndex = 0;
 			this.label1.Text = "IP位址";
 			// 
-			// txtIP
-			// 
-			this.txtIP.BackColor = System.Drawing.SystemColors.Window;
-			this.txtIP.Location = new System.Drawing.Point(69, 12);
-			this.txtIP.Name = "txtIP";
-			this.txtIP.Size = new System.Drawing.Size(88, 22);
-			this.txtIP.TabIndex = 1;
-			// 
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(180, 17);
+			this.label2.Location = new System.Drawing.Point(207, 17);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(53, 12);
 			this.label2.TabIndex = 2;
-			this.label2.Text = "通訊埠號";
+			this.label2.Text = "監聽埠號";
 			// 
 			// txtPort
 			// 
-			this.txtPort.Location = new System.Drawing.Point(239, 12);
+			this.txtPort.Location = new System.Drawing.Point(266, 12);
 			this.txtPort.Name = "txtPort";
 			this.txtPort.Size = new System.Drawing.Size(60, 22);
 			this.txtPort.TabIndex = 3;
+			this.txtPort.Text = "5000";
 			// 
 			// btnStart
 			// 
@@ -84,7 +77,7 @@
 			this.btnStart.Name = "btnStart";
 			this.btnStart.Size = new System.Drawing.Size(75, 23);
 			this.btnStart.TabIndex = 6;
-			this.btnStart.Text = "啟動";
+			this.btnStart.Text = "監聽";
 			this.btnStart.UseVisualStyleBackColor = true;
 			this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
 			// 
@@ -103,7 +96,7 @@
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(328, 17);
+			this.label4.Location = new System.Drawing.Point(355, 17);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(65, 12);
 			this.label4.TabIndex = 4;
@@ -111,7 +104,7 @@
 			// 
 			// txtBuffer
 			// 
-			this.txtBuffer.Location = new System.Drawing.Point(399, 12);
+			this.txtBuffer.Location = new System.Drawing.Point(426, 12);
 			this.txtBuffer.Name = "txtBuffer";
 			this.txtBuffer.Size = new System.Drawing.Size(60, 22);
 			this.txtBuffer.TabIndex = 5;
@@ -125,7 +118,7 @@
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(53, 12);
 			this.label5.TabIndex = 8;
-			this.label5.Text = "訊息發送";
+			this.label5.Text = "發送對象";
 			// 
 			// txtSendMsg
 			// 
@@ -184,11 +177,22 @@
 			this.chkHexString.Text = "16進位字串";
 			this.chkHexString.UseVisualStyleBackColor = true;
 			// 
+			// cboIP
+			// 
+			this.cboIP.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cboIP.FormattingEnabled = true;
+			this.cboIP.Location = new System.Drawing.Point(69, 13);
+			this.cboIP.Name = "cboIP";
+			this.cboIP.Size = new System.Drawing.Size(121, 20);
+			this.cboIP.TabIndex = 13;
+			this.cboIP.SelectedIndexChanged += new System.EventHandler(this.cboIP_SelectedIndexChanged);
+			// 
 			// FAsyncUdpServer
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(782, 337);
+			this.Controls.Add(this.cboIP);
 			this.Controls.Add(this.chkHexString);
 			this.Controls.Add(this.chkBroadcast);
 			this.Controls.Add(this.rtbConsole);
@@ -200,7 +204,6 @@
 			this.Controls.Add(this.txtPort);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.txtSendTo);
-			this.Controls.Add(this.txtIP);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
 			this.Name = "FAsyncUdpServer";
@@ -213,7 +216,6 @@
 		#endregion
 
 		private System.Windows.Forms.Label label1;
-		private System.Windows.Forms.TextBox txtIP;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.TextBox txtPort;
 		private System.Windows.Forms.Button btnStart;
@@ -226,5 +228,6 @@
 		private System.Windows.Forms.TextBox txtSendTo;
 		private System.Windows.Forms.CheckBox chkBroadcast;
 		private System.Windows.Forms.CheckBox chkHexString;
+		private System.Windows.Forms.ComboBox cboIP;
 	}
 }
