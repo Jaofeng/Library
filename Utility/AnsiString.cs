@@ -34,6 +34,7 @@ namespace CJF.Utility
 			AppendData("{blink}", CodeType.FontColor, "\x1B[5m", "Blink");
 			AppendData("{blinkf}", CodeType.FontColor, "\x1B[6m", "Blink Fast");
 			AppendData("{inverse}", CodeType.FontColor, "\x1B[7m", "Inverse");
+			AppendData("{conceal}", CodeType.FontColor, "\x1B[8m", "Conceal(Not widely supported.)");
 			AppendData("{strike}", CodeType.FontColor, "\x1B[9m", "Strikethrough");
 
 			// 字型樣式(關)
@@ -201,13 +202,15 @@ namespace CJF.Utility
 		public static string Underline { get { return _AnsiTable["{ul}"].Code; } }
 		/// <summary>取得ANSI控制碼:移除底線{ul}</summary>
 		public static string UnderlineOff { get { return _AnsiTable["{!ul}"].Code; } }
-		///// <summary>取得ANSI控制碼:還原字型與顏色預設值</summary>
+		/// <summary>取得ANSI控制碼:緩慢閃爍</summary>
 		public static string Blink { get { return _AnsiTable["{blink}"].Code; } }
-		///// <summary>取得ANSI控制碼:還原字型與顏色預設值</summary>
+		/// <summary>取得ANSI控制碼:快速閃爍</summary>
 		public static string BlinkFast { get { return _AnsiTable["{blinkf}"].Code; } }
-		///// <summary>取得ANSI控制碼:還原字型與顏色預設值</summary>
+		/// <summary>取得ANSI控制碼:前景色與背景色交換</summary>
 		public static string Inverse { get { return _AnsiTable["{inverse}"].Code; } }
-		///// <summary>取得ANSI控制碼:還原字型與顏色預設值</summary>
+		/// <summary>取得ANSI控制碼:隱藏(未廣泛支援)</summary>
+		public static string Conceal { get { return _AnsiTable["{conceal}"].Code; } }
+		/// <summary>取得ANSI控制碼:刪除線(未廣泛支援)</summary>
 		public static string Strikethrough { get { return _AnsiTable["{strike}"].Code; } }
 		public static string ForeColorBlack { get { return _AnsiTable["{black}"].Code; } }
 		public static string ForeColorDarkRed { get { return _AnsiTable["{d_red}"].Code; } }
