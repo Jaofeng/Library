@@ -36,6 +36,9 @@ namespace CJF.Utility.CRC
 			table = InitializeTable(polynomial);
 			this.seed = seed;
 		}
+		/// <summary>建立並初始化 CJF.Utility.CRC.Crc16 類別的新執行個體。</summary>
+		/// <returns></returns>
+		new public static Crc16 Create() { return new Crc16(); }
 		#endregion
 
 		#region Public Override Method : void Initialize()
@@ -56,12 +59,26 @@ namespace CJF.Utility.CRC
 
 		#region Protected Override Method : byte[] HashFinal()
 		/// <summary>在衍生類別中覆寫時，當密碼編譯資料流物件處理最後的資料後，會對雜湊計算做最後處理。</summary>
-		/// <returns>計算出來的雜湊程式碼。</returns>
+		/// <returns>計算出來的 CRC16 碼。</returns>
 		protected override byte[] HashFinal()
 		{
 			var hashBuffer = ToBigEndianBytes(hash);
 			HashValue = hashBuffer;
 			return hashBuffer;
+		}
+		#endregion
+
+		#region New Public Method : byte[] ComputeHash(System.IO.Stream inputStream)
+		/// <summary>覆寫自 HashAlgorithm.ComputeHash，計算指定 System.IO.Stream 物件的雜湊值。</summary>
+		/// <param name="inputStream">要用來計算 CRC16 的原始資料。</param>
+		/// <returns>計算出來的 CRC16 碼。</returns>
+		new public byte[] ComputeHash(System.IO.Stream inputStream)
+		{
+			inputStream.Position = 0;
+			byte[] buffer = new byte[inputStream.Length];
+			inputStream.Read(buffer, 0, buffer.Length);
+			hash = CalculateHash(InitializeTable(DefaultPolynomial), DefaultSeed, buffer, 0, buffer.Length);
+			return HashFinal();
 		}
 		#endregion
 
@@ -186,6 +203,9 @@ namespace CJF.Utility.CRC
 			table = InitializeTable(polynomial);
 			this.seed = hash = seed;
 		}
+		/// <summary>建立並初始化 CJF.Utility.CRC.Crc32 類別的新執行個體。</summary>
+		/// <returns></returns>
+		new public static Crc32 Create() { return new Crc32(); }
 		#endregion
 
 		#region Public Override Method : void Initialize()
@@ -215,6 +235,20 @@ namespace CJF.Utility.CRC
 			var hashBuffer = ToBigEndianBytes(~hash);
 			HashValue = hashBuffer;
 			return hashBuffer;
+		}
+		#endregion
+
+		#region New Public Method : byte[] ComputeHash(System.IO.Stream inputStream)
+		/// <summary>覆寫自 HashAlgorithm.ComputeHash，計算指定 System.IO.Stream 物件的雜湊值。</summary>
+		/// <param name="inputStream">要用來計算 CRC16 的原始資料。</param>
+		/// <returns>計算出來的 CRC16 碼。</returns>
+		new public byte[] ComputeHash(System.IO.Stream inputStream)
+		{
+			inputStream.Position = 0;
+			byte[] buffer = new byte[inputStream.Length];
+			inputStream.Read(buffer, 0, buffer.Length);
+			hash = CalculateHash(InitializeTable(DefaultPolynomial), DefaultSeed, buffer, 0, buffer.Length);
+			return HashFinal();
 		}
 		#endregion
 

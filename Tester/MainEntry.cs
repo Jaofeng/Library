@@ -154,6 +154,15 @@ namespace Tester
 
 		private void btnFile_Click(object sender, EventArgs e)
 		{
+			Button btn = (Button)sender;
+			if (btn.Tag == null)
+			{
+				MessageBox.Show("本按鈕未設定對應之文字框!");
+				return;
+			}
+			Control[] cs = btn.Parent.Controls.Find(btn.Tag.ToString(), true);
+			if (cs == null || cs.Length == 0)
+				return;
 			using (OpenFileDialog ofd = new OpenFileDialog())
 			{
 				ofd.Filter = "所有檔案(*.*)|*.*";
@@ -162,8 +171,7 @@ namespace Tester
 				ofd.CheckFileExists = true;
 				ofd.CheckPathExists = true;
 				ofd.Multiselect = false;
-				ofd.DefaultExt = ".zip";
-				ofd.Title = "請選擇欲搜尋內容的檔案";
+				ofd.Title = "請選擇檔案";
 				if (string.IsNullOrEmpty(txtFile.Text))
 					ofd.FileName = string.Empty;
 				else
@@ -171,7 +179,7 @@ namespace Tester
 				DialogResult dr = ofd.ShowDialog(this);
 				if (dr != DialogResult.OK)
 					return;
-				txtFile.Text = ofd.FileName;
+				cs[0].Text = ofd.FileName;
 			}
 		}
 
@@ -281,6 +289,56 @@ namespace Tester
 				txtXorResult.Text = txtXorSource.Text.ToByteArray().Xor(code[0]).ToHexString();
 			else
 				txtXorResult.Text = txtXorSource.Text.ToByteArray().Xor(code).ToHexString();
+		}
+
+		private void btnCrcFile_Click(object sender, EventArgs e)
+		{
+			btnFile_Click(btnCrcFile, new EventArgs());
+			Application.DoEvents();
+			int times = 1000;
+			byte[] bs = File.ReadAllBytes(txtCrcFile.Text);
+			FileStream fs = File.OpenRead(txtCrcFile.Text);
+			MemoryStream ms = new MemoryStream(bs);
+			byte[] res = null;
+			System.Diagnostics.Stopwatch watch = new System.Diagnostics.Stopwatch();
+			Crc16 crc16 = Crc16.Create();
+			watch.Start();
+			for (int i = 0; i < times; i++)
+				res = crc16.ComputeHash(bs);
+			watch.Stop();
+			lab16B.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			Application.DoEvents();
+			watch.Restart();
+			for (int i = 0; i < times; i++)
+				res = crc16.ComputeHash(fs);
+			watch.Stop();
+			lab16S.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			Application.DoEvents();
+			watch.Restart();
+			for (int i = 0; i < times; i++)
+				res = crc16.ComputeHash(ms);
+			watch.Stop();
+			lab16M.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			Application.DoEvents();
+			Crc32 crc32 = Crc32.Create();
+			watch.Start();
+			for (int i = 0; i < times; i++)
+				res = crc32.ComputeHash(bs);
+			watch.Stop();
+			lab32B.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			Application.DoEvents();
+			watch.Restart();
+			for (int i = 0; i < times; i++)
+				res = crc32.ComputeHash(fs);
+			watch.Stop();
+			lab32S.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			Application.DoEvents();
+			watch.Restart();
+			for (int i = 0; i < times; i++)
+				res = crc32.ComputeHash(ms);
+			watch.Stop();
+			lab32M.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			Application.DoEvents();
 		}
 	}
 }
