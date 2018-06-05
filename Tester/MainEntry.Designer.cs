@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainEntry));
 			this.button1 = new System.Windows.Forms.Button();
 			this.button2 = new System.Windows.Forms.Button();
 			this.button3 = new System.Windows.Forms.Button();
@@ -42,13 +43,23 @@
 			this.chkBigEndian = new System.Windows.Forms.CheckBox();
 			this.cbDateType = new System.Windows.Forms.ComboBox();
 			this.button7 = new System.Windows.Forms.Button();
-			this.listBox1 = new System.Windows.Forms.ListBox();
+			this.lstAnsi = new System.Windows.Forms.ListBox();
 			this.button8 = new System.Windows.Forms.Button();
 			this.button9 = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.labConvResult = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
-			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.groupBox7 = new System.Windows.Forms.GroupBox();
+			this.lab32B = new System.Windows.Forms.Label();
+			this.lab32M = new System.Windows.Forms.Label();
+			this.lab32S = new System.Windows.Forms.Label();
+			this.lab16M = new System.Windows.Forms.Label();
+			this.lab16S = new System.Windows.Forms.Label();
+			this.lab16B = new System.Windows.Forms.Label();
+			this.label21 = new System.Windows.Forms.Label();
+			this.label22 = new System.Windows.Forms.Label();
+			this.btnCrcFile = new System.Windows.Forms.Button();
+			this.txtCrcFile = new System.Windows.Forms.TextBox();
 			this.labCrc32Time = new System.Windows.Forms.Label();
 			this.labCrc32Res = new System.Windows.Forms.Label();
 			this.labCrc32Byte = new System.Windows.Forms.Label();
@@ -76,7 +87,6 @@
 			this.txtHexStr = new System.Windows.Forms.TextBox();
 			this.btnSearchHex = new System.Windows.Forms.Button();
 			this.txtFile = new System.Windows.Forms.TextBox();
-			this.groupBox6 = new System.Windows.Forms.GroupBox();
 			this.txtTarget = new System.Windows.Forms.TextBox();
 			this.label7 = new System.Windows.Forms.Label();
 			this.txtSource = new System.Windows.Forms.TextBox();
@@ -97,29 +107,59 @@
 			this.label8 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
 			this.btnXor = new System.Windows.Forms.Button();
-			this.btnCrcFile = new System.Windows.Forms.Button();
-			this.txtCrcFile = new System.Windows.Forms.TextBox();
-			this.lab32B = new System.Windows.Forms.Label();
-			this.lab32S = new System.Windows.Forms.Label();
-			this.lab16S = new System.Windows.Forms.Label();
-			this.lab16B = new System.Windows.Forms.Label();
-			this.label21 = new System.Windows.Forms.Label();
-			this.label22 = new System.Windows.Forms.Label();
-			this.groupBox7 = new System.Windows.Forms.GroupBox();
-			this.lab16M = new System.Windows.Forms.Label();
-			this.lab32M = new System.Windows.Forms.Label();
+			this.txtMsgBoxText = new System.Windows.Forms.TextBox();
+			this.txtMsgBoxCaption = new System.Windows.Forms.TextBox();
+			this.cbMsgBoxDefBtn = new System.Windows.Forms.ComboBox();
+			this.cbMsgBoxFontSize = new System.Windows.Forms.ComboBox();
+			this.cbMsgBoxIcon = new System.Windows.Forms.ComboBox();
+			this.cbMsgBoxFont = new System.Windows.Forms.ComboBox();
+			this.cbMsgBoxBtn = new System.Windows.Forms.ComboBox();
+			this.label11 = new System.Windows.Forms.Label();
+			this.btnShowMsgBox = new System.Windows.Forms.Button();
+			this.label2 = new System.Windows.Forms.Label();
+			this.chkFont = new System.Windows.Forms.CheckBox();
+			this.tabControl1 = new System.Windows.Forms.TabControl();
+			this.tabPage1 = new System.Windows.Forms.TabPage();
+			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+			this.tabPage2 = new System.Windows.Forms.TabPage();
+			this.tabPage3 = new System.Windows.Forms.TabPage();
+			this.tabPage4 = new System.Windows.Forms.TabPage();
+			this.label13 = new System.Windows.Forms.Label();
+			this.label12 = new System.Windows.Forms.Label();
+			this.tabPage5 = new System.Windows.Forms.TabPage();
+			this.label17 = new System.Windows.Forms.Label();
+			this.label16 = new System.Windows.Forms.Label();
+			this.label15 = new System.Windows.Forms.Label();
+			this.tabPage6 = new System.Windows.Forms.TabPage();
+			this.button13 = new System.Windows.Forms.Button();
+			this.txtAnsiStr = new System.Windows.Forms.TextBox();
+			this.label19 = new System.Windows.Forms.Label();
+			this.txtAnsiCode = new System.Windows.Forms.TextBox();
+			this.label18 = new System.Windows.Forms.Label();
+			this.tabPage7 = new System.Windows.Forms.TabPage();
+			this.tabPage8 = new System.Windows.Forms.TabPage();
+			this.label20 = new System.Windows.Forms.Label();
+			this.txtCsi = new System.Windows.Forms.TextBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
-			this.groupBox3.SuspendLayout();
 			this.groupBox4.SuspendLayout();
 			this.groupBox5.SuspendLayout();
-			this.groupBox6.SuspendLayout();
 			this.Xor.SuspendLayout();
+			this.tabControl1.SuspendLayout();
+			this.tabPage1.SuspendLayout();
+			this.flowLayoutPanel1.SuspendLayout();
+			this.tabPage2.SuspendLayout();
+			this.tabPage3.SuspendLayout();
+			this.tabPage4.SuspendLayout();
+			this.tabPage5.SuspendLayout();
+			this.tabPage6.SuspendLayout();
+			this.tabPage7.SuspendLayout();
+			this.tabPage8.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// button1
 			// 
-			this.button1.Location = new System.Drawing.Point(22, 21);
+			this.button1.Location = new System.Drawing.Point(3, 3);
 			this.button1.Name = "button1";
 			this.button1.Size = new System.Drawing.Size(107, 50);
 			this.button1.TabIndex = 0;
@@ -129,7 +169,7 @@
 			// 
 			// button2
 			// 
-			this.button2.Location = new System.Drawing.Point(22, 77);
+			this.button2.Location = new System.Drawing.Point(116, 3);
 			this.button2.Name = "button2";
 			this.button2.Size = new System.Drawing.Size(107, 50);
 			this.button2.TabIndex = 1;
@@ -139,7 +179,7 @@
 			// 
 			// button3
 			// 
-			this.button3.Location = new System.Drawing.Point(22, 133);
+			this.button3.Location = new System.Drawing.Point(229, 3);
 			this.button3.Name = "button3";
 			this.button3.Size = new System.Drawing.Size(107, 50);
 			this.button3.TabIndex = 2;
@@ -149,7 +189,7 @@
 			// 
 			// button4
 			// 
-			this.button4.Location = new System.Drawing.Point(22, 189);
+			this.button4.Location = new System.Drawing.Point(455, 3);
 			this.button4.Name = "button4";
 			this.button4.Size = new System.Drawing.Size(107, 50);
 			this.button4.TabIndex = 3;
@@ -159,7 +199,7 @@
 			// 
 			// button5
 			// 
-			this.button5.Location = new System.Drawing.Point(22, 245);
+			this.button5.Location = new System.Drawing.Point(229, 59);
 			this.button5.Name = "button5";
 			this.button5.Size = new System.Drawing.Size(107, 50);
 			this.button5.TabIndex = 4;
@@ -169,7 +209,7 @@
 			// 
 			// button6
 			// 
-			this.button6.Location = new System.Drawing.Point(135, 133);
+			this.button6.Location = new System.Drawing.Point(13, 102);
 			this.button6.Name = "button6";
 			this.button6.Size = new System.Drawing.Size(107, 50);
 			this.button6.TabIndex = 5;
@@ -181,13 +221,13 @@
 			// 
 			this.txtConvUnit.Location = new System.Drawing.Point(9, 21);
 			this.txtConvUnit.Name = "txtConvUnit";
-			this.txtConvUnit.Size = new System.Drawing.Size(92, 22);
+			this.txtConvUnit.Size = new System.Drawing.Size(128, 22);
 			this.txtConvUnit.TabIndex = 7;
 			this.txtConvUnit.Text = "1000";
 			// 
 			// btnUnitConv
 			// 
-			this.btnUnitConv.Location = new System.Drawing.Point(107, 21);
+			this.btnUnitConv.Location = new System.Drawing.Point(143, 21);
 			this.btnUnitConv.Name = "btnUnitConv";
 			this.btnUnitConv.Size = new System.Drawing.Size(75, 22);
 			this.btnUnitConv.TabIndex = 8;
@@ -209,13 +249,13 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtGetBytesResult.Location = new System.Drawing.Point(9, 49);
 			this.txtGetBytesResult.Name = "txtGetBytesResult";
-			this.txtGetBytesResult.Size = new System.Drawing.Size(267, 22);
+			this.txtGetBytesResult.Size = new System.Drawing.Size(475, 22);
 			this.txtGetBytesResult.TabIndex = 14;
 			// 
 			// btnGetBytes
 			// 
 			this.btnGetBytes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnGetBytes.Location = new System.Drawing.Point(282, 49);
+			this.btnGetBytes.Location = new System.Drawing.Point(490, 49);
 			this.btnGetBytes.Name = "btnGetBytes";
 			this.btnGetBytes.Size = new System.Drawing.Size(75, 23);
 			this.btnGetBytes.TabIndex = 11;
@@ -253,26 +293,29 @@
 			// 
 			// button7
 			// 
-			this.button7.Location = new System.Drawing.Point(135, 245);
+			this.button7.Location = new System.Drawing.Point(13, 13);
 			this.button7.Name = "button7";
-			this.button7.Size = new System.Drawing.Size(107, 31);
+			this.button7.Size = new System.Drawing.Size(107, 33);
 			this.button7.TabIndex = 15;
-			this.button7.Text = "ANSI String";
+			this.button7.Text = "Show ANSI";
 			this.button7.UseVisualStyleBackColor = true;
 			this.button7.Click += new System.EventHandler(this.button7_Click);
 			// 
-			// listBox1
+			// lstAnsi
 			// 
-			this.listBox1.FormattingEnabled = true;
-			this.listBox1.ItemHeight = 12;
-			this.listBox1.Location = new System.Drawing.Point(135, 274);
-			this.listBox1.Name = "listBox1";
-			this.listBox1.Size = new System.Drawing.Size(107, 136);
-			this.listBox1.TabIndex = 16;
+			this.lstAnsi.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+			this.lstAnsi.FormattingEnabled = true;
+			this.lstAnsi.ItemHeight = 12;
+			this.lstAnsi.Location = new System.Drawing.Point(13, 52);
+			this.lstAnsi.Name = "lstAnsi";
+			this.lstAnsi.Size = new System.Drawing.Size(107, 196);
+			this.lstAnsi.TabIndex = 16;
+			this.lstAnsi.DoubleClick += new System.EventHandler(this.lstAnsi_DoubleClick);
 			// 
 			// button8
 			// 
-			this.button8.Location = new System.Drawing.Point(22, 301);
+			this.button8.Location = new System.Drawing.Point(342, 59);
 			this.button8.Name = "button8";
 			this.button8.Size = new System.Drawing.Size(107, 50);
 			this.button8.TabIndex = 4;
@@ -282,7 +325,7 @@
 			// 
 			// button9
 			// 
-			this.button9.Location = new System.Drawing.Point(135, 21);
+			this.button9.Location = new System.Drawing.Point(342, 3);
 			this.button9.Name = "button9";
 			this.button9.Size = new System.Drawing.Size(107, 50);
 			this.button9.TabIndex = 4;
@@ -295,9 +338,10 @@
 			this.groupBox1.Controls.Add(this.labConvResult);
 			this.groupBox1.Controls.Add(this.txtConvUnit);
 			this.groupBox1.Controls.Add(this.btnUnitConv);
-			this.groupBox1.Location = new System.Drawing.Point(261, 21);
+			this.groupBox1.Location = new System.Drawing.Point(13, 10);
+			this.groupBox1.Margin = new System.Windows.Forms.Padding(3, 10, 3, 10);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(363, 50);
+			this.groupBox1.Size = new System.Drawing.Size(348, 50);
 			this.groupBox1.TabIndex = 17;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "計量單位轉換";
@@ -306,68 +350,150 @@
 			// 
 			this.labConvResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.labConvResult.BackColor = System.Drawing.SystemColors.Window;
+			this.labConvResult.BackColor = System.Drawing.SystemColors.Control;
 			this.labConvResult.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.labConvResult.Location = new System.Drawing.Point(188, 21);
+			this.labConvResult.Location = new System.Drawing.Point(224, 21);
 			this.labConvResult.Name = "labConvResult";
-			this.labConvResult.Size = new System.Drawing.Size(169, 22);
+			this.labConvResult.Size = new System.Drawing.Size(118, 22);
 			this.labConvResult.TabIndex = 9;
 			this.labConvResult.Text = "0";
 			this.labConvResult.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox2.Controls.Add(this.txtGetBytes);
 			this.groupBox2.Controls.Add(this.btnGetBytes);
 			this.groupBox2.Controls.Add(this.cbDateType);
 			this.groupBox2.Controls.Add(this.chkBigEndian);
 			this.groupBox2.Controls.Add(this.txtGetBytesResult);
-			this.groupBox2.Location = new System.Drawing.Point(261, 77);
+			this.groupBox2.Location = new System.Drawing.Point(13, 13);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(363, 81);
+			this.groupBox2.Size = new System.Drawing.Size(571, 81);
 			this.groupBox2.TabIndex = 18;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Number GetByte Array";
 			// 
-			// groupBox3
+			// groupBox7
 			// 
-			this.groupBox3.Controls.Add(this.groupBox7);
-			this.groupBox3.Controls.Add(this.lab32B);
-			this.groupBox3.Controls.Add(this.lab32M);
-			this.groupBox3.Controls.Add(this.lab32S);
-			this.groupBox3.Controls.Add(this.lab16M);
-			this.groupBox3.Controls.Add(this.lab16S);
-			this.groupBox3.Controls.Add(this.lab16B);
-			this.groupBox3.Controls.Add(this.label21);
-			this.groupBox3.Controls.Add(this.label22);
-			this.groupBox3.Controls.Add(this.btnCrcFile);
-			this.groupBox3.Controls.Add(this.txtCrcFile);
-			this.groupBox3.Controls.Add(this.labCrc32Time);
-			this.groupBox3.Controls.Add(this.labCrc32Res);
-			this.groupBox3.Controls.Add(this.labCrc32Byte);
-			this.groupBox3.Controls.Add(this.label14);
-			this.groupBox3.Controls.Add(this.labCrc16TimeM);
-			this.groupBox3.Controls.Add(this.labCrc16ResM);
-			this.groupBox3.Controls.Add(this.labCrc16Time);
-			this.groupBox3.Controls.Add(this.labCrc16ByteM);
-			this.groupBox3.Controls.Add(this.labCrc16Byte);
-			this.groupBox3.Controls.Add(this.labCrc16Res);
-			this.groupBox3.Controls.Add(this.label3);
-			this.groupBox3.Controls.Add(this.label1);
-			this.groupBox3.Controls.Add(this.txtCrcSource);
-			this.groupBox3.Controls.Add(this.btnCRC16);
-			this.groupBox3.Location = new System.Drawing.Point(261, 164);
-			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Size = new System.Drawing.Size(363, 229);
-			this.groupBox3.TabIndex = 19;
-			this.groupBox3.TabStop = false;
-			this.groupBox3.Text = "CRC Calculate";
+			this.groupBox7.Location = new System.Drawing.Point(23, 143);
+			this.groupBox7.Name = "groupBox7";
+			this.groupBox7.Size = new System.Drawing.Size(564, 3);
+			this.groupBox7.TabIndex = 41;
+			this.groupBox7.TabStop = false;
+			// 
+			// lab32B
+			// 
+			this.lab32B.BackColor = System.Drawing.SystemColors.Control;
+			this.lab32B.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.lab32B.Location = new System.Drawing.Point(77, 220);
+			this.lab32B.Name = "lab32B";
+			this.lab32B.Size = new System.Drawing.Size(145, 22);
+			this.lab32B.TabIndex = 35;
+			this.lab32B.Text = "0";
+			this.lab32B.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// lab32M
+			// 
+			this.lab32M.BackColor = System.Drawing.SystemColors.Control;
+			this.lab32M.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.lab32M.Location = new System.Drawing.Point(383, 220);
+			this.lab32M.Name = "lab32M";
+			this.lab32M.Size = new System.Drawing.Size(145, 22);
+			this.lab32M.TabIndex = 31;
+			this.lab32M.Text = "0";
+			this.lab32M.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// lab32S
+			// 
+			this.lab32S.BackColor = System.Drawing.SystemColors.Control;
+			this.lab32S.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.lab32S.Location = new System.Drawing.Point(230, 220);
+			this.lab32S.Name = "lab32S";
+			this.lab32S.Size = new System.Drawing.Size(145, 22);
+			this.lab32S.TabIndex = 31;
+			this.lab32S.Text = "0";
+			this.lab32S.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// lab16M
+			// 
+			this.lab16M.BackColor = System.Drawing.SystemColors.Control;
+			this.lab16M.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.lab16M.Location = new System.Drawing.Point(383, 191);
+			this.lab16M.Name = "lab16M";
+			this.lab16M.Size = new System.Drawing.Size(145, 22);
+			this.lab16M.TabIndex = 34;
+			this.lab16M.Text = "0";
+			this.lab16M.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// lab16S
+			// 
+			this.lab16S.BackColor = System.Drawing.SystemColors.Control;
+			this.lab16S.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.lab16S.Location = new System.Drawing.Point(230, 191);
+			this.lab16S.Name = "lab16S";
+			this.lab16S.Size = new System.Drawing.Size(145, 22);
+			this.lab16S.TabIndex = 34;
+			this.lab16S.Text = "0";
+			this.lab16S.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// lab16B
+			// 
+			this.lab16B.BackColor = System.Drawing.SystemColors.Control;
+			this.lab16B.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.lab16B.Location = new System.Drawing.Point(77, 191);
+			this.lab16B.Name = "lab16B";
+			this.lab16B.Size = new System.Drawing.Size(145, 22);
+			this.lab16B.TabIndex = 33;
+			this.lab16B.Text = "0";
+			this.lab16B.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// label21
+			// 
+			this.label21.AutoSize = true;
+			this.label21.Location = new System.Drawing.Point(21, 225);
+			this.label21.Name = "label21";
+			this.label21.Size = new System.Drawing.Size(41, 12);
+			this.label21.TabIndex = 29;
+			this.label21.Text = "CRC32";
+			// 
+			// label22
+			// 
+			this.label22.AutoSize = true;
+			this.label22.Location = new System.Drawing.Point(21, 196);
+			this.label22.Name = "label22";
+			this.label22.Size = new System.Drawing.Size(41, 12);
+			this.label22.TabIndex = 30;
+			this.label22.Text = "CRC16";
+			// 
+			// btnCrcFile
+			// 
+			this.btnCrcFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnCrcFile.Location = new System.Drawing.Point(562, 160);
+			this.btnCrcFile.Name = "btnCrcFile";
+			this.btnCrcFile.Size = new System.Drawing.Size(25, 23);
+			this.btnCrcFile.TabIndex = 28;
+			this.btnCrcFile.Tag = "txtCrcFile";
+			this.btnCrcFile.Text = "...";
+			this.btnCrcFile.UseVisualStyleBackColor = true;
+			this.btnCrcFile.Click += new System.EventHandler(this.btnCrcFile_Click);
+			// 
+			// txtCrcFile
+			// 
+			this.txtCrcFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtCrcFile.Location = new System.Drawing.Point(77, 161);
+			this.txtCrcFile.Name = "txtCrcFile";
+			this.txtCrcFile.Size = new System.Drawing.Size(479, 22);
+			this.txtCrcFile.TabIndex = 27;
 			// 
 			// labCrc32Time
 			// 
-			this.labCrc32Time.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc32Time.BackColor = System.Drawing.SystemColors.Control;
 			this.labCrc32Time.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.labCrc32Time.Location = new System.Drawing.Point(252, 102);
+			this.labCrc32Time.Location = new System.Drawing.Point(262, 108);
 			this.labCrc32Time.Name = "labCrc32Time";
 			this.labCrc32Time.Size = new System.Drawing.Size(105, 22);
 			this.labCrc32Time.TabIndex = 26;
@@ -376,9 +502,9 @@
 			// 
 			// labCrc32Res
 			// 
-			this.labCrc32Res.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc32Res.BackColor = System.Drawing.SystemColors.Control;
 			this.labCrc32Res.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.labCrc32Res.Location = new System.Drawing.Point(67, 102);
+			this.labCrc32Res.Location = new System.Drawing.Point(77, 108);
 			this.labCrc32Res.Name = "labCrc32Res";
 			this.labCrc32Res.Size = new System.Drawing.Size(90, 22);
 			this.labCrc32Res.TabIndex = 25;
@@ -387,9 +513,9 @@
 			// 
 			// labCrc32Byte
 			// 
-			this.labCrc32Byte.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc32Byte.BackColor = System.Drawing.SystemColors.Control;
 			this.labCrc32Byte.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.labCrc32Byte.Location = new System.Drawing.Point(159, 102);
+			this.labCrc32Byte.Location = new System.Drawing.Point(169, 108);
 			this.labCrc32Byte.Name = "labCrc32Byte";
 			this.labCrc32Byte.Size = new System.Drawing.Size(90, 22);
 			this.labCrc32Byte.TabIndex = 24;
@@ -399,7 +525,7 @@
 			// label14
 			// 
 			this.label14.AutoSize = true;
-			this.label14.Location = new System.Drawing.Point(7, 107);
+			this.label14.Location = new System.Drawing.Point(21, 113);
 			this.label14.Name = "label14";
 			this.label14.Size = new System.Drawing.Size(41, 12);
 			this.label14.TabIndex = 23;
@@ -407,9 +533,9 @@
 			// 
 			// labCrc16TimeM
 			// 
-			this.labCrc16TimeM.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16TimeM.BackColor = System.Drawing.SystemColors.Control;
 			this.labCrc16TimeM.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.labCrc16TimeM.Location = new System.Drawing.Point(252, 74);
+			this.labCrc16TimeM.Location = new System.Drawing.Point(262, 80);
 			this.labCrc16TimeM.Name = "labCrc16TimeM";
 			this.labCrc16TimeM.Size = new System.Drawing.Size(105, 22);
 			this.labCrc16TimeM.TabIndex = 21;
@@ -418,9 +544,9 @@
 			// 
 			// labCrc16ResM
 			// 
-			this.labCrc16ResM.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16ResM.BackColor = System.Drawing.SystemColors.Control;
 			this.labCrc16ResM.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.labCrc16ResM.Location = new System.Drawing.Point(67, 74);
+			this.labCrc16ResM.Location = new System.Drawing.Point(77, 80);
 			this.labCrc16ResM.Name = "labCrc16ResM";
 			this.labCrc16ResM.Size = new System.Drawing.Size(90, 22);
 			this.labCrc16ResM.TabIndex = 20;
@@ -429,9 +555,9 @@
 			// 
 			// labCrc16Time
 			// 
-			this.labCrc16Time.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16Time.BackColor = System.Drawing.SystemColors.Control;
 			this.labCrc16Time.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.labCrc16Time.Location = new System.Drawing.Point(252, 46);
+			this.labCrc16Time.Location = new System.Drawing.Point(262, 52);
 			this.labCrc16Time.Name = "labCrc16Time";
 			this.labCrc16Time.Size = new System.Drawing.Size(105, 22);
 			this.labCrc16Time.TabIndex = 17;
@@ -440,9 +566,9 @@
 			// 
 			// labCrc16ByteM
 			// 
-			this.labCrc16ByteM.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16ByteM.BackColor = System.Drawing.SystemColors.Control;
 			this.labCrc16ByteM.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.labCrc16ByteM.Location = new System.Drawing.Point(159, 74);
+			this.labCrc16ByteM.Location = new System.Drawing.Point(169, 80);
 			this.labCrc16ByteM.Name = "labCrc16ByteM";
 			this.labCrc16ByteM.Size = new System.Drawing.Size(90, 22);
 			this.labCrc16ByteM.TabIndex = 17;
@@ -451,9 +577,9 @@
 			// 
 			// labCrc16Byte
 			// 
-			this.labCrc16Byte.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16Byte.BackColor = System.Drawing.SystemColors.Control;
 			this.labCrc16Byte.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.labCrc16Byte.Location = new System.Drawing.Point(159, 46);
+			this.labCrc16Byte.Location = new System.Drawing.Point(169, 52);
 			this.labCrc16Byte.Name = "labCrc16Byte";
 			this.labCrc16Byte.Size = new System.Drawing.Size(90, 22);
 			this.labCrc16Byte.TabIndex = 17;
@@ -462,9 +588,9 @@
 			// 
 			// labCrc16Res
 			// 
-			this.labCrc16Res.BackColor = System.Drawing.SystemColors.Window;
+			this.labCrc16Res.BackColor = System.Drawing.SystemColors.Control;
 			this.labCrc16Res.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.labCrc16Res.Location = new System.Drawing.Point(67, 46);
+			this.labCrc16Res.Location = new System.Drawing.Point(77, 52);
 			this.labCrc16Res.Name = "labCrc16Res";
 			this.labCrc16Res.Size = new System.Drawing.Size(90, 22);
 			this.labCrc16Res.TabIndex = 17;
@@ -474,7 +600,7 @@
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(7, 79);
+			this.label3.Location = new System.Drawing.Point(21, 85);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(43, 12);
 			this.label3.TabIndex = 16;
@@ -483,7 +609,7 @@
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(6, 51);
+			this.label1.Location = new System.Drawing.Point(21, 57);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(41, 12);
 			this.label1.TabIndex = 16;
@@ -491,14 +617,18 @@
 			// 
 			// txtCrcSource
 			// 
-			this.txtCrcSource.Location = new System.Drawing.Point(9, 21);
+			this.txtCrcSource.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtCrcSource.Location = new System.Drawing.Point(77, 23);
 			this.txtCrcSource.Name = "txtCrcSource";
-			this.txtCrcSource.Size = new System.Drawing.Size(267, 22);
+			this.txtCrcSource.Size = new System.Drawing.Size(429, 22);
 			this.txtCrcSource.TabIndex = 15;
 			// 
 			// btnCRC16
 			// 
-			this.btnCRC16.Location = new System.Drawing.Point(282, 21);
+			this.btnCRC16.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnCRC16.Location = new System.Drawing.Point(512, 23);
 			this.btnCRC16.Name = "btnCRC16";
 			this.btnCRC16.Size = new System.Drawing.Size(75, 23);
 			this.btnCRC16.TabIndex = 11;
@@ -508,12 +638,14 @@
 			// 
 			// groupBox4
 			// 
+			this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox4.Controls.Add(this.txtLog);
 			this.groupBox4.Controls.Add(this.cbLogLevel);
 			this.groupBox4.Controls.Add(this.btnSaveLog);
-			this.groupBox4.Location = new System.Drawing.Point(631, 337);
+			this.groupBox4.Location = new System.Drawing.Point(13, 13);
 			this.groupBox4.Name = "groupBox4";
-			this.groupBox4.Size = new System.Drawing.Size(363, 83);
+			this.groupBox4.Size = new System.Drawing.Size(571, 83);
 			this.groupBox4.TabIndex = 21;
 			this.groupBox4.TabStop = false;
 			this.groupBox4.Text = "Log4Net Test";
@@ -524,7 +656,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtLog.Location = new System.Drawing.Point(8, 21);
 			this.txtLog.Name = "txtLog";
-			this.txtLog.Size = new System.Drawing.Size(349, 22);
+			this.txtLog.Size = new System.Drawing.Size(557, 22);
 			this.txtLog.TabIndex = 1;
 			// 
 			// cbLogLevel
@@ -545,7 +677,7 @@
 			// btnSaveLog
 			// 
 			this.btnSaveLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnSaveLog.Location = new System.Drawing.Point(282, 49);
+			this.btnSaveLog.Location = new System.Drawing.Point(490, 49);
 			this.btnSaveLog.Name = "btnSaveLog";
 			this.btnSaveLog.Size = new System.Drawing.Size(75, 23);
 			this.btnSaveLog.TabIndex = 11;
@@ -555,7 +687,7 @@
 			// 
 			// button11
 			// 
-			this.button11.Location = new System.Drawing.Point(135, 77);
+			this.button11.Location = new System.Drawing.Point(3, 59);
 			this.button11.Name = "button11";
 			this.button11.Size = new System.Drawing.Size(107, 50);
 			this.button11.TabIndex = 5;
@@ -565,6 +697,8 @@
 			// 
 			// groupBox5
 			// 
+			this.groupBox5.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.groupBox5.Controls.Add(this.rbFindIndexes);
 			this.groupBox5.Controls.Add(this.rbFindIndex);
 			this.groupBox5.Controls.Add(this.rbIndexOfBytes);
@@ -572,9 +706,10 @@
 			this.groupBox5.Controls.Add(this.txtHexStr);
 			this.groupBox5.Controls.Add(this.btnSearchHex);
 			this.groupBox5.Controls.Add(this.txtFile);
-			this.groupBox5.Location = new System.Drawing.Point(630, 21);
+			this.groupBox5.Location = new System.Drawing.Point(13, 66);
+			this.groupBox5.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
 			this.groupBox5.Name = "groupBox5";
-			this.groupBox5.Size = new System.Drawing.Size(364, 106);
+			this.groupBox5.Size = new System.Drawing.Size(571, 106);
 			this.groupBox5.TabIndex = 22;
 			this.groupBox5.TabStop = false;
 			this.groupBox5.Text = "Byte Array Search";
@@ -618,7 +753,7 @@
 			// btnFile
 			// 
 			this.btnFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnFile.Location = new System.Drawing.Point(333, 44);
+			this.btnFile.Location = new System.Drawing.Point(540, 44);
 			this.btnFile.Name = "btnFile";
 			this.btnFile.Size = new System.Drawing.Size(25, 23);
 			this.btnFile.TabIndex = 12;
@@ -633,14 +768,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtHexStr.Location = new System.Drawing.Point(9, 72);
 			this.txtHexStr.Name = "txtHexStr";
-			this.txtHexStr.Size = new System.Drawing.Size(268, 22);
+			this.txtHexStr.Size = new System.Drawing.Size(475, 22);
 			this.txtHexStr.TabIndex = 2;
 			this.txtHexStr.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
 			// 
 			// btnSearchHex
 			// 
 			this.btnSearchHex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnSearchHex.Location = new System.Drawing.Point(283, 73);
+			this.btnSearchHex.Location = new System.Drawing.Point(490, 73);
 			this.btnSearchHex.Name = "btnSearchHex";
 			this.btnSearchHex.Size = new System.Drawing.Size(75, 23);
 			this.btnSearchHex.TabIndex = 11;
@@ -654,40 +789,23 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtFile.Location = new System.Drawing.Point(9, 44);
 			this.txtFile.Name = "txtFile";
-			this.txtFile.Size = new System.Drawing.Size(318, 22);
+			this.txtFile.Size = new System.Drawing.Size(525, 22);
 			this.txtFile.TabIndex = 2;
 			this.txtFile.TextChanged += new System.EventHandler(this.txtSearch_TextChanged);
 			// 
-			// groupBox6
-			// 
-			this.groupBox6.Controls.Add(this.txtTarget);
-			this.groupBox6.Controls.Add(this.label7);
-			this.groupBox6.Controls.Add(this.txtSource);
-			this.groupBox6.Controls.Add(this.label6);
-			this.groupBox6.Controls.Add(this.txtIV);
-			this.groupBox6.Controls.Add(this.txtKey);
-			this.groupBox6.Controls.Add(this.label5);
-			this.groupBox6.Controls.Add(this.label4);
-			this.groupBox6.Controls.Add(this.btnDecrypt);
-			this.groupBox6.Controls.Add(this.btnEncrypt);
-			this.groupBox6.Location = new System.Drawing.Point(630, 133);
-			this.groupBox6.Name = "groupBox6";
-			this.groupBox6.Size = new System.Drawing.Size(364, 107);
-			this.groupBox6.TabIndex = 23;
-			this.groupBox6.TabStop = false;
-			this.groupBox6.Text = "Security";
-			// 
 			// txtTarget
 			// 
-			this.txtTarget.Location = new System.Drawing.Point(54, 78);
+			this.txtTarget.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtTarget.Location = new System.Drawing.Point(69, 82);
 			this.txtTarget.Name = "txtTarget";
-			this.txtTarget.Size = new System.Drawing.Size(304, 22);
+			this.txtTarget.Size = new System.Drawing.Size(500, 22);
 			this.txtTarget.TabIndex = 7;
 			// 
 			// label7
 			// 
 			this.label7.AutoSize = true;
-			this.label7.Location = new System.Drawing.Point(11, 82);
+			this.label7.Location = new System.Drawing.Point(22, 85);
 			this.label7.Name = "label7";
 			this.label7.Size = new System.Drawing.Size(35, 12);
 			this.label7.TabIndex = 6;
@@ -695,15 +813,17 @@
 			// 
 			// txtSource
 			// 
-			this.txtSource.Location = new System.Drawing.Point(54, 50);
+			this.txtSource.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtSource.Location = new System.Drawing.Point(69, 54);
 			this.txtSource.Name = "txtSource";
-			this.txtSource.Size = new System.Drawing.Size(304, 22);
+			this.txtSource.Size = new System.Drawing.Size(500, 22);
 			this.txtSource.TabIndex = 5;
 			// 
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(11, 54);
+			this.label6.Location = new System.Drawing.Point(22, 57);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(37, 12);
 			this.label6.TabIndex = 4;
@@ -711,7 +831,7 @@
 			// 
 			// txtIV
 			// 
-			this.txtIV.Location = new System.Drawing.Point(167, 21);
+			this.txtIV.Location = new System.Drawing.Point(182, 25);
 			this.txtIV.MaxLength = 8;
 			this.txtIV.Name = "txtIV";
 			this.txtIV.Size = new System.Drawing.Size(75, 22);
@@ -720,7 +840,7 @@
 			// 
 			// txtKey
 			// 
-			this.txtKey.Location = new System.Drawing.Point(54, 21);
+			this.txtKey.Location = new System.Drawing.Point(69, 25);
 			this.txtKey.MaxLength = 8;
 			this.txtKey.Name = "txtKey";
 			this.txtKey.Size = new System.Drawing.Size(75, 22);
@@ -730,7 +850,7 @@
 			// label5
 			// 
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(144, 26);
+			this.label5.Location = new System.Drawing.Point(159, 30);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(17, 12);
 			this.label5.TabIndex = 2;
@@ -739,7 +859,7 @@
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(23, 26);
+			this.label4.Location = new System.Drawing.Point(33, 30);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(24, 12);
 			this.label4.TabIndex = 0;
@@ -748,7 +868,7 @@
 			// btnDecrypt
 			// 
 			this.btnDecrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnDecrypt.Location = new System.Drawing.Point(306, 21);
+			this.btnDecrypt.Location = new System.Drawing.Point(321, 25);
 			this.btnDecrypt.Name = "btnDecrypt";
 			this.btnDecrypt.Size = new System.Drawing.Size(52, 23);
 			this.btnDecrypt.TabIndex = 9;
@@ -759,7 +879,7 @@
 			// btnEncrypt
 			// 
 			this.btnEncrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnEncrypt.Location = new System.Drawing.Point(248, 21);
+			this.btnEncrypt.Location = new System.Drawing.Point(263, 25);
 			this.btnEncrypt.Name = "btnEncrypt";
 			this.btnEncrypt.Size = new System.Drawing.Size(52, 23);
 			this.btnEncrypt.TabIndex = 8;
@@ -770,7 +890,7 @@
 			// button10
 			// 
 			this.button10.Enabled = false;
-			this.button10.Location = new System.Drawing.Point(22, 357);
+			this.button10.Location = new System.Drawing.Point(455, 59);
 			this.button10.Name = "button10";
 			this.button10.Size = new System.Drawing.Size(107, 50);
 			this.button10.TabIndex = 4;
@@ -780,7 +900,7 @@
 			// 
 			// button12
 			// 
-			this.button12.Location = new System.Drawing.Point(135, 189);
+			this.button12.Location = new System.Drawing.Point(116, 59);
 			this.button12.Name = "button12";
 			this.button12.Size = new System.Drawing.Size(107, 50);
 			this.button12.TabIndex = 24;
@@ -790,6 +910,8 @@
 			// 
 			// Xor
 			// 
+			this.Xor.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.Xor.Controls.Add(this.txtXorResult);
 			this.Xor.Controls.Add(this.label10);
 			this.Xor.Controls.Add(this.txtXor);
@@ -797,18 +919,20 @@
 			this.Xor.Controls.Add(this.label8);
 			this.Xor.Controls.Add(this.label9);
 			this.Xor.Controls.Add(this.btnXor);
-			this.Xor.Location = new System.Drawing.Point(631, 247);
+			this.Xor.Location = new System.Drawing.Point(13, 100);
 			this.Xor.Name = "Xor";
-			this.Xor.Size = new System.Drawing.Size(363, 84);
+			this.Xor.Size = new System.Drawing.Size(571, 84);
 			this.Xor.TabIndex = 25;
 			this.Xor.TabStop = false;
 			this.Xor.Text = "Byte Array Xor";
 			// 
 			// txtXorResult
 			// 
+			this.txtXorResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtXorResult.Location = new System.Drawing.Point(53, 50);
 			this.txtXorResult.Name = "txtXorResult";
-			this.txtXorResult.Size = new System.Drawing.Size(304, 22);
+			this.txtXorResult.Size = new System.Drawing.Size(512, 22);
 			this.txtXorResult.TabIndex = 15;
 			// 
 			// label10
@@ -857,7 +981,7 @@
 			// btnXor
 			// 
 			this.btnXor.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnXor.Location = new System.Drawing.Point(305, 21);
+			this.btnXor.Location = new System.Drawing.Point(513, 21);
 			this.btnXor.Name = "btnXor";
 			this.btnXor.Size = new System.Drawing.Size(52, 23);
 			this.btnXor.TabIndex = 13;
@@ -865,163 +989,470 @@
 			this.btnXor.UseVisualStyleBackColor = true;
 			this.btnXor.Click += new System.EventHandler(this.btnXor_Click);
 			// 
-			// btnCrcFile
+			// txtMsgBoxText
 			// 
-			this.btnCrcFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnCrcFile.Location = new System.Drawing.Point(332, 145);
-			this.btnCrcFile.Name = "btnCrcFile";
-			this.btnCrcFile.Size = new System.Drawing.Size(25, 23);
-			this.btnCrcFile.TabIndex = 28;
-			this.btnCrcFile.Tag = "txtCrcFile";
-			this.btnCrcFile.Text = "...";
-			this.btnCrcFile.UseVisualStyleBackColor = true;
-			this.btnCrcFile.Click += new System.EventHandler(this.btnCrcFile_Click);
-			// 
-			// txtCrcFile
-			// 
-			this.txtCrcFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			this.txtMsgBoxText.AcceptsReturn = true;
+			this.txtMsgBoxText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtCrcFile.Location = new System.Drawing.Point(9, 145);
-			this.txtCrcFile.Name = "txtCrcFile";
-			this.txtCrcFile.Size = new System.Drawing.Size(319, 22);
-			this.txtCrcFile.TabIndex = 27;
+			this.txtMsgBoxText.Location = new System.Drawing.Point(103, 57);
+			this.txtMsgBoxText.Multiline = true;
+			this.txtMsgBoxText.Name = "txtMsgBoxText";
+			this.txtMsgBoxText.Size = new System.Drawing.Size(470, 73);
+			this.txtMsgBoxText.TabIndex = 3;
+			this.txtMsgBoxText.Text = resources.GetString("txtMsgBoxText.Text");
+			this.txtMsgBoxText.WordWrap = false;
 			// 
-			// lab32B
+			// txtMsgBoxCaption
 			// 
-			this.lab32B.BackColor = System.Drawing.SystemColors.Window;
-			this.lab32B.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.lab32B.Location = new System.Drawing.Point(49, 198);
-			this.lab32B.Name = "lab32B";
-			this.lab32B.Size = new System.Drawing.Size(100, 22);
-			this.lab32B.TabIndex = 35;
-			this.lab32B.Text = "0";
-			this.lab32B.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.txtMsgBoxCaption.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtMsgBoxCaption.Location = new System.Drawing.Point(103, 29);
+			this.txtMsgBoxCaption.Name = "txtMsgBoxCaption";
+			this.txtMsgBoxCaption.Size = new System.Drawing.Size(470, 22);
+			this.txtMsgBoxCaption.TabIndex = 1;
+			this.txtMsgBoxCaption.Text = "WinKits.MessageBox";
 			// 
-			// lab32S
+			// cbMsgBoxDefBtn
 			// 
-			this.lab32S.BackColor = System.Drawing.SystemColors.Window;
-			this.lab32S.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.lab32S.Location = new System.Drawing.Point(152, 198);
-			this.lab32S.Name = "lab32S";
-			this.lab32S.Size = new System.Drawing.Size(100, 22);
-			this.lab32S.TabIndex = 31;
-			this.lab32S.Text = "0";
-			this.lab32S.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.cbMsgBoxDefBtn.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbMsgBoxDefBtn.FormattingEnabled = true;
+			this.cbMsgBoxDefBtn.Items.AddRange(new object[] {
+            "Button1",
+            "Button2",
+            "Button3"});
+			this.cbMsgBoxDefBtn.Location = new System.Drawing.Point(102, 188);
+			this.cbMsgBoxDefBtn.Name = "cbMsgBoxDefBtn";
+			this.cbMsgBoxDefBtn.Size = new System.Drawing.Size(110, 20);
+			this.cbMsgBoxDefBtn.TabIndex = 6;
 			// 
-			// lab16S
+			// cbMsgBoxFontSize
 			// 
-			this.lab16S.BackColor = System.Drawing.SystemColors.Window;
-			this.lab16S.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.lab16S.Location = new System.Drawing.Point(152, 171);
-			this.lab16S.Name = "lab16S";
-			this.lab16S.Size = new System.Drawing.Size(100, 22);
-			this.lab16S.TabIndex = 34;
-			this.lab16S.Text = "0";
-			this.lab16S.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.cbMsgBoxFontSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbMsgBoxFontSize.Enabled = false;
+			this.cbMsgBoxFontSize.FormattingEnabled = true;
+			this.cbMsgBoxFontSize.Location = new System.Drawing.Point(273, 214);
+			this.cbMsgBoxFontSize.Name = "cbMsgBoxFontSize";
+			this.cbMsgBoxFontSize.Size = new System.Drawing.Size(57, 20);
+			this.cbMsgBoxFontSize.TabIndex = 5;
 			// 
-			// lab16B
+			// cbMsgBoxIcon
 			// 
-			this.lab16B.BackColor = System.Drawing.SystemColors.Window;
-			this.lab16B.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.lab16B.Location = new System.Drawing.Point(49, 171);
-			this.lab16B.Name = "lab16B";
-			this.lab16B.Size = new System.Drawing.Size(100, 22);
-			this.lab16B.TabIndex = 33;
-			this.lab16B.Text = "0";
-			this.lab16B.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.cbMsgBoxIcon.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbMsgBoxIcon.FormattingEnabled = true;
+			this.cbMsgBoxIcon.Items.AddRange(new object[] {
+            "None",
+            "Error",
+            "Hand",
+            "Stop",
+            "Question",
+            "Exclamation",
+            "Warning",
+            "Information",
+            "Asterisk"});
+			this.cbMsgBoxIcon.Location = new System.Drawing.Point(102, 162);
+			this.cbMsgBoxIcon.Name = "cbMsgBoxIcon";
+			this.cbMsgBoxIcon.Size = new System.Drawing.Size(110, 20);
+			this.cbMsgBoxIcon.TabIndex = 5;
 			// 
-			// label21
+			// cbMsgBoxFont
 			// 
-			this.label21.AutoSize = true;
-			this.label21.Location = new System.Drawing.Point(7, 203);
-			this.label21.Name = "label21";
-			this.label21.Size = new System.Drawing.Size(41, 12);
-			this.label21.TabIndex = 29;
-			this.label21.Text = "CRC32";
+			this.cbMsgBoxFont.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbMsgBoxFont.Enabled = false;
+			this.cbMsgBoxFont.FormattingEnabled = true;
+			this.cbMsgBoxFont.Location = new System.Drawing.Point(102, 214);
+			this.cbMsgBoxFont.Name = "cbMsgBoxFont";
+			this.cbMsgBoxFont.Size = new System.Drawing.Size(165, 20);
+			this.cbMsgBoxFont.TabIndex = 4;
 			// 
-			// label22
+			// cbMsgBoxBtn
 			// 
-			this.label22.AutoSize = true;
-			this.label22.Location = new System.Drawing.Point(6, 176);
-			this.label22.Name = "label22";
-			this.label22.Size = new System.Drawing.Size(41, 12);
-			this.label22.TabIndex = 30;
-			this.label22.Text = "CRC16";
+			this.cbMsgBoxBtn.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbMsgBoxBtn.FormattingEnabled = true;
+			this.cbMsgBoxBtn.Items.AddRange(new object[] {
+            "OK",
+            "OKCancel",
+            "YesNo",
+            "YesNoCancel",
+            "RetryCancel",
+            "AbortRetryIgnore"});
+			this.cbMsgBoxBtn.Location = new System.Drawing.Point(103, 136);
+			this.cbMsgBoxBtn.Name = "cbMsgBoxBtn";
+			this.cbMsgBoxBtn.Size = new System.Drawing.Size(110, 20);
+			this.cbMsgBoxBtn.TabIndex = 4;
 			// 
-			// groupBox7
+			// label11
 			// 
-			this.groupBox7.Location = new System.Drawing.Point(9, 133);
-			this.groupBox7.Name = "groupBox7";
-			this.groupBox7.Size = new System.Drawing.Size(319, 3);
-			this.groupBox7.TabIndex = 41;
-			this.groupBox7.TabStop = false;
+			this.label11.AutoSize = true;
+			this.label11.Location = new System.Drawing.Point(53, 60);
+			this.label11.Name = "label11";
+			this.label11.Size = new System.Drawing.Size(44, 12);
+			this.label11.TabIndex = 2;
+			this.label11.Text = "Message";
 			// 
-			// lab16M
+			// btnShowMsgBox
 			// 
-			this.lab16M.BackColor = System.Drawing.SystemColors.Window;
-			this.lab16M.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.lab16M.Location = new System.Drawing.Point(256, 171);
-			this.lab16M.Name = "lab16M";
-			this.lab16M.Size = new System.Drawing.Size(100, 22);
-			this.lab16M.TabIndex = 34;
-			this.lab16M.Text = "0";
-			this.lab16M.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.btnShowMsgBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnShowMsgBox.Location = new System.Drawing.Point(498, 212);
+			this.btnShowMsgBox.Name = "btnShowMsgBox";
+			this.btnShowMsgBox.Size = new System.Drawing.Size(75, 23);
+			this.btnShowMsgBox.TabIndex = 7;
+			this.btnShowMsgBox.Text = "Show";
+			this.btnShowMsgBox.UseVisualStyleBackColor = true;
+			this.btnShowMsgBox.Click += new System.EventHandler(this.btnShowMsgBox_Click);
 			// 
-			// lab32M
+			// label2
 			// 
-			this.lab32M.BackColor = System.Drawing.SystemColors.Window;
-			this.lab32M.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			this.lab32M.Location = new System.Drawing.Point(256, 198);
-			this.lab32M.Name = "lab32M";
-			this.lab32M.Size = new System.Drawing.Size(100, 22);
-			this.lab32M.TabIndex = 31;
-			this.lab32M.Text = "0";
-			this.lab32M.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(55, 32);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(42, 12);
+			this.label2.TabIndex = 0;
+			this.label2.Text = "Caption";
+			// 
+			// chkFont
+			// 
+			this.chkFont.AutoSize = true;
+			this.chkFont.Location = new System.Drawing.Point(49, 216);
+			this.chkFont.Name = "chkFont";
+			this.chkFont.Size = new System.Drawing.Size(48, 16);
+			this.chkFont.TabIndex = 8;
+			this.chkFont.Text = "字型";
+			this.chkFont.UseVisualStyleBackColor = true;
+			this.chkFont.CheckedChanged += new System.EventHandler(this.chkFont_CheckedChanged);
+			// 
+			// tabControl1
+			// 
+			this.tabControl1.Controls.Add(this.tabPage1);
+			this.tabControl1.Controls.Add(this.tabPage2);
+			this.tabControl1.Controls.Add(this.tabPage3);
+			this.tabControl1.Controls.Add(this.tabPage4);
+			this.tabControl1.Controls.Add(this.tabPage5);
+			this.tabControl1.Controls.Add(this.tabPage6);
+			this.tabControl1.Controls.Add(this.tabPage7);
+			this.tabControl1.Controls.Add(this.tabPage8);
+			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.tabControl1.Location = new System.Drawing.Point(5, 5);
+			this.tabControl1.Name = "tabControl1";
+			this.tabControl1.SelectedIndex = 0;
+			this.tabControl1.Size = new System.Drawing.Size(605, 288);
+			this.tabControl1.TabIndex = 27;
+			// 
+			// tabPage1
+			// 
+			this.tabPage1.Controls.Add(this.flowLayoutPanel1);
+			this.tabPage1.Location = new System.Drawing.Point(4, 22);
+			this.tabPage1.Name = "tabPage1";
+			this.tabPage1.Padding = new System.Windows.Forms.Padding(10);
+			this.tabPage1.Size = new System.Drawing.Size(597, 262);
+			this.tabPage1.TabIndex = 0;
+			this.tabPage1.Text = "Network Test";
+			this.tabPage1.UseVisualStyleBackColor = true;
+			// 
+			// flowLayoutPanel1
+			// 
+			this.flowLayoutPanel1.Controls.Add(this.button1);
+			this.flowLayoutPanel1.Controls.Add(this.button2);
+			this.flowLayoutPanel1.Controls.Add(this.button3);
+			this.flowLayoutPanel1.Controls.Add(this.button9);
+			this.flowLayoutPanel1.Controls.Add(this.button4);
+			this.flowLayoutPanel1.Controls.Add(this.button11);
+			this.flowLayoutPanel1.Controls.Add(this.button12);
+			this.flowLayoutPanel1.Controls.Add(this.button5);
+			this.flowLayoutPanel1.Controls.Add(this.button8);
+			this.flowLayoutPanel1.Controls.Add(this.button10);
+			this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.flowLayoutPanel1.Location = new System.Drawing.Point(10, 10);
+			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+			this.flowLayoutPanel1.Size = new System.Drawing.Size(577, 242);
+			this.flowLayoutPanel1.TabIndex = 25;
+			// 
+			// tabPage2
+			// 
+			this.tabPage2.Controls.Add(this.groupBox5);
+			this.tabPage2.Controls.Add(this.groupBox1);
+			this.tabPage2.Location = new System.Drawing.Point(4, 22);
+			this.tabPage2.Name = "tabPage2";
+			this.tabPage2.Padding = new System.Windows.Forms.Padding(10);
+			this.tabPage2.Size = new System.Drawing.Size(597, 262);
+			this.tabPage2.TabIndex = 1;
+			this.tabPage2.Text = "Utility Test";
+			this.tabPage2.UseVisualStyleBackColor = true;
+			// 
+			// tabPage3
+			// 
+			this.tabPage3.Controls.Add(this.groupBox2);
+			this.tabPage3.Controls.Add(this.Xor);
+			this.tabPage3.Location = new System.Drawing.Point(4, 22);
+			this.tabPage3.Name = "tabPage3";
+			this.tabPage3.Padding = new System.Windows.Forms.Padding(10);
+			this.tabPage3.Size = new System.Drawing.Size(597, 262);
+			this.tabPage3.TabIndex = 2;
+			this.tabPage3.Text = "Extensions";
+			this.tabPage3.UseVisualStyleBackColor = true;
+			// 
+			// tabPage4
+			// 
+			this.tabPage4.Controls.Add(this.groupBox7);
+			this.tabPage4.Controls.Add(this.lab32B);
+			this.tabPage4.Controls.Add(this.txtCrcSource);
+			this.tabPage4.Controls.Add(this.lab32M);
+			this.tabPage4.Controls.Add(this.btnCRC16);
+			this.tabPage4.Controls.Add(this.lab32S);
+			this.tabPage4.Controls.Add(this.label13);
+			this.tabPage4.Controls.Add(this.label12);
+			this.tabPage4.Controls.Add(this.label1);
+			this.tabPage4.Controls.Add(this.lab16M);
+			this.tabPage4.Controls.Add(this.label3);
+			this.tabPage4.Controls.Add(this.lab16S);
+			this.tabPage4.Controls.Add(this.labCrc16Res);
+			this.tabPage4.Controls.Add(this.lab16B);
+			this.tabPage4.Controls.Add(this.labCrc16Byte);
+			this.tabPage4.Controls.Add(this.label21);
+			this.tabPage4.Controls.Add(this.labCrc16ByteM);
+			this.tabPage4.Controls.Add(this.label22);
+			this.tabPage4.Controls.Add(this.labCrc16Time);
+			this.tabPage4.Controls.Add(this.btnCrcFile);
+			this.tabPage4.Controls.Add(this.labCrc16ResM);
+			this.tabPage4.Controls.Add(this.txtCrcFile);
+			this.tabPage4.Controls.Add(this.labCrc16TimeM);
+			this.tabPage4.Controls.Add(this.labCrc32Time);
+			this.tabPage4.Controls.Add(this.label14);
+			this.tabPage4.Controls.Add(this.labCrc32Res);
+			this.tabPage4.Controls.Add(this.labCrc32Byte);
+			this.tabPage4.Location = new System.Drawing.Point(4, 22);
+			this.tabPage4.Name = "tabPage4";
+			this.tabPage4.Padding = new System.Windows.Forms.Padding(10);
+			this.tabPage4.Size = new System.Drawing.Size(597, 262);
+			this.tabPage4.TabIndex = 3;
+			this.tabPage4.Text = "CRC Checksum";
+			this.tabPage4.UseVisualStyleBackColor = true;
+			// 
+			// label13
+			// 
+			this.label13.AutoSize = true;
+			this.label13.Location = new System.Drawing.Point(21, 165);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(22, 12);
+			this.label13.TabIndex = 16;
+			this.label13.Text = "File";
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.Location = new System.Drawing.Point(21, 26);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(37, 12);
+			this.label12.TabIndex = 16;
+			this.label12.Text = "Source";
+			// 
+			// tabPage5
+			// 
+			this.tabPage5.Controls.Add(this.cbMsgBoxFontSize);
+			this.tabPage5.Controls.Add(this.cbMsgBoxDefBtn);
+			this.tabPage5.Controls.Add(this.cbMsgBoxFont);
+			this.tabPage5.Controls.Add(this.btnShowMsgBox);
+			this.tabPage5.Controls.Add(this.txtMsgBoxText);
+			this.tabPage5.Controls.Add(this.chkFont);
+			this.tabPage5.Controls.Add(this.cbMsgBoxIcon);
+			this.tabPage5.Controls.Add(this.txtMsgBoxCaption);
+			this.tabPage5.Controls.Add(this.label2);
+			this.tabPage5.Controls.Add(this.cbMsgBoxBtn);
+			this.tabPage5.Controls.Add(this.label17);
+			this.tabPage5.Controls.Add(this.label16);
+			this.tabPage5.Controls.Add(this.label15);
+			this.tabPage5.Controls.Add(this.label11);
+			this.tabPage5.Location = new System.Drawing.Point(4, 22);
+			this.tabPage5.Name = "tabPage5";
+			this.tabPage5.Padding = new System.Windows.Forms.Padding(10);
+			this.tabPage5.Size = new System.Drawing.Size(597, 262);
+			this.tabPage5.TabIndex = 4;
+			this.tabPage5.Text = "MessageBox";
+			this.tabPage5.UseVisualStyleBackColor = true;
+			// 
+			// label17
+			// 
+			this.label17.AutoSize = true;
+			this.label17.Location = new System.Drawing.Point(23, 191);
+			this.label17.Name = "label17";
+			this.label17.Size = new System.Drawing.Size(74, 12);
+			this.label17.TabIndex = 2;
+			this.label17.Text = "Default Button";
+			// 
+			// label16
+			// 
+			this.label16.AutoSize = true;
+			this.label16.Location = new System.Drawing.Point(71, 165);
+			this.label16.Name = "label16";
+			this.label16.Size = new System.Drawing.Size(26, 12);
+			this.label16.TabIndex = 2;
+			this.label16.Text = "Icon";
+			// 
+			// label15
+			// 
+			this.label15.AutoSize = true;
+			this.label15.Location = new System.Drawing.Point(60, 137);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(37, 12);
+			this.label15.TabIndex = 2;
+			this.label15.Text = "Button";
+			// 
+			// tabPage6
+			// 
+			this.tabPage6.Controls.Add(this.button13);
+			this.tabPage6.Controls.Add(this.txtCsi);
+			this.tabPage6.Controls.Add(this.label20);
+			this.tabPage6.Controls.Add(this.txtAnsiStr);
+			this.tabPage6.Controls.Add(this.label19);
+			this.tabPage6.Controls.Add(this.txtAnsiCode);
+			this.tabPage6.Controls.Add(this.label18);
+			this.tabPage6.Controls.Add(this.lstAnsi);
+			this.tabPage6.Controls.Add(this.button7);
+			this.tabPage6.Location = new System.Drawing.Point(4, 22);
+			this.tabPage6.Name = "tabPage6";
+			this.tabPage6.Padding = new System.Windows.Forms.Padding(10);
+			this.tabPage6.Size = new System.Drawing.Size(597, 262);
+			this.tabPage6.TabIndex = 5;
+			this.tabPage6.Text = "ANSI Code";
+			this.tabPage6.UseVisualStyleBackColor = true;
+			// 
+			// button13
+			// 
+			this.button13.Location = new System.Drawing.Point(509, 226);
+			this.button13.Name = "button13";
+			this.button13.Size = new System.Drawing.Size(75, 23);
+			this.button13.TabIndex = 19;
+			this.button13.Text = "Convert";
+			this.button13.UseVisualStyleBackColor = true;
+			this.button13.Click += new System.EventHandler(this.button13_Click);
+			// 
+			// txtAnsiStr
+			// 
+			this.txtAnsiStr.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtAnsiStr.Location = new System.Drawing.Point(193, 68);
+			this.txtAnsiStr.Multiline = true;
+			this.txtAnsiStr.Name = "txtAnsiStr";
+			this.txtAnsiStr.Size = new System.Drawing.Size(391, 42);
+			this.txtAnsiStr.TabIndex = 18;
+			// 
+			// label19
+			// 
+			this.label19.AutoSize = true;
+			this.label19.Location = new System.Drawing.Point(126, 71);
+			this.label19.Name = "label19";
+			this.label19.Size = new System.Drawing.Size(57, 12);
+			this.label19.TabIndex = 17;
+			this.label19.Text = "Ansi String";
+			// 
+			// txtAnsiCode
+			// 
+			this.txtAnsiCode.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtAnsiCode.Location = new System.Drawing.Point(193, 20);
+			this.txtAnsiCode.Multiline = true;
+			this.txtAnsiCode.Name = "txtAnsiCode";
+			this.txtAnsiCode.Size = new System.Drawing.Size(391, 42);
+			this.txtAnsiCode.TabIndex = 18;
+			this.txtAnsiCode.Text = "123{red}456{green}789{reset}";
+			// 
+			// label18
+			// 
+			this.label18.AutoSize = true;
+			this.label18.Location = new System.Drawing.Point(126, 23);
+			this.label18.Name = "label18";
+			this.label18.Size = new System.Drawing.Size(61, 12);
+			this.label18.TabIndex = 17;
+			this.label18.Text = "Code String";
+			// 
+			// tabPage7
+			// 
+			this.tabPage7.Controls.Add(this.txtTarget);
+			this.tabPage7.Controls.Add(this.label7);
+			this.tabPage7.Controls.Add(this.txtKey);
+			this.tabPage7.Controls.Add(this.txtSource);
+			this.tabPage7.Controls.Add(this.btnEncrypt);
+			this.tabPage7.Controls.Add(this.label6);
+			this.tabPage7.Controls.Add(this.btnDecrypt);
+			this.tabPage7.Controls.Add(this.txtIV);
+			this.tabPage7.Controls.Add(this.label4);
+			this.tabPage7.Controls.Add(this.label5);
+			this.tabPage7.Location = new System.Drawing.Point(4, 22);
+			this.tabPage7.Name = "tabPage7";
+			this.tabPage7.Padding = new System.Windows.Forms.Padding(10);
+			this.tabPage7.Size = new System.Drawing.Size(597, 262);
+			this.tabPage7.TabIndex = 6;
+			this.tabPage7.Text = "Security";
+			this.tabPage7.UseVisualStyleBackColor = true;
+			// 
+			// tabPage8
+			// 
+			this.tabPage8.Controls.Add(this.groupBox4);
+			this.tabPage8.Controls.Add(this.button6);
+			this.tabPage8.Location = new System.Drawing.Point(4, 22);
+			this.tabPage8.Name = "tabPage8";
+			this.tabPage8.Padding = new System.Windows.Forms.Padding(10);
+			this.tabPage8.Size = new System.Drawing.Size(597, 262);
+			this.tabPage8.TabIndex = 7;
+			this.tabPage8.Text = "Other";
+			this.tabPage8.UseVisualStyleBackColor = true;
+			// 
+			// label20
+			// 
+			this.label20.AutoSize = true;
+			this.label20.Location = new System.Drawing.Point(126, 119);
+			this.label20.Name = "label20";
+			this.label20.Size = new System.Drawing.Size(55, 12);
+			this.label20.TabIndex = 17;
+			this.label20.Text = "CsiBuilder";
+			// 
+			// txtCsi
+			// 
+			this.txtCsi.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtCsi.Location = new System.Drawing.Point(193, 116);
+			this.txtCsi.Multiline = true;
+			this.txtCsi.Name = "txtCsi";
+			this.txtCsi.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.txtCsi.Size = new System.Drawing.Size(391, 104);
+			this.txtCsi.TabIndex = 18;
 			// 
 			// MainEntry
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1006, 431);
-			this.Controls.Add(this.Xor);
-			this.Controls.Add(this.button12);
-			this.Controls.Add(this.groupBox6);
-			this.Controls.Add(this.groupBox5);
-			this.Controls.Add(this.groupBox4);
-			this.Controls.Add(this.groupBox3);
-			this.Controls.Add(this.groupBox2);
-			this.Controls.Add(this.groupBox1);
-			this.Controls.Add(this.listBox1);
-			this.Controls.Add(this.button7);
-			this.Controls.Add(this.button11);
-			this.Controls.Add(this.button6);
-			this.Controls.Add(this.button9);
-			this.Controls.Add(this.button10);
-			this.Controls.Add(this.button8);
-			this.Controls.Add(this.button5);
-			this.Controls.Add(this.button4);
-			this.Controls.Add(this.button3);
-			this.Controls.Add(this.button2);
-			this.Controls.Add(this.button1);
+			this.ClientSize = new System.Drawing.Size(615, 298);
+			this.Controls.Add(this.tabControl1);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
 			this.Name = "MainEntry";
+			this.Padding = new System.Windows.Forms.Padding(5);
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "Main Form";
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			this.groupBox2.ResumeLayout(false);
 			this.groupBox2.PerformLayout();
-			this.groupBox3.ResumeLayout(false);
-			this.groupBox3.PerformLayout();
 			this.groupBox4.ResumeLayout(false);
 			this.groupBox4.PerformLayout();
 			this.groupBox5.ResumeLayout(false);
 			this.groupBox5.PerformLayout();
-			this.groupBox6.ResumeLayout(false);
-			this.groupBox6.PerformLayout();
 			this.Xor.ResumeLayout(false);
 			this.Xor.PerformLayout();
+			this.tabControl1.ResumeLayout(false);
+			this.tabPage1.ResumeLayout(false);
+			this.flowLayoutPanel1.ResumeLayout(false);
+			this.tabPage2.ResumeLayout(false);
+			this.tabPage3.ResumeLayout(false);
+			this.tabPage4.ResumeLayout(false);
+			this.tabPage4.PerformLayout();
+			this.tabPage5.ResumeLayout(false);
+			this.tabPage5.PerformLayout();
+			this.tabPage6.ResumeLayout(false);
+			this.tabPage6.PerformLayout();
+			this.tabPage7.ResumeLayout(false);
+			this.tabPage7.PerformLayout();
+			this.tabPage8.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -1042,13 +1473,12 @@
 		private System.Windows.Forms.CheckBox chkBigEndian;
 		private System.Windows.Forms.ComboBox cbDateType;
 		private System.Windows.Forms.Button button7;
-		private System.Windows.Forms.ListBox listBox1;
+		private System.Windows.Forms.ListBox lstAnsi;
 		private System.Windows.Forms.Button button8;
 		private System.Windows.Forms.Button button9;
 		private System.Windows.Forms.GroupBox groupBox1;
 		private System.Windows.Forms.Label labConvResult;
 		private System.Windows.Forms.GroupBox groupBox2;
-		private System.Windows.Forms.GroupBox groupBox3;
 		private System.Windows.Forms.TextBox txtCrcSource;
 		private System.Windows.Forms.Label labCrc16TimeM;
 		private System.Windows.Forms.Label labCrc16ResM;
@@ -1072,7 +1502,6 @@
 		private System.Windows.Forms.RadioButton rbFindIndex;
 		private System.Windows.Forms.RadioButton rbIndexOfBytes;
 		private System.Windows.Forms.RadioButton rbFindIndexes;
-		private System.Windows.Forms.GroupBox groupBox6;
 		private System.Windows.Forms.TextBox txtIV;
 		private System.Windows.Forms.TextBox txtKey;
 		private System.Windows.Forms.Label label5;
@@ -1108,5 +1537,38 @@
 		private System.Windows.Forms.TextBox txtCrcFile;
 		private System.Windows.Forms.Label lab32M;
 		private System.Windows.Forms.Label lab16M;
+		private System.Windows.Forms.TextBox txtMsgBoxCaption;
+		private System.Windows.Forms.ComboBox cbMsgBoxBtn;
+		private System.Windows.Forms.Button btnShowMsgBox;
+		private System.Windows.Forms.ComboBox cbMsgBoxDefBtn;
+		private System.Windows.Forms.ComboBox cbMsgBoxIcon;
+		private System.Windows.Forms.Label label2;
+		private System.Windows.Forms.TextBox txtMsgBoxText;
+		private System.Windows.Forms.Label label11;
+		private System.Windows.Forms.ComboBox cbMsgBoxFont;
+		private System.Windows.Forms.ComboBox cbMsgBoxFontSize;
+		private System.Windows.Forms.CheckBox chkFont;
+		private System.Windows.Forms.TabControl tabControl1;
+		private System.Windows.Forms.TabPage tabPage1;
+		private System.Windows.Forms.TabPage tabPage2;
+		private System.Windows.Forms.TabPage tabPage3;
+		private System.Windows.Forms.TabPage tabPage4;
+		private System.Windows.Forms.TabPage tabPage5;
+		private System.Windows.Forms.TabPage tabPage6;
+		private System.Windows.Forms.TabPage tabPage7;
+		private System.Windows.Forms.TabPage tabPage8;
+		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.Label label13;
+		private System.Windows.Forms.Label label17;
+		private System.Windows.Forms.Label label16;
+		private System.Windows.Forms.Label label15;
+		private System.Windows.Forms.Label label18;
+		private System.Windows.Forms.TextBox txtAnsiStr;
+		private System.Windows.Forms.Label label19;
+		private System.Windows.Forms.TextBox txtAnsiCode;
+		private System.Windows.Forms.Button button13;
+		private System.Windows.Forms.TextBox txtCsi;
+		private System.Windows.Forms.Label label20;
 	}
 }

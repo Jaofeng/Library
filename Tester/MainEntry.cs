@@ -1,21 +1,44 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Text;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
 using CJF.Utility;
 using CJF.Utility.CRC;
 using CJF.Utility.Extensions;
+using WK = CJF.Utility.WinKits;
+using CJF.Utility.Ansi;
 
 namespace Tester
 {
 	public partial class MainEntry : Form
-	{
-		public MainEntry()
+	{	
+		public MainEntry(int defTab)
 		{
 			InitializeComponent();
 			cbDateType.SelectedIndex = 0;
 			cbLogLevel.SelectedIndex = 0;
+			cbMsgBoxBtn.SelectedIndex = 0;
+			cbMsgBoxIcon.SelectedIndex = 0;
+			cbMsgBoxDefBtn.SelectedIndex = 0;
+			InstalledFontCollection fc = new InstalledFontCollection();
+			cbMsgBoxFont.DataSource = fc.Families;
+			cbMsgBoxFont.DisplayMember = "Name";
+			foreach (FontFamily ff in fc.Families)
+			{
+				if (ff.Name.Equals(SystemFonts.MessageBoxFont.Name))
+				{
+					cbMsgBoxFont.SelectedItem = ff;
+					break;
+				}
+			}
+			float[] fs = new float[] { 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 28, 30, 32, 36 };
+			cbMsgBoxFontSize.DataSource = fs;
+			cbMsgBoxFontSize.SelectedItem = SystemFonts.MessageBoxFont.Size;
+			tabControl1.SelectedIndex = defTab;
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -92,13 +115,6 @@ namespace Tester
 					MessageBox.Show("No Support");
 					break;
 			}
-		}
-
-		private void button7_Click(object sender, EventArgs e)
-		{
-			listBox1.Items.Clear();
-			foreach (string s in AnsiString.AllKeyWords)
-				listBox1.Items.Add(s);
 		}
 
 		private void button8_Click(object sender, EventArgs e)
@@ -262,11 +278,15 @@ namespace Tester
 
 		private void btnEncrypt_Click(object sender, EventArgs e)
 		{
+			if (string.IsNullOrEmpty(txtSource.Text))
+				return;
 			txtTarget.Text = Security.Encrypt(txtSource.Text, txtKey.Text, txtIV.Text);
 		}
 
 		private void btnDecrypt_Click(object sender, EventArgs e)
 		{
+			if (string.IsNullOrEmpty(txtSource.Text))
+				return;
 			txtTarget.Text = Security.Decrypt(txtSource.Text, txtKey.Text, txtIV.Text);
 		}
 
@@ -306,39 +326,89 @@ namespace Tester
 			for (int i = 0; i < times; i++)
 				res = crc16.ComputeHash(bs);
 			watch.Stop();
-			lab16B.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			lab16B.Text = res.ToHexString("") + " > " + (watch.ElapsedTicks / times).ToString();
 			Application.DoEvents();
 			watch.Restart();
 			for (int i = 0; i < times; i++)
 				res = crc16.ComputeHash(fs);
 			watch.Stop();
-			lab16S.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			lab16S.Text = res.ToHexString("") + " > " + (watch.ElapsedTicks / times).ToString();
 			Application.DoEvents();
 			watch.Restart();
 			for (int i = 0; i < times; i++)
 				res = crc16.ComputeHash(ms);
 			watch.Stop();
-			lab16M.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			lab16M.Text = res.ToHexString("") + " > " + (watch.ElapsedTicks / times).ToString();
 			Application.DoEvents();
 			Crc32 crc32 = Crc32.Create();
 			watch.Start();
 			for (int i = 0; i < times; i++)
 				res = crc32.ComputeHash(bs);
 			watch.Stop();
-			lab32B.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			lab32B.Text = res.ToHexString("") + " > " + (watch.ElapsedTicks / times).ToString();
 			Application.DoEvents();
 			watch.Restart();
 			for (int i = 0; i < times; i++)
 				res = crc32.ComputeHash(fs);
 			watch.Stop();
-			lab32S.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			lab32S.Text = res.ToHexString("") + " > " + (watch.ElapsedTicks / times).ToString();
 			Application.DoEvents();
 			watch.Restart();
 			for (int i = 0; i < times; i++)
 				res = crc32.ComputeHash(ms);
 			watch.Stop();
-			lab32M.Text = res.ToHexString("") + ">" + (watch.ElapsedTicks / times).ToString();
+			lab32M.Text = res.ToHexString("") + " > " + (watch.ElapsedTicks / times).ToString();
 			Application.DoEvents();
+		}
+
+		private void btnShowMsgBox_Click(object sender, EventArgs e)
+		{
+			MessageBoxButtons btn = (MessageBoxButtons)Enum.Parse(typeof(MessageBoxButtons), cbMsgBoxBtn.Text);
+			MessageBoxIcon icon = (MessageBoxIcon)Enum.Parse(typeof(MessageBoxIcon), cbMsgBoxIcon.Text);
+			MessageBoxDefaultButton defBtn = (MessageBoxDefaultButton)Enum.Parse(typeof(MessageBoxDefaultButton), cbMsgBoxDefBtn.Text);
+			if (chkFont.Checked)
+				WK.MessageBox.Font = new Font((FontFamily)cbMsgBoxFont.SelectedItem, (float)cbMsgBoxFontSize.SelectedItem);
+			else if (WK.MessageBox.Font != null)
+				WK.MessageBox.Font = null;
+			DialogResult res = WK.MessageBox.Show(txtMsgBoxText.Text, txtMsgBoxCaption.Text, btn, icon, defBtn);
+			MessageBox.Show(string.Format("DialogResult = {0}", res), "WinKits.MessageBox 回傳");
+		}
+
+		private void chkFont_CheckedChanged(object sender, EventArgs e)
+		{
+			cbMsgBoxFont.Enabled = cbMsgBoxFontSize.Enabled = chkFont.Checked;
+		}
+
+		private void button7_Click(object sender, EventArgs e)
+		{
+			lstAnsi.Items.Clear();
+			foreach (string s in AnsiString.AllKeyWords)
+				lstAnsi.Items.Add(s);
+		}
+
+		private void button13_Click(object sender, EventArgs e)
+		{
+			string ansi = AnsiString.ToANSI(txtAnsiCode.Text);
+			txtAnsiStr.Tag = ansi;
+			txtAnsiStr.Text = ansi.Replace("\x1B", "\\x1B");
+			CsiBuilder cb1 = new CsiBuilder(ansi);
+			txtCsi.Text = string.Format("Pure Text : {0}{1}{2}{1}", cb1.ToPureText(), Environment.NewLine, "-".PadLeft(50, '-'));
+			txtCsi.Text += string.Format("Items Count:{0}, Length:{1}{2}", cb1.Count, cb1.Length, Environment.NewLine);
+			for (int i = 0; i <cb1.Count; i++)
+				txtCsi.Text += string.Format("[{0}] {1}{2}", i, cb1[i].Replace("\x1B", "\\x1B").Replace("\r", "\\r").Replace("\n", "\\n"), Environment.NewLine);
+			CsiBuilder cb2 = new CsiBuilder();
+			cb2.Append("123");
+			cb2.Append(SgrColors.Red, "456");
+			cb2.AppendCommand(CsiCommands.Cls);
+			cb2.Append(SgrColors.Yellow, "789");
+			cb2.AppendCommand(CsiCommands.ResetColor);
+			int[] idxs = cb2.IndexesOf();
+			int idx = cb2.IndexOf(CsiCommands.Cls);
+		}
+
+		private void lstAnsi_DoubleClick(object sender, EventArgs e)
+		{
+			txtAnsiCode.Text += lstAnsi.SelectedItem.ToString();
 		}
 	}
 }
