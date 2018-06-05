@@ -31,6 +31,6 @@ using System.Runtime.InteropServices;
 //
 // 您可以指定所有的值，也可以依照以下的方式，使用 '*' 將修訂和組建編號
 // 指定為預設值:
-[assembly: AssemblyVersion("1.34.0529.585")]
-[assembly: AssemblyFileVersion("1.34.0529.585")]
+[assembly: AssemblyVersion("1.35.0605.590")]
+[assembly: AssemblyFileVersion("1.35.0605.590")]
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]

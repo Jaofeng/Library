@@ -656,6 +656,64 @@ namespace CJF.Utility
 		}
 		#endregion
 
+		#region Public Static Method : string PadRight(string source, int totalByteLength)
+		/// <summary>以原始字串靠左，向右填滿空</summary>
+		/// <param name="source">來源字串</param>
+		/// <param name="totalByteLength">總長度，位元為單位</param>
+		/// <returns></returns>
+		[Obsolete("請使用 CJF.Utility.Extensions.StringExtensions.PadRightFixLength()", true)]
+		public static string PadRight(string source, int totalByteLength)
+		{
+			int len = Encoding.Default.GetByteCount(source);
+			if (len >= totalByteLength) return source;
+			return source.PadRight(totalByteLength - (len - source.Length));
+		}
+		#endregion
+
+		#region Public Static Method : string PadRight(string source, int totalByteLength, char paddingChar)
+		/// <summary>以原始字串靠左，向右填滿傳入的字元</summary>
+		/// <param name="source">來源字串</param>
+		/// <param name="totalByteLength">總長度，位元為單位</param>
+		/// <param name="paddingChar">填滿的字元</param>
+		/// <returns></returns>
+		[Obsolete("請使用 CJF.Utility.Extensions.StringExtensions.PadRightFixLength()", true)]
+		public static string PadRight(string source, int totalByteLength, char paddingChar)
+		{
+			int len = Encoding.Default.GetByteCount(source);
+			if (len >= totalByteLength) return source;
+			return source.PadRight(totalByteLength - (len - source.Length), paddingChar);
+		}
+		#endregion
+
+		#region Public Static Method : string PadLeft(string source, int totalByteLength)
+		/// <summary>以原始字串靠右，向左填滿空</summary>
+		/// <param name="source">來源字串</param>
+		/// <param name="totalByteLength">總長度，位元為單位</param>
+		/// <returns></returns>
+		[Obsolete("請使用 CJF.Utility.Extensions.StringExtensions.PadLeftFixLength()", true)]
+		public static string PadLeft(string source, int totalByteLength)
+		{
+			int len = Encoding.Default.GetByteCount(source);
+			if (len >= totalByteLength) return source;
+			return source.PadLeft(totalByteLength - (len - source.Length));
+		}
+		#endregion
+
+		#region Public Static Method : string PadLeft(string source, int totalByteLength, char paddingChar)
+		/// <summary>以原始字串靠右，向左填滿傳入的字元</summary>
+		/// <param name="source">來源字串</param>
+		/// <param name="totalByteLength">總長度，位元為單位</param>
+		/// <param name="paddingChar">填滿的字元</param>
+		/// <returns></returns>
+		[Obsolete("請使用 CJF.Utility.Extensions.StringExtensions.PadLeftFixLength()", true)]
+		public static string PadLeft(string source, int totalByteLength, char paddingChar)
+		{
+			int len = Encoding.Default.GetByteCount(source);
+			if (len >= totalByteLength) return source;
+			return source.PadLeft(totalByteLength - (len - source.Length), paddingChar);
+		}
+		#endregion
+
 		#region Public Static Method : bool ArraySequenceEqual(byte[] source, byte[] pattern)
 		/// <summary>
 		/// 比對兩字元組陣列是否相同
@@ -917,60 +975,6 @@ namespace CJF.Utility
 							return string.Format("{0}T", sNum);
 					}
 			}
-		}
-		#endregion
-
-		#region Public Static Method : string PadRight(string source, int totalByteLength)
-		/// <summary>以原始字串靠左，向右填滿空</summary>
-		/// <param name="source">來源字串</param>
-		/// <param name="totalByteLength">總長度，位元為單位</param>
-		/// <returns></returns>
-		public static string PadRight(string source, int totalByteLength)
-		{
-			int len = Encoding.Default.GetByteCount(source);
-			if (len >= totalByteLength) return source;
-			return source.PadRight(totalByteLength - (len - source.Length));
-		}
-		#endregion
-
-		#region Public Static Method : string PadRight(string source, int totalByteLength, char paddingChar)
-		/// <summary>以原始字串靠左，向右填滿傳入的字元</summary>
-		/// <param name="source">來源字串</param>
-		/// <param name="totalByteLength">總長度，位元為單位</param>
-		/// <param name="paddingChar">填滿的字元</param>
-		/// <returns></returns>
-		public static string PadRight(string source, int totalByteLength, char paddingChar)
-		{
-			int len = Encoding.Default.GetByteCount(source);
-			if (len >= totalByteLength) return source;
-			return source.PadRight(totalByteLength - (len - source.Length), paddingChar);
-		}
-		#endregion
-
-		#region Public Static Method : string PadLeft(string source, int totalByteLength)
-		/// <summary>以原始字串靠右，向左填滿空</summary>
-		/// <param name="source">來源字串</param>
-		/// <param name="totalByteLength">總長度，位元為單位</param>
-		/// <returns></returns>
-		public static string PadLeft(string source, int totalByteLength)
-		{
-			int len = Encoding.Default.GetByteCount(source);
-			if (len >= totalByteLength) return source;
-			return source.PadLeft(totalByteLength - (len - source.Length));
-		}
-		#endregion
-
-		#region Public Static Method : string PadLeft(string source, int totalByteLength, char paddingChar)
-		/// <summary>以原始字串靠右，向左填滿傳入的字元</summary>
-		/// <param name="source">來源字串</param>
-		/// <param name="totalByteLength">總長度，位元為單位</param>
-		/// <param name="paddingChar">填滿的字元</param>
-		/// <returns></returns>
-		public static string PadLeft(string source, int totalByteLength, char paddingChar)
-		{
-			int len = Encoding.Default.GetByteCount(source);
-			if (len >= totalByteLength) return source;
-			return source.PadLeft(totalByteLength - (len - source.Length), paddingChar);
 		}
 		#endregion
 

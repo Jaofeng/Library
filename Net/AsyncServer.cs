@@ -892,7 +892,7 @@ namespace CJF.Net
 		public Socket Socket { get { return m_ListenSocket; } }
 		/// <summary>取得值，緩衝區最大值</summary>
 		public int BufferSize { get { return m_BufferSize; } }
-		/// <summary>取得值，最大連線數</summary>
+		///// <summary>取得值，最大連線數</summary>
 		//public int MaxConnections { get; private set; }
 		/// <summary>取得值，本地端通訊埠</summary>
 		public IPEndPoint LocalEndPort { get { return m_LocalEndPort; } }
@@ -1622,6 +1622,8 @@ namespace CJF.Net
 			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
+		/// <summary>清除並釋放 AsyncServer 所使用的資源。</summary>
+		/// <param name="disposing">是否確實清除與釋放。</param>
 		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes")]
 		protected virtual void Dispose(bool disposing)
 		{

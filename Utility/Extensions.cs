@@ -112,7 +112,6 @@ namespace CJF.Utility.Extensions
 				return source.PadRight(len + num).PadLeft(len + num * 2 + 1);
 		}
 		#endregion
-
 	}
 	#endregion
 

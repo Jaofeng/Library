@@ -14,7 +14,7 @@ namespace Tester
 			Application.SetCompatibleTextRenderingDefault(false);
 			if (args == null || args.Length == 0)
 			{
-				MainEntry main = new MainEntry();
+				MainEntry main = new MainEntry(0);
 				Application.Run(main);
 			}
 			else
@@ -28,11 +28,18 @@ namespace Tester
 						else
 							f = new FAsyncServer();
 						break;
+					case "-tab":
+						int idx = 0;
+						if (args.Length >= 2 && int.TryParse(args[1], out idx))
+							f = new MainEntry(idx);
+						break;
 					default:
 						break;
 				}
 				if (f != null)
 					Application.Run(f);
+				else
+					Application.Run(new MainEntry(0));
 			}
 		}
 	}

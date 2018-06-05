@@ -19,13 +19,6 @@ namespace Tester
 
 		/// <summary>SHA1 加密類別</summary>
 		SHA1 m_sha = null;
-		/// <summary>WebSocket 專用 GUID</summary>
-		static readonly String GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
-
-		struct WebClientInfo
-		{
-			public bool ShankHands;
-		}
 
 		public FWebSocketServer()
 		{

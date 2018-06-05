@@ -73,7 +73,6 @@ namespace Tester
 					MessageBox.Show("Invalid Port!!!", Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 					return;
 				}
-				byte sId = 0;
 				ushort addr = 0;
 				if (!ushort.TryParse(txtRegister.Text, out addr) || addr < 1 || addr > 65535)
 				{

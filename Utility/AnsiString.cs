@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace CJF.Utility
 {
 	/// <summary>提供協助 TelnetServer 輸出 ANSI 相關控制碼</summary>
-	public class AnsiString
+	[Obsolete("請改用 CJF.Utility.Ansi.CsiBuilder", false)]
+	public static class AnsiString
 	{
 		#region Private Varaibles
 		private static Dictionary<string, AnsiData> _AnsiTable = new Dictionary<string, AnsiData>();
@@ -93,37 +96,36 @@ namespace CJF.Utility
 		}
 		#endregion
 
-		#region Public Static Method : string ToANSI(string str)
+		#region Public Static Method : string ToANSI(string source)
 		/// <summary>將關鍵字替換成ANSI String</summary>
-		/// <param name="str">內含關鍵字的原始字串</param>
+		/// <param name="source">內含關鍵字的原始字串</param>
 		/// <returns>替換完畢包含ANSI String的字串</returns>
-		public static string ToANSI(string str)
+		public static string ToANSI(string source)
 		{
 			foreach (AnsiData ansiData in _AnsiTable.Values)
-				str = str.Replace(ansiData.Key, ansiData.Code);
-			return (str);
+				source = source.Replace(ansiData.Key, ansiData.Code);
+			return (source);
 		}
 		#endregion
 
-		#region Public Static Method : string RemoveANSI(string str)
+		#region Public Static Method : string RemoveANSI(string source)
 		/// <summary>移除ANSI代碼</summary>
-		/// <param name="str">包含 ANSI 代碼的字串</param>
+		/// <param name="source">包含 ANSI 代碼的字串</param>
 		/// <returns></returns>
-		public static string RemoveANSI(string str)
+		public static string RemoveANSI(string source)
 		{
-			System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("\\{[\\w|!]+\\}");
-			return reg.Replace(str, "");
+			return Regex.Replace(source, "\x1B\\[(\\d+)*(;\\d+)?([ABCDEFGHJKSTfmsu])", "");
 		}
 		#endregion
 
-		#region Public Static Method : string CleanKeycode(string str)
+		#region Public Static Method : string CleanKeycode(string source)
 		/// <summary>將關鍵字清除</summary>
-		/// <param name="str">內含關鍵字的原始字串</param>
+		/// <param name="source">內含關鍵字的原始字串</param>
 		/// <returns>清除完畢的字串</returns>
-		public static string CleanKeycode(string str)
+		public static string CleanKeycode(string source)
 		{
-			System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex(@"\{\w+\}", System.Text.RegularExpressions.RegexOptions.Multiline);
-			return reg.Replace(str, "");
+			Regex reg = new Regex(@"\{\w+\}", RegexOptions.Multiline);
+			return reg.Replace(source, "");
 		}
 		#endregion
 
@@ -176,6 +178,7 @@ namespace CJF.Utility
 		}
 		#endregion
 
+		#region Public Static Properties
 		/// <summary>取得ANSI控制碼:清除畫面({cls})</summary>
 		public static string Cls { get { return _AnsiTable["{cls}"].Code; } }
 		/// <summary>取得ANSI控制碼:清除該行游標後面的文字({c2end})</summary>
@@ -256,17 +259,19 @@ namespace CJF.Utility
 				return keys;
 			}
 		}
-
+		#endregion
 	}
 
 	#region Enum : CodeType
 	/// <summary>ANSI 控制代碼類型列舉</summary>
-	enum CodeType
+	public enum CodeType
 	{
+		/// <summary>未定義</summary>
+		None = 0,
 		/// <summary>命令、控制型</summary>
-		Command = 0,
+		Command = 1,
 		/// <summary>字形顏色型</summary>
-		FontColor = 1
+		FontColor = 2
 	}
 	#endregion
 
@@ -294,6 +299,13 @@ namespace CJF.Utility
 			_Code = code;
 			_Memo = definition;
 			_CodeType = ct;
+		}
+
+		public static AnsiData Empty { get { return new AnsiData(); } }
+		public bool IsEmpty { get { return string.IsNullOrEmpty(_Key); } }
+		public bool Equals(AnsiData item)
+		{
+			return item.Key.Equals(this.Key);
 		}
 	}
 	#endregion
