@@ -57,14 +57,14 @@ namespace CJF.Utility
 			AppendData("{d_magenta}", CodeType.FontColor, "\x1B[35m", "Foreground DarkMagenta");
 			AppendData("{d_cyan}", CodeType.FontColor, "\x1B[36m", "Foreground DarkCyan");
 			AppendData("{gray}", CodeType.FontColor, "\x1B[37m", "Foreground Gray");
-			AppendData("{d_gray}", CodeType.FontColor, "\x1B[30;1m", "Foreground DarkGary");
-			AppendData("{red}", CodeType.FontColor, "\x1B[31;1m", "Foreground Red");
-			AppendData("{green}", CodeType.FontColor, "\x1B[32;1m", "Foreground Green");
-			AppendData("{yellow}", CodeType.FontColor, "\x1B[33;1m", "Foreground Yellow");
-			AppendData("{blue}", CodeType.FontColor, "\x1B[34;1m", "Foreground Blue");
-			AppendData("{magenta}", CodeType.FontColor, "\x1B[35;1m", "Foreground Magenta");
-			AppendData("{cyan}", CodeType.FontColor, "\x1B[36;1m", "Foreground Cyan");
-			AppendData("{white}", CodeType.FontColor, "\x1B[37;1m", "Foreground White");
+			AppendData("{d_gray}", CodeType.FontColor, "\x1B[1;30m", "Foreground DarkGary");
+			AppendData("{red}", CodeType.FontColor, "\x1B[1;31m", "Foreground Red");
+			AppendData("{green}", CodeType.FontColor, "\x1B[1;32m", "Foreground Green");
+			AppendData("{yellow}", CodeType.FontColor, "\x1B[1;33m", "Foreground Yellow");
+			AppendData("{blue}", CodeType.FontColor, "\x1B[1;34m", "Foreground Blue");
+			AppendData("{magenta}", CodeType.FontColor, "\x1B[1;35m", "Foreground Magenta");
+			AppendData("{cyan}", CodeType.FontColor, "\x1B[1;36m", "Foreground Cyan");
+			AppendData("{white}", CodeType.FontColor, "\x1B[1;37m", "Foreground White");
 			AppendData("{defcolor}", CodeType.FontColor, "\x1B[39m", "Default Foreground Color");
 
 			// 背景顏色
@@ -76,14 +76,14 @@ namespace CJF.Utility
 			AppendData("{!d_magenta}", CodeType.FontColor, "\x1B[45m", "Background DarkMagenta");
 			AppendData("{!d_cyan}", CodeType.FontColor, "\x1B[46m", "Background DarkCyan");
 			AppendData("{!gray}", CodeType.FontColor, "\x1B[47m", "Background Gray");
-			AppendData("{!d_gray}", CodeType.FontColor, "\x1B[40;1m", "Background DarkGray");
-			AppendData("{!red}", CodeType.FontColor, "\x1B[41;1m", "Background Red");
-			AppendData("{!green}", CodeType.FontColor, "\x1B[42;1m", "Background Green");
-			AppendData("{!yellow}", CodeType.FontColor, "\x1B[43;1m", "Background Yellow");
-			AppendData("{!blue}", CodeType.FontColor, "\x1B[44;1m", "Background Blue");
-			AppendData("{!magenta}", CodeType.FontColor, "\x1B[45;1m", "Background Magenta");
-			AppendData("{!cyan}", CodeType.FontColor, "\x1B[46;1m", "Background Cyan");
-			AppendData("{!white}", CodeType.FontColor, "\x1B[47;1m", "Background White");
+			AppendData("{!d_gray}", CodeType.FontColor, "\x1B[1;40m", "Background DarkGray");
+			AppendData("{!red}", CodeType.FontColor, "\x1B[1;41m", "Background Red");
+			AppendData("{!green}", CodeType.FontColor, "\x1B[1;42m", "Background Green");
+			AppendData("{!yellow}", CodeType.FontColor, "\x1B[1;43m", "Background Yellow");
+			AppendData("{!blue}", CodeType.FontColor, "\x1B[1;44m", "Background Blue");
+			AppendData("{!magenta}", CodeType.FontColor, "\x1B[1;45m", "Background Magenta");
+			AppendData("{!cyan}", CodeType.FontColor, "\x1B[1;46m", "Background Cyan");
+			AppendData("{!white}", CodeType.FontColor, "\x1B[1;47m", "Background White");
 			AppendData("{!defcolor}", CodeType.FontColor, "\x1B[49m", "Default Background Color");
 			#endregion
 		}
