@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Runtime.InteropServices;
@@ -10,42 +11,44 @@ using System.Security;
 namespace CJF.Utility.Ansi
 {
 	#region Public Enum : SgrColors(ushort)
-	/// <summary>指定顏色的常數。</summary>
+	/// <summary>文字前景與背景顏色的列舉。</summary>
 	[Serializable]
 	public enum SgrColors : ushort
 	{
-		/// <summary>黑色。</summary>
+		/// <summary>無或未定義。</summary>
+		None = 0,
+		/// <summary>Color Code = 30, 黑色。</summary>
 		Black = 30,
-		/// <summary>深紅色。</summary>
+		/// <summary>Color Code = 31, 深紅色。</summary>
 		DarkRed = 31,
-		/// <summary>深綠色。</summary>
+		/// <summary>Color Code = 32, 深綠色。</summary>
 		DarkGreen = 32,
-		/// <summary>深黃色。</summary>
+		/// <summary>Color Code = 33, 深黃色。</summary>
 		DarkYellow = 33,
-		/// <summary>深藍色。</summary>
+		/// <summary>Color Code = 34, 深藍色。</summary>
 		DarkBlue = 34,
-		/// <summary>深洋紅色 (深紫紅色)。</summary>
+		/// <summary>Color Code = 35, 深洋紅色 (深紫紅色)。</summary>
 		DarkMagenta = 35,
-		/// <summary>深青色 (深藍綠色)。</summary>
+		/// <summary>Color Code = 36, 深青色 (深藍綠色)。</summary>
 		DarkCyan = 36,
-		/// <summary>灰色。</summary>
+		/// <summary>Color Code = 37, 灰色。</summary>
 		Gray = 37,
-		/// <summary>亮黑（深灰色）。</summary>
+		/// <summary>Color Code = 90, 亮黑（深灰色）。</summary>
 		DarkGray = 90,
-		/// <summary>亮紅色。</summary>
+		/// <summary>Color Code = 91, 亮紅色。</summary>
 		Red = 91,
-		/// <summary>亮綠色。</summary>
+		/// <summary>Color Code = 92, 亮綠色。</summary>
 		Green = 92,
-		/// <summary>亮黃色。</summary>
+		/// <summary>Color Code = 93, 亮黃色。</summary>
 		Yellow = 93,
-		/// <summary>亮藍色。</summary>
+		/// <summary>Color Code = 94, 亮藍色。</summary>
 		Blue = 94,
-		/// <summary>亮洋紅色 (亮紫紅色)。</summary>
+		/// <summary>Color Code = 95, 亮洋紅色 (亮紫紅色)。</summary>
 		Magenta = 95,
-		/// <summary>亮青色 (亮藍綠色)。</summary>
+		/// <summary>Color Code = 96, 亮青色 (亮藍綠色)。</summary>
 		Cyan = 96,
-		/// <summary>白色。</summary>
-		White = 37
+		/// <summary>Color Code = 97, 白色。</summary>
+		White = 97
 	}
 	#endregion
 
@@ -54,6 +57,8 @@ namespace CJF.Utility.Ansi
 	[Serializable]
 	public enum CsiCommands
 	{
+		/// <summary>非 CSI 指令，或不支援該指令。</summary>
+		None,
 		/// <summary>CSI n A(CUU)：游標上移（Cursor Up）。</summary>
 		CursorUp,
 		/// <summary>CSI n B(CUD)：游標下移（Cursor Down）。</summary>
@@ -70,12 +75,14 @@ namespace CJF.Utility.Ansi
 		CursorHorizontalAbsolute,
 		/// <summary>CSI n;m H(CUP)：游標位置（Cursor Position）。游標移動到第 n 行、第 m 列。值從1開始，且預設為 1（左上角）。</summary>
 		CursorPosition,
-		/// <summary>CSI n J(ED)：擦除顯示（Erase in Display）。清除螢幕的部分割域。使用的是清除整個螢幕 n=2。</summary>
+		/// <summary>CSI n J(ED)：擦除顯示（Erase in Display）。清除螢幕的部分割域。n=2 使用的是清除整個螢幕。</summary>
 		Cls,
-		/// <summary>CSI n m(SGR)：重新設定顏色。</summary>
-		ResetColor,
-		/// <summary>CSI n[;m] m(SGR)：設定顏色。</summary>
-		Color,
+		/// <summary>CSI n J(ED)：擦除顯示（Erase in Display）。清除螢幕的部分割域。n=3，則清除整個螢幕，並刪除回滾快取區中的所有行。</summary>
+		ClsHistory,
+		/// <summary>CSI n m(SGR)：清除 SGR 設定，n=0 等同於清除顏色設定。</summary>
+		ResetSGR,
+		/// <summary>CSI n[;m] m(SGR)：選擇圖形再現（Select Graphic Rendition）。CSI 後可以是 0 或者更多參數，用分號分隔。如果沒有參數，則視為CSI 0 m（等於 ResetColor）。</summary>
+		SGR,
 		/// <summary>CSI n K(EL)：擦除行（Erase in Line）清除行內的部分割域。n=0（或缺失），清除從游標位置到該行末尾的部分。</summary>
 		EraseToStart,
 		/// <summary>CSI n K(EL)：擦除行（Erase in Line）清除行內的部分割域。n=1，清除從游標位置到該行開頭的部分。</summary>
@@ -89,7 +96,47 @@ namespace CJF.Utility.Ansi
 		/// <summary>CSI n S(SU)：向上捲動（Scroll Up）。整頁向上捲動 n（預設1）行。新行添加到底部。</summary>
 		ScrollUp,
 		/// <summary>CSI n T(SD)：向下捲動（Scroll Down）。整頁向下捲動 n（預設1）行。新行添加到頂部。</summary>
-		ScrollDown
+		ScrollDown,
+		/// <summary>錯誤指令參數。</summary>
+		ErrorCode
+	}
+	#endregion
+
+	#region Public Static Class : class Extensions
+	/// <summary>擴充函示</summary>
+	public static class Extensions
+	{
+		#region Public Static Method : Color ToColor(this SgrColors sgr)
+		/// <summary>將 SGR 顏色轉為 System.Drawing.Color 結構類別。</summary>
+		/// <param name="sgr">SGR 顏色值。</param>
+		/// <returns>System.Drawing.Color 結構類別。</returns>
+		/// <exception cref="System.NotSupportedException">未支援該 SGR 顏色值。</exception>
+		public static Color ToColor(this SgrColors sgr)
+		{
+			switch (sgr)
+			{
+				case SgrColors.Black: return Color.Black;
+				case SgrColors.DarkRed: return Color.DarkRed;
+				case SgrColors.DarkGreen: return Color.DarkGreen;
+				case SgrColors.DarkYellow: return Color.Olive;
+				case SgrColors.DarkBlue: return Color.DarkBlue;
+				case SgrColors.DarkMagenta: return Color.DarkMagenta;
+				case SgrColors.DarkCyan: return Color.DarkCyan;
+				case SgrColors.Gray: return Color.DarkGray;
+				case SgrColors.DarkGray: return Color.Gray;
+				case SgrColors.Red: return Color.Red;
+				case SgrColors.Green: return Color.Green;
+				case SgrColors.Yellow: return Color.Yellow;
+				case SgrColors.Blue: return Color.Blue;
+				case SgrColors.Magenta: return Color.Magenta;
+				case SgrColors.Cyan: return Color.Cyan;
+				case SgrColors.White: return Color.White;
+				case SgrColors.None: return Color.Transparent;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+		#endregion
 	}
 	#endregion
 
@@ -100,7 +147,7 @@ namespace CJF.Utility.Ansi
 	{
 		#region Public Consts
 		/// <summary>用於判斷 ASNI CSI 的規則運算式字串。</summary>
-		public const string PATTERN = "\x1B\\[(\\d+)*(;\\d+)?([ABCDEFGHJKSTfmsu])";
+		public const string PATTERN = "\x1B\\[(\\d+)*;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?([ABCDEFGHJKSTfmsu])";
 		#endregion
 
 		private List<string> _Items = null;
@@ -329,7 +376,7 @@ namespace CJF.Utility.Ansi
 			if (index < 0 || index > _Items.Count)
 				throw new ArgumentOutOfRangeException();
 			Insert(index, text);
-			InsertCommand(index, CsiCommands.Color, (int)fore);
+			InsertCommand(index, CsiCommands.SGR, (int)fore);
 		}
 		#endregion
 
@@ -345,7 +392,7 @@ namespace CJF.Utility.Ansi
 			if (index < 0 || index > _Items.Count)
 				throw new ArgumentOutOfRangeException();
 			Insert(index, text);
-			InsertCommand(index, CsiCommands.Color, (int)fore, (int)back + 10);
+			InsertCommand(index, CsiCommands.SGR, (ushort)fore, (ushort)back + 10);
 		}
 		#endregion
 
@@ -405,6 +452,19 @@ namespace CJF.Utility.Ansi
 			string sk = GetCsiString(cmd, 0, 0);
 			sk = sk.Substring(sk.Length - 1);
 			return _Items.FindIndex(index, s => s.StartsWith("\x1B[") && s.EndsWith(sk));
+		}
+		#endregion
+
+		#region Public Method : bool IsCsiString(int index)
+		/// <summary>取得這個執行個體的元素字串是否為 ANSI CSI 字串。</summary>
+		/// <param name="index">元素字串的位置。</param>
+		/// <returns>true:該元素為 ANSI CSI 字串；false:不為 ANSI CSI 字串。</returns>
+		/// <exception cref="System.IndexOutOfRangeException">index 小於 0。- 或 -index 大於等於元素數量。</exception>
+		public bool IsCsiString(int index)
+		{
+			if (index < 0 || index >= _Items.Count)
+				throw new IndexOutOfRangeException();
+			return Regex.IsMatch(_Items[index], PATTERN);
 		}
 		#endregion
 
@@ -502,6 +562,19 @@ namespace CJF.Utility.Ansi
 		}
 		#endregion
 
+		#region Public Method : CsiCommands GetCommandType(int index)
+		/// <summary>取得這個執行個體中指定元素的 ANSI CSI 指令型態。</summary>
+		/// <param name="index">元素字串的位置。</param>
+		/// <returns>元素的 ANSI CSI 指令型態。</returns>
+		/// <exception cref="System.IndexOutOfRangeException">index 小於 0。- 或 -index 大於等於元素數量。</exception>
+		public CsiCommands GetCommandType(int index)
+		{
+			if (index < 0 || index >= _Items.Count)
+				throw new IndexOutOfRangeException();
+			return GetCommandType(_Items[index]);
+		}
+		#endregion
+
 		#region Public Method : string[] ToArray()
 		/// <summary>將這個執行個體的字串元素複製到新的陣列。</summary>
 		/// <returns>陣列，包含這個執行個體的項目複本。</returns>
@@ -511,12 +584,21 @@ namespace CJF.Utility.Ansi
 		}
 		#endregion
 
+		#region Public Method : string[] ToPureTextArray()
+		/// <summary>將這個執行個體中未包含 ANSI CSI 指令碼的字串元素複製到新的陣列。</summary>
+		/// <returns>陣列，包含這個執行個體的項目複本。</returns>
+		public string[] ToPureTextArray()
+		{
+			return _Items.FindAll(s => !s.StartsWith("\x1B[")).ToArray();
+		}
+		#endregion
+
 		#region Public Method : string ToPureText()
 		/// <summary>將這個執行個體的值轉換為不包含 ANSI CSI 的純文字字串。</summary>
 		/// <returns>不包含 ANSI CSI 的純文字字串。</returns>
 		public string ToPureText()
 		{
-			return Regex.Replace(ToString(), PATTERN, "");
+			return GetPureText(ToString());
 		}
 		#endregion
 
@@ -552,7 +634,8 @@ namespace CJF.Utility.Ansi
 			switch (cmd)
 			{
 				case CsiCommands.Cls: res += "2J"; break;
-				case CsiCommands.ResetColor: res += "0m"; break;
+				case CsiCommands.ClsHistory: res += "3J"; break;
+				case CsiCommands.ResetSGR: res += "0m"; break;
 				case CsiCommands.EraseToStart: res += "0K"; break;
 				case CsiCommands.EraseToEnd: res += "1K"; break;
 				case CsiCommands.EraseLine: res += "2K"; break;
@@ -568,13 +651,16 @@ namespace CJF.Utility.Ansi
 				case CsiCommands.ScrollUp: res += "{0}S"; break;
 				case CsiCommands.ScrollDown: res += "{0}T"; break;
 				case CsiCommands.CursorPosition: res += "{0};{1}H"; break;
-				case CsiCommands.Color:
+				case CsiCommands.SGR:
 					if (args == null || args.Length == 0)
-						throw new ArgumentNullException();
-					else if (args.Length == 1)
-						res += "{0}m";
-					else if (args.Length >= 2)
-						res += "{0};{1}m";
+						res += "m";
+					else
+					{
+						for (int i = 0; i < args.Length;i++)
+							res += string.Format("{{{0}}};", i);
+						res = res.TrimEnd(';');
+						res += "m";
+					}
 					break;
 				default: res = null; break;
 			}
@@ -592,5 +678,90 @@ namespace CJF.Utility.Ansi
 		}
 		#endregion
 
+		#region Public Static Method : bool IsCsiString(string text)
+		/// <summary>檢查 text 參數是否為 ANSI CSI 字串。</summary>
+		/// <param name="text">欲檢查的字串。</param>
+		/// <returns>true:該字串為 ANSI CSI 字串; false:不是 ANSI CSI 格式字串。</returns>
+		public static bool IsCsiString(string text)
+		{
+			return Regex.IsMatch(text, PATTERN, RegexOptions.Multiline);
+		}
+		#endregion
+
+		#region Public Static Method : string GetPureText(string csiText)
+		/// <summary>將傳入的字串轉換為不包含 ANSI CSI 的純文字字串。</summary>
+		/// <param name="csiText">欲移除 ANSI CSI 的字串。</param>
+		/// <returns>不含 ANSI CSI 的字串。</returns>
+		public static string GetPureText(string csiText)
+		{
+			return Regex.Replace(csiText, PATTERN, "");
+		}
+		#endregion
+
+		#region Private Method : CsiCommands GetCommandType(string csi)
+		/// <summary>取得字串的 ANSI CSI 指令型態。</summary>
+		/// <param name="csi">字串內容。</param>
+		/// <returns>元素的 ANSI CSI 指令型態。如不為 ANSI CSI 指令，則回傳 null。</returns>
+		/// <exception cref="System.ArgumentNullException">csi 不可為 null。</exception>
+		private static CsiCommands GetCommandType(string csi)
+		{
+			if (csi == null)
+				throw new ArgumentNullException();
+			Match m = Regex.Match(csi, PATTERN);
+			if (!m.Success)
+				return CsiCommands.None;
+			else
+			{
+				switch (m.Groups[6].Value)
+				{
+					case "A": return CsiCommands.CursorUp;
+					case "B": return CsiCommands.CursorDown;
+					case "C": return CsiCommands.CursorForward;
+					case "D": return CsiCommands.CursorBack;
+					case "E": return CsiCommands.CursorNextLine;
+					case "F": return CsiCommands.CursorPrevLine;
+					case "G": return CsiCommands.CursorHorizontalAbsolute;
+					case "H": return CsiCommands.CursorPosition;
+					case "J":
+						if (m.Groups[1].Success)
+						{
+							switch (m.Groups[1].Value)
+							{
+								case "0":
+								case "1": return CsiCommands.None;
+								case "2": return CsiCommands.Cls;
+								case "3": return CsiCommands.ClsHistory;
+								default: return CsiCommands.ErrorCode;
+							}
+						}
+						else
+							return CsiCommands.None;
+					case "K":
+						if (m.Groups[1].Success)
+						{
+							switch (m.Groups[1].Value)
+							{
+								case "0": return CsiCommands.EraseToEnd;
+								case "1": return CsiCommands.EraseToStart;
+								case "2": return CsiCommands.EraseLine;
+								default: return CsiCommands.ErrorCode;
+							}
+						}
+						else
+							return CsiCommands.EraseToEnd;
+					case "S": return CsiCommands.ScrollUp;
+					case "T": return CsiCommands.ScrollDown;
+					case "m":
+						if (!m.Groups[1].Success || m.Groups[1].Value.Equals("0"))
+							return CsiCommands.ResetSGR;
+						else
+							return CsiCommands.SGR;
+					case "s": return CsiCommands.SaveCursorPosition;
+					case "u": return CsiCommands.RestoreCursorPosition;
+					default: return CsiCommands.None;
+				}
+			}
+		}
+		#endregion
 	}
 }
