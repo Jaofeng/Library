@@ -28,7 +28,6 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainEntry));
 			this.button1 = new System.Windows.Forms.Button();
 			this.button2 = new System.Windows.Forms.Button();
 			this.button3 = new System.Windows.Forms.Button();
@@ -121,25 +120,35 @@
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+			this.label24 = new System.Windows.Forms.Label();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.tabPage3 = new System.Windows.Forms.TabPage();
 			this.tabPage4 = new System.Windows.Forms.TabPage();
 			this.label13 = new System.Windows.Forms.Label();
 			this.label12 = new System.Windows.Forms.Label();
 			this.tabPage5 = new System.Windows.Forms.TabPage();
+			this.rbMsgCsiSample5 = new System.Windows.Forms.RadioButton();
+			this.rbMsgCsiSample4 = new System.Windows.Forms.RadioButton();
+			this.rbMsgCsiSample3 = new System.Windows.Forms.RadioButton();
+			this.rbMsgCsiSample2 = new System.Windows.Forms.RadioButton();
+			this.rbMsgCsiSample1 = new System.Windows.Forms.RadioButton();
 			this.label17 = new System.Windows.Forms.Label();
 			this.label16 = new System.Windows.Forms.Label();
+			this.labDialogResult = new System.Windows.Forms.Label();
+			this.label23 = new System.Windows.Forms.Label();
 			this.label15 = new System.Windows.Forms.Label();
 			this.tabPage6 = new System.Windows.Forms.TabPage();
+			this.btnOpenConsole = new System.Windows.Forms.Button();
 			this.button13 = new System.Windows.Forms.Button();
+			this.txtCsi = new System.Windows.Forms.TextBox();
+			this.label20 = new System.Windows.Forms.Label();
 			this.txtAnsiStr = new System.Windows.Forms.TextBox();
 			this.label19 = new System.Windows.Forms.Label();
 			this.txtAnsiCode = new System.Windows.Forms.TextBox();
 			this.label18 = new System.Windows.Forms.Label();
 			this.tabPage7 = new System.Windows.Forms.TabPage();
 			this.tabPage8 = new System.Windows.Forms.TabPage();
-			this.label20 = new System.Windows.Forms.Label();
-			this.txtCsi = new System.Windows.Forms.TextBox();
+			this.rbMsgCsiSample6 = new System.Windows.Forms.RadioButton();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox4.SuspendLayout();
@@ -994,21 +1003,21 @@
 			this.txtMsgBoxText.AcceptsReturn = true;
 			this.txtMsgBoxText.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtMsgBoxText.Location = new System.Drawing.Point(103, 57);
+			this.txtMsgBoxText.Location = new System.Drawing.Point(89, 57);
 			this.txtMsgBoxText.Multiline = true;
 			this.txtMsgBoxText.Name = "txtMsgBoxText";
-			this.txtMsgBoxText.Size = new System.Drawing.Size(470, 73);
+			this.txtMsgBoxText.ScrollBars = System.Windows.Forms.ScrollBars.Both;
+			this.txtMsgBoxText.Size = new System.Drawing.Size(424, 137);
 			this.txtMsgBoxText.TabIndex = 3;
-			this.txtMsgBoxText.Text = resources.GetString("txtMsgBoxText.Text");
 			this.txtMsgBoxText.WordWrap = false;
 			// 
 			// txtMsgBoxCaption
 			// 
 			this.txtMsgBoxCaption.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtMsgBoxCaption.Location = new System.Drawing.Point(103, 29);
+			this.txtMsgBoxCaption.Location = new System.Drawing.Point(89, 29);
 			this.txtMsgBoxCaption.Name = "txtMsgBoxCaption";
-			this.txtMsgBoxCaption.Size = new System.Drawing.Size(470, 22);
+			this.txtMsgBoxCaption.Size = new System.Drawing.Size(424, 22);
 			this.txtMsgBoxCaption.TabIndex = 1;
 			this.txtMsgBoxCaption.Text = "WinKits.MessageBox";
 			// 
@@ -1020,7 +1029,7 @@
             "Button1",
             "Button2",
             "Button3"});
-			this.cbMsgBoxDefBtn.Location = new System.Drawing.Point(102, 188);
+			this.cbMsgBoxDefBtn.Location = new System.Drawing.Point(475, 200);
 			this.cbMsgBoxDefBtn.Name = "cbMsgBoxDefBtn";
 			this.cbMsgBoxDefBtn.Size = new System.Drawing.Size(110, 20);
 			this.cbMsgBoxDefBtn.TabIndex = 6;
@@ -1030,7 +1039,7 @@
 			this.cbMsgBoxFontSize.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cbMsgBoxFontSize.Enabled = false;
 			this.cbMsgBoxFontSize.FormattingEnabled = true;
-			this.cbMsgBoxFontSize.Location = new System.Drawing.Point(273, 214);
+			this.cbMsgBoxFontSize.Location = new System.Drawing.Point(261, 229);
 			this.cbMsgBoxFontSize.Name = "cbMsgBoxFontSize";
 			this.cbMsgBoxFontSize.Size = new System.Drawing.Size(57, 20);
 			this.cbMsgBoxFontSize.TabIndex = 5;
@@ -1049,7 +1058,7 @@
             "Warning",
             "Information",
             "Asterisk"});
-			this.cbMsgBoxIcon.Location = new System.Drawing.Point(102, 162);
+			this.cbMsgBoxIcon.Location = new System.Drawing.Point(260, 200);
 			this.cbMsgBoxIcon.Name = "cbMsgBoxIcon";
 			this.cbMsgBoxIcon.Size = new System.Drawing.Size(110, 20);
 			this.cbMsgBoxIcon.TabIndex = 5;
@@ -1059,7 +1068,7 @@
 			this.cbMsgBoxFont.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.cbMsgBoxFont.Enabled = false;
 			this.cbMsgBoxFont.FormattingEnabled = true;
-			this.cbMsgBoxFont.Location = new System.Drawing.Point(102, 214);
+			this.cbMsgBoxFont.Location = new System.Drawing.Point(90, 229);
 			this.cbMsgBoxFont.Name = "cbMsgBoxFont";
 			this.cbMsgBoxFont.Size = new System.Drawing.Size(165, 20);
 			this.cbMsgBoxFont.TabIndex = 4;
@@ -1075,7 +1084,7 @@
             "YesNoCancel",
             "RetryCancel",
             "AbortRetryIgnore"});
-			this.cbMsgBoxBtn.Location = new System.Drawing.Point(103, 136);
+			this.cbMsgBoxBtn.Location = new System.Drawing.Point(90, 200);
 			this.cbMsgBoxBtn.Name = "cbMsgBoxBtn";
 			this.cbMsgBoxBtn.Size = new System.Drawing.Size(110, 20);
 			this.cbMsgBoxBtn.TabIndex = 4;
@@ -1083,7 +1092,7 @@
 			// label11
 			// 
 			this.label11.AutoSize = true;
-			this.label11.Location = new System.Drawing.Point(53, 60);
+			this.label11.Location = new System.Drawing.Point(39, 60);
 			this.label11.Name = "label11";
 			this.label11.Size = new System.Drawing.Size(44, 12);
 			this.label11.TabIndex = 2;
@@ -1092,7 +1101,7 @@
 			// btnShowMsgBox
 			// 
 			this.btnShowMsgBox.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnShowMsgBox.Location = new System.Drawing.Point(498, 212);
+			this.btnShowMsgBox.Location = new System.Drawing.Point(509, 227);
 			this.btnShowMsgBox.Name = "btnShowMsgBox";
 			this.btnShowMsgBox.Size = new System.Drawing.Size(75, 23);
 			this.btnShowMsgBox.TabIndex = 7;
@@ -1103,7 +1112,7 @@
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(55, 32);
+			this.label2.Location = new System.Drawing.Point(41, 32);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(42, 12);
 			this.label2.TabIndex = 0;
@@ -1112,7 +1121,7 @@
 			// chkFont
 			// 
 			this.chkFont.AutoSize = true;
-			this.chkFont.Location = new System.Drawing.Point(49, 216);
+			this.chkFont.Location = new System.Drawing.Point(37, 231);
 			this.chkFont.Name = "chkFont";
 			this.chkFont.Size = new System.Drawing.Size(48, 16);
 			this.chkFont.TabIndex = 8;
@@ -1160,11 +1169,19 @@
 			this.flowLayoutPanel1.Controls.Add(this.button5);
 			this.flowLayoutPanel1.Controls.Add(this.button8);
 			this.flowLayoutPanel1.Controls.Add(this.button10);
+			this.flowLayoutPanel1.Controls.Add(this.label24);
 			this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.flowLayoutPanel1.Location = new System.Drawing.Point(10, 10);
 			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
 			this.flowLayoutPanel1.Size = new System.Drawing.Size(577, 242);
 			this.flowLayoutPanel1.TabIndex = 25;
+			// 
+			// label24
+			// 
+			this.label24.Location = new System.Drawing.Point(3, 112);
+			this.label24.Name = "label24";
+			this.label24.Size = new System.Drawing.Size(261, 26);
+			this.label24.TabIndex = 25;
 			// 
 			// tabPage2
 			// 
@@ -1247,6 +1264,12 @@
 			// 
 			// tabPage5
 			// 
+			this.tabPage5.Controls.Add(this.rbMsgCsiSample6);
+			this.tabPage5.Controls.Add(this.rbMsgCsiSample5);
+			this.tabPage5.Controls.Add(this.rbMsgCsiSample4);
+			this.tabPage5.Controls.Add(this.rbMsgCsiSample3);
+			this.tabPage5.Controls.Add(this.rbMsgCsiSample2);
+			this.tabPage5.Controls.Add(this.rbMsgCsiSample1);
 			this.tabPage5.Controls.Add(this.cbMsgBoxFontSize);
 			this.tabPage5.Controls.Add(this.cbMsgBoxDefBtn);
 			this.tabPage5.Controls.Add(this.cbMsgBoxFont);
@@ -1259,6 +1282,8 @@
 			this.tabPage5.Controls.Add(this.cbMsgBoxBtn);
 			this.tabPage5.Controls.Add(this.label17);
 			this.tabPage5.Controls.Add(this.label16);
+			this.tabPage5.Controls.Add(this.labDialogResult);
+			this.tabPage5.Controls.Add(this.label23);
 			this.tabPage5.Controls.Add(this.label15);
 			this.tabPage5.Controls.Add(this.label11);
 			this.tabPage5.Location = new System.Drawing.Point(4, 22);
@@ -1269,10 +1294,65 @@
 			this.tabPage5.Text = "MessageBox";
 			this.tabPage5.UseVisualStyleBackColor = true;
 			// 
+			// rbMsgCsiSample5
+			// 
+			this.rbMsgCsiSample5.AutoSize = true;
+			this.rbMsgCsiSample5.Location = new System.Drawing.Point(519, 118);
+			this.rbMsgCsiSample5.Name = "rbMsgCsiSample5";
+			this.rbMsgCsiSample5.Size = new System.Drawing.Size(66, 16);
+			this.rbMsgCsiSample5.TabIndex = 9;
+			this.rbMsgCsiSample5.Text = "Sample 5";
+			this.rbMsgCsiSample5.UseVisualStyleBackColor = true;
+			this.rbMsgCsiSample5.CheckedChanged += new System.EventHandler(this.rbMsgCsiSample_CheckedChanged);
+			// 
+			// rbMsgCsiSample4
+			// 
+			this.rbMsgCsiSample4.AutoSize = true;
+			this.rbMsgCsiSample4.Location = new System.Drawing.Point(519, 96);
+			this.rbMsgCsiSample4.Name = "rbMsgCsiSample4";
+			this.rbMsgCsiSample4.Size = new System.Drawing.Size(66, 16);
+			this.rbMsgCsiSample4.TabIndex = 9;
+			this.rbMsgCsiSample4.Text = "Sample 4";
+			this.rbMsgCsiSample4.UseVisualStyleBackColor = true;
+			this.rbMsgCsiSample4.CheckedChanged += new System.EventHandler(this.rbMsgCsiSample_CheckedChanged);
+			// 
+			// rbMsgCsiSample3
+			// 
+			this.rbMsgCsiSample3.AutoSize = true;
+			this.rbMsgCsiSample3.Location = new System.Drawing.Point(519, 74);
+			this.rbMsgCsiSample3.Name = "rbMsgCsiSample3";
+			this.rbMsgCsiSample3.Size = new System.Drawing.Size(66, 16);
+			this.rbMsgCsiSample3.TabIndex = 9;
+			this.rbMsgCsiSample3.Text = "Sample 3";
+			this.rbMsgCsiSample3.UseVisualStyleBackColor = true;
+			this.rbMsgCsiSample3.CheckedChanged += new System.EventHandler(this.rbMsgCsiSample_CheckedChanged);
+			// 
+			// rbMsgCsiSample2
+			// 
+			this.rbMsgCsiSample2.AutoSize = true;
+			this.rbMsgCsiSample2.Location = new System.Drawing.Point(519, 52);
+			this.rbMsgCsiSample2.Name = "rbMsgCsiSample2";
+			this.rbMsgCsiSample2.Size = new System.Drawing.Size(66, 16);
+			this.rbMsgCsiSample2.TabIndex = 9;
+			this.rbMsgCsiSample2.Text = "Sample 2";
+			this.rbMsgCsiSample2.UseVisualStyleBackColor = true;
+			this.rbMsgCsiSample2.CheckedChanged += new System.EventHandler(this.rbMsgCsiSample_CheckedChanged);
+			// 
+			// rbMsgCsiSample1
+			// 
+			this.rbMsgCsiSample1.AutoSize = true;
+			this.rbMsgCsiSample1.Location = new System.Drawing.Point(519, 30);
+			this.rbMsgCsiSample1.Name = "rbMsgCsiSample1";
+			this.rbMsgCsiSample1.Size = new System.Drawing.Size(66, 16);
+			this.rbMsgCsiSample1.TabIndex = 9;
+			this.rbMsgCsiSample1.Text = "Sample 1";
+			this.rbMsgCsiSample1.UseVisualStyleBackColor = true;
+			this.rbMsgCsiSample1.CheckedChanged += new System.EventHandler(this.rbMsgCsiSample_CheckedChanged);
+			// 
 			// label17
 			// 
 			this.label17.AutoSize = true;
-			this.label17.Location = new System.Drawing.Point(23, 191);
+			this.label17.Location = new System.Drawing.Point(396, 204);
 			this.label17.Name = "label17";
 			this.label17.Size = new System.Drawing.Size(74, 12);
 			this.label17.TabIndex = 2;
@@ -1281,16 +1361,35 @@
 			// label16
 			// 
 			this.label16.AutoSize = true;
-			this.label16.Location = new System.Drawing.Point(71, 165);
+			this.label16.Location = new System.Drawing.Point(229, 204);
 			this.label16.Name = "label16";
 			this.label16.Size = new System.Drawing.Size(26, 12);
 			this.label16.TabIndex = 2;
 			this.label16.Text = "Icon";
 			// 
+			// labDialogResult
+			// 
+			this.labDialogResult.BackColor = System.Drawing.SystemColors.Control;
+			this.labDialogResult.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+			this.labDialogResult.Location = new System.Drawing.Point(405, 229);
+			this.labDialogResult.Name = "labDialogResult";
+			this.labDialogResult.Size = new System.Drawing.Size(98, 20);
+			this.labDialogResult.TabIndex = 2;
+			this.labDialogResult.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+			// 
+			// label23
+			// 
+			this.label23.AutoSize = true;
+			this.label23.Location = new System.Drawing.Point(333, 233);
+			this.label23.Name = "label23";
+			this.label23.Size = new System.Drawing.Size(65, 12);
+			this.label23.TabIndex = 2;
+			this.label23.Text = "DialogResult";
+			// 
 			// label15
 			// 
 			this.label15.AutoSize = true;
-			this.label15.Location = new System.Drawing.Point(60, 137);
+			this.label15.Location = new System.Drawing.Point(47, 204);
 			this.label15.Name = "label15";
 			this.label15.Size = new System.Drawing.Size(37, 12);
 			this.label15.TabIndex = 2;
@@ -1298,6 +1397,7 @@
 			// 
 			// tabPage6
 			// 
+			this.tabPage6.Controls.Add(this.btnOpenConsole);
 			this.tabPage6.Controls.Add(this.button13);
 			this.tabPage6.Controls.Add(this.txtCsi);
 			this.tabPage6.Controls.Add(this.label20);
@@ -1315,6 +1415,16 @@
 			this.tabPage6.Text = "ANSI Code";
 			this.tabPage6.UseVisualStyleBackColor = true;
 			// 
+			// btnOpenConsole
+			// 
+			this.btnOpenConsole.Location = new System.Drawing.Point(193, 226);
+			this.btnOpenConsole.Name = "btnOpenConsole";
+			this.btnOpenConsole.Size = new System.Drawing.Size(96, 23);
+			this.btnOpenConsole.TabIndex = 19;
+			this.btnOpenConsole.Text = "Open Console";
+			this.btnOpenConsole.UseVisualStyleBackColor = true;
+			this.btnOpenConsole.Click += new System.EventHandler(this.btnOpenConsole_Click);
+			// 
 			// button13
 			// 
 			this.button13.Location = new System.Drawing.Point(509, 226);
@@ -1324,6 +1434,26 @@
 			this.button13.Text = "Convert";
 			this.button13.UseVisualStyleBackColor = true;
 			this.button13.Click += new System.EventHandler(this.button13_Click);
+			// 
+			// txtCsi
+			// 
+			this.txtCsi.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtCsi.Location = new System.Drawing.Point(193, 116);
+			this.txtCsi.Multiline = true;
+			this.txtCsi.Name = "txtCsi";
+			this.txtCsi.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+			this.txtCsi.Size = new System.Drawing.Size(391, 104);
+			this.txtCsi.TabIndex = 18;
+			// 
+			// label20
+			// 
+			this.label20.AutoSize = true;
+			this.label20.Location = new System.Drawing.Point(126, 119);
+			this.label20.Name = "label20";
+			this.label20.Size = new System.Drawing.Size(55, 12);
+			this.label20.TabIndex = 17;
+			this.label20.Text = "CsiBuilder";
 			// 
 			// txtAnsiStr
 			// 
@@ -1396,25 +1526,16 @@
 			this.tabPage8.Text = "Other";
 			this.tabPage8.UseVisualStyleBackColor = true;
 			// 
-			// label20
+			// rbMsgCsiSample6
 			// 
-			this.label20.AutoSize = true;
-			this.label20.Location = new System.Drawing.Point(126, 119);
-			this.label20.Name = "label20";
-			this.label20.Size = new System.Drawing.Size(55, 12);
-			this.label20.TabIndex = 17;
-			this.label20.Text = "CsiBuilder";
-			// 
-			// txtCsi
-			// 
-			this.txtCsi.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtCsi.Location = new System.Drawing.Point(193, 116);
-			this.txtCsi.Multiline = true;
-			this.txtCsi.Name = "txtCsi";
-			this.txtCsi.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-			this.txtCsi.Size = new System.Drawing.Size(391, 104);
-			this.txtCsi.TabIndex = 18;
+			this.rbMsgCsiSample6.AutoSize = true;
+			this.rbMsgCsiSample6.Location = new System.Drawing.Point(518, 140);
+			this.rbMsgCsiSample6.Name = "rbMsgCsiSample6";
+			this.rbMsgCsiSample6.Size = new System.Drawing.Size(66, 16);
+			this.rbMsgCsiSample6.TabIndex = 9;
+			this.rbMsgCsiSample6.Text = "Sample 6";
+			this.rbMsgCsiSample6.UseVisualStyleBackColor = true;
+			this.rbMsgCsiSample6.CheckedChanged += new System.EventHandler(this.rbMsgCsiSample_CheckedChanged);
 			// 
 			// MainEntry
 			// 
@@ -1570,5 +1691,15 @@
 		private System.Windows.Forms.Button button13;
 		private System.Windows.Forms.TextBox txtCsi;
 		private System.Windows.Forms.Label label20;
+		private System.Windows.Forms.Label labDialogResult;
+		private System.Windows.Forms.Label label23;
+		private System.Windows.Forms.Label label24;
+		private System.Windows.Forms.RadioButton rbMsgCsiSample4;
+		private System.Windows.Forms.RadioButton rbMsgCsiSample3;
+		private System.Windows.Forms.RadioButton rbMsgCsiSample2;
+		private System.Windows.Forms.RadioButton rbMsgCsiSample1;
+		private System.Windows.Forms.Button btnOpenConsole;
+		private System.Windows.Forms.RadioButton rbMsgCsiSample5;
+		private System.Windows.Forms.RadioButton rbMsgCsiSample6;
 	}
 }

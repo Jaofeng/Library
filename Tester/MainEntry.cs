@@ -5,6 +5,7 @@ using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using CJF.Utility;
 using CJF.Utility.CRC;
@@ -15,7 +16,31 @@ using CJF.Utility.Ansi;
 namespace Tester
 {
 	public partial class MainEntry : Form
-	{	
+	{
+
+		[DllImport("kernel32.dll", SetLastError = true)]
+		[return: MarshalAs(UnmanagedType.Bool)]
+		static extern bool AllocConsole();		// 開啟 Console
+
+		[DllImport("Kernel32")]
+		static extern void FreeConsole();		// 釋放 Console
+
+		private const int STD_OUTPUT_HANDLE = -11;
+		private const uint ENABLE_VIRTUAL_TERMINAL_PROCESSING = 0x0004;
+		private const uint DISABLE_NEWLINE_AUTO_RETURN = 0x0008;
+
+		[DllImport("kernel32.dll")]
+		private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
+
+		[DllImport("kernel32.dll")]
+		private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
+
+		[DllImport("kernel32.dll", SetLastError = true)]
+		private static extern IntPtr GetStdHandle(int nStdHandle);
+
+		[DllImport("kernel32.dll")]
+		public static extern uint GetLastError();
+
 		public MainEntry(int defTab)
 		{
 			InitializeComponent();
@@ -39,6 +64,7 @@ namespace Tester
 			cbMsgBoxFontSize.DataSource = fs;
 			cbMsgBoxFontSize.SelectedItem = SystemFonts.MessageBoxFont.Size;
 			tabControl1.SelectedIndex = defTab;
+			label24.Text = "<span style=\"color:Red;\">TextPart1</span><span style=\"color:White;\"> Another Text</span>";
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -363,6 +389,7 @@ namespace Tester
 
 		private void btnShowMsgBox_Click(object sender, EventArgs e)
 		{
+			labDialogResult.Text = string.Empty;
 			MessageBoxButtons btn = (MessageBoxButtons)Enum.Parse(typeof(MessageBoxButtons), cbMsgBoxBtn.Text);
 			MessageBoxIcon icon = (MessageBoxIcon)Enum.Parse(typeof(MessageBoxIcon), cbMsgBoxIcon.Text);
 			MessageBoxDefaultButton defBtn = (MessageBoxDefaultButton)Enum.Parse(typeof(MessageBoxDefaultButton), cbMsgBoxDefBtn.Text);
@@ -370,8 +397,10 @@ namespace Tester
 				WK.MessageBox.Font = new Font((FontFamily)cbMsgBoxFont.SelectedItem, (float)cbMsgBoxFontSize.SelectedItem);
 			else if (WK.MessageBox.Font != null)
 				WK.MessageBox.Font = null;
-			DialogResult res = WK.MessageBox.Show(txtMsgBoxText.Text, txtMsgBoxCaption.Text, btn, icon, defBtn);
-			MessageBox.Show(string.Format("DialogResult = {0}", res), "WinKits.MessageBox 回傳");
+			string msg = txtMsgBoxText.Text.Replace("\\x1b", "\\x1B").Replace("\\x1B", "\x1B");
+			MessageBox.Show(CsiBuilder.GetPureText(msg), "System.Windows.Forms.MessageBox", btn, icon, defBtn);
+			labDialogResult.Text = WK.MessageBox.Show(CsiBuilder.GetPureText(msg), txtMsgBoxCaption.Text, btn, icon, defBtn).ToString();
+			labDialogResult.Text = WK.MessageBox.Show(msg, txtMsgBoxCaption.Text, btn, icon, defBtn).ToString();
 		}
 
 		private void chkFont_CheckedChanged(object sender, EventArgs e)
@@ -397,18 +426,111 @@ namespace Tester
 			for (int i = 0; i <cb1.Count; i++)
 				txtCsi.Text += string.Format("[{0}] {1}{2}", i, cb1[i].Replace("\x1B", "\\x1B").Replace("\r", "\\r").Replace("\n", "\\n"), Environment.NewLine);
 			CsiBuilder cb2 = new CsiBuilder();
+			cb2.Append("\x1B[J");
 			cb2.Append("123");
 			cb2.Append(SgrColors.Red, "456");
 			cb2.AppendCommand(CsiCommands.Cls);
 			cb2.Append(SgrColors.Yellow, "789");
-			cb2.AppendCommand(CsiCommands.ResetColor);
-			int[] idxs = cb2.IndexesOf();
-			int idx = cb2.IndexOf(CsiCommands.Cls);
+			cb2.AppendCommand(CsiCommands.ResetSGR);
+			//var stdout = Console.OpenStandardOutput();
+			//var con = new StreamWriter(stdout, Encoding.ASCII);
+			//con.AutoFlush = true;
+			//Console.SetOut(con);
+			Console.WriteLine("\x1b[36mTEST\x1b[0m".Replace("\x1B", "\u001B"));
+			Console.WriteLine("ANSIString Class : ");
+			Console.WriteLine(ansi.Replace("\x1B", "\u001B"));
+			Console.WriteLine("CsiBuilder Class : ");
+			Console.WriteLine(cb2.ToString().Replace("\x1B", "\u001B"));
 		}
 
 		private void lstAnsi_DoubleClick(object sender, EventArgs e)
 		{
 			txtAnsiCode.Text += lstAnsi.SelectedItem.ToString();
+		}
+
+		private void rbMsgCsiSample_CheckedChanged(object sender, EventArgs e)
+		{
+			RadioButton rb = (RadioButton)sender;
+			if (!rb.Checked)
+				return;
+			if (rb.Equals(rbMsgCsiSample1))
+				txtMsgBoxText.Text = @"Message : 
+Colors: \x1B[31m[CSI 31 m]Red\x1B[0m, \x1B[32m[CSI 32 m]Green\x1B[0m, \x1B[33m[CSI 33 m]Yellow\x1B[0m, \x1B[34m[CSI 34 m]Blue\x1B[0m
+\x1B[7m[CSI 7 m]反相\x1B[0m, \x1B[1;91m[CSI 1;91 m]亮紅粗體\x1B[0m, \x1B[4;91m[CSI 4;91 m]亮紅底線\x1B[0m, \x1B[9;91m[CSI 9;91 m]亮紅刪除線\x1B[0m
+\x1B[91m[CSI 91 m]亮紅\x1B[0m, \x1B[92m[CSI 92 m]亮綠\x1B[0m, \x1B[93m[CSI 93 m]亮黃\x1B[0m, \x1B[94m[CSI 94 m]亮藍\x1B[39;49m
+\x1B[97;101m[CSI 97;101 m]亮紅底白字\x1B[0m, \x1B[97;42m[CSI 97;42 m]綠底白字\x1B[39;49m
+";
+			else if (rb.Equals(rbMsgCsiSample2))
+				txtMsgBoxText.Text = @"Message : 
+Colors \x1B[31m[CSI 31 m]Red\x1B[0m, \x1B[32m[CSI 32 m]Green\x1B[0m, \x1B[33m[CSI 33 m]Yellow\x1B[0m, \x1B[34m[CSI 34 m]Blue\x1B[0m
+超長文字：一二三四五六七八九十，一二三四五六七八九十。一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十
+超長文字：一二三四五六七八九\x1B[91m十一二三四五六七八九十\x1B[92m一二三四五六七八九十\x1B[93m一二三四五六七八九十\x1B[94m一二三四五六七八九十
+一二三四五六七八九十
+
+\x1B[1;31m[CSI 1;31 m]Bright Red\x1B[0m, \x1B[1;32m[CSI 1;32 m]Bright Green\x1B[0m, \x1B[1;33m[CSI 1;33 m]Bright Yellow\x1B[0m, \x1B[1;34m[CSI 1;34 m]Bright Blue\x1B[0m
+\x1B[91m[CSI 91 m]亮紅\x1B[0m, \x1B[92m[CSI 92 m]亮綠\x1B[0m, \x1B[93m[CSI 93 m]亮黃\x1B[0m, \x1B[94m[CSI 94 m]亮藍\x1B[39;49m
+";
+			else if (rb.Equals(rbMsgCsiSample3))
+				txtMsgBoxText.Text = @"發生錯誤！
+\x1B[33m警告\x1B[0m : \x1B[31m'CJF.Utility.AnsiString' 已過時: '請改用 CJF.Utility.Ansi.CsiBuilder'\x1B[33m
+D:\WorkSpace\Source\Common\Library\Tester\MainEntry.cs \x1B[94mLine:394, Colume:18 \x1B[0m@ \x1B[32mTester
+
+";
+			else if (rb.Equals(rbMsgCsiSample4))
+				txtMsgBoxText.Text = "Message :\nColors: \x1B[31m[CSI 31 m]Red\x1B[0m, \x1B[32m[CSI 32 m]Green\x1B[0m, \x1B[33m[CSI 33 m]Yellow\x1B[0m, \x1B[34m[CSI 34 m]Blue\x1B[0m\n" +
+					"\x1B[1;31m[CSI 1;31 m]Bright Red\x1B[0m, \x1B[1;32m[CSI 1;32 m]Bright Green\x1B[0m, \x1B[1;33m[CSI 1;33 m]Bright Yellow\x1B[0m, \x1B[1;34m[CSI 1;34 m]Bright Blue\x1B[0m\n" +
+					"\x1B[91m[CSI 91 m]亮紅\x1B[0m, \x1B[92m[CSI 92 m]亮綠\x1B[0m, \x1B[93m[CSI 93 m]亮黃\x1B[0m, \x1B[94m[CSI 94 m]亮藍\x1B[39;49m\n";
+			else if (rb.Equals(rbMsgCsiSample5))
+			{
+				txtMsgBoxText.Text = "";
+				for (int i = 0; i < 16; i++)
+					txtMsgBoxText.Text += string.Format("\x1B[48;5;{0}m　", i);
+				txtMsgBoxText.Text += Environment.NewLine;
+				for (int i = 0; i < 6; i++)
+				{
+					for (int j = 0; j < 36; j++)
+						txtMsgBoxText.Text += string.Format("\x1B[48;5;{0}m　", 16 + i * 36 + j);
+					txtMsgBoxText.Text += Environment.NewLine;
+				}
+				for (int i = 0; i<24;i++)
+					txtMsgBoxText.Text += string.Format("\x1B[48;5;{0}m　", i + 232);
+			}
+			else if (rb.Equals(rbMsgCsiSample6))
+			{
+				txtMsgBoxText.Text = @"24-bits Color :
+\x1B[48;2;255;0;0;38;2;255;255;255m[48;2;255;0;0;38;2;255;255;255m紅底白字\x1B[39;49m\x1B[48;2;0;128;0;38;2;255;255;255m[48;2;0;128;0;38;2;255;255;255m綠底白字
+\x1B[48;2;0;0;255;38;2;255;255;255m[48;2;0;0;255;38;2;255;255;255m藍底白字\x1B[39;49m\x1B[48;2;255;255;0;38;2;0;0;0m[48;2;255;255;0;38;2;0;0;0m黃底黑字
+\x1B[48;5;9;38;5;15m[48;5;9;38;5;15m紅底白字\x1B[39;49m\x1B[48;5;2;38;5;15m[48;5;2;38;5;15m綠底白字
+\x1B[48;5;12;38;5;15m[48;5;12;38;5;15m藍底白字\x1B[39;49m\x1B[48;5;11;38;5;0m[48;5;11;38;5;0m黃底黑字
+";
+			}
+		}
+
+		private void btnOpenConsole_Click(object sender, EventArgs e)
+		{
+			AllocConsole();
+			Console.CancelKeyPress += new ConsoleCancelEventHandler(delegate(object snd, ConsoleCancelEventArgs ee)
+				{
+					ee.Cancel = true;
+				});
+
+			var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+			uint outConsoleMode = 0;
+			if (!GetConsoleMode(iStdOut, out outConsoleMode))
+			{
+				Console.WriteLine("failed to get output console mode");
+				Console.ReadKey();
+				return;
+			}
+
+			//outConsoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
+			if (!SetConsoleMode(iStdOut, outConsoleMode))
+			{
+				Console.WriteLine("failed to set output console mode, error code: {0}", GetLastError());
+				Console.ReadKey();
+				return;
+			}           
+
 		}
 	}
 }
