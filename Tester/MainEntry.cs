@@ -10,8 +10,8 @@ using System.Windows.Forms;
 using CJF.Utility;
 using CJF.Utility.CRC;
 using CJF.Utility.Extensions;
-using WK = CJF.Utility.WinKits;
 using CJF.Utility.Ansi;
+using WK = CJF.Utility.WinKits;
 
 namespace Tester
 {
@@ -64,7 +64,17 @@ namespace Tester
 			cbMsgBoxFontSize.DataSource = fs;
 			cbMsgBoxFontSize.SelectedItem = SystemFonts.MessageBoxFont.Size;
 			tabControl1.SelectedIndex = defTab;
-			label24.Text = "<span style=\"color:Red;\">TextPart1</span><span style=\"color:White;\"> Another Text</span>";
+
+			richTextBox1.Text = "-----";
+			richTextBox1.SelectionStart = richTextBox1.TextLength;
+			richTextBox1.SelectionColor = Color.Red;
+			richTextBox1.AppendText("1234567890");
+			richTextBox1.SelectionStart = richTextBox1.TextLength;
+			richTextBox1.SelectionColor = Color.Blue;
+			richTextBox1.AppendText("ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+			richTextBox1.SelectionStart = richTextBox1.TextLength;
+			richTextBox1.SelectionColor = richTextBox1.ForeColor;
+			richTextBox1.AppendText("\x1B[95mABCDEFGHIJKLMNOPQRSTUVWXYZ\x1B[0m");
 		}
 
 		private void button1_Click(object sender, EventArgs e)
@@ -423,7 +433,7 @@ namespace Tester
 			CsiBuilder cb1 = new CsiBuilder(ansi);
 			txtCsi.Text = string.Format("Pure Text : {0}{1}{2}{1}", cb1.ToPureText(), Environment.NewLine, "-".PadLeft(50, '-'));
 			txtCsi.Text += string.Format("Items Count:{0}, Length:{1}{2}", cb1.Count, cb1.Length, Environment.NewLine);
-			for (int i = 0; i <cb1.Count; i++)
+			for (int i = 0; i < cb1.Count; i++)
 				txtCsi.Text += string.Format("[{0}] {1}{2}", i, cb1[i].Replace("\x1B", "\\x1B").Replace("\r", "\\r").Replace("\n", "\\n"), Environment.NewLine);
 			CsiBuilder cb2 = new CsiBuilder();
 			cb2.Append("\x1B[J");
@@ -492,7 +502,7 @@ D:\WorkSpace\Source\Common\Library\Tester\MainEntry.cs \x1B[94mLine:394, Colume:
 						txtMsgBoxText.Text += string.Format("\x1B[48;5;{0}m　", 16 + i * 36 + j);
 					txtMsgBoxText.Text += Environment.NewLine;
 				}
-				for (int i = 0; i<24;i++)
+				for (int i = 0; i < 24; i++)
 					txtMsgBoxText.Text += string.Format("\x1B[48;5;{0}m　", i + 232);
 			}
 			else if (rb.Equals(rbMsgCsiSample6))
@@ -529,8 +539,57 @@ D:\WorkSpace\Source\Common\Library\Tester\MainEntry.cs \x1B[94mLine:394, Colume:
 				Console.WriteLine("failed to set output console mode, error code: {0}", GetLastError());
 				Console.ReadKey();
 				return;
-			}           
+			}
 
+		}
+
+		private void button14_Click(object sender, EventArgs e)
+		{
+			for (int i = 0; i < 100; i++)
+			{
+				ansiViewer1.Append(Environment.NewLine + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " " + txtAnsi.Text);
+				ansiViewer1.ScrollToEnd();
+				Application.DoEvents();
+			}
+		}
+
+		private void ansiViewer1_Click(object sender, EventArgs e)
+		{
+
+		}
+
+		private void button15_Click(object sender, EventArgs e)
+		{
+			Random rnd = new Random(DateTime.Now.Millisecond);
+			int rv = rnd.Next();
+			ansiLabel1.Text = string.Format("\x1B[94m{0}\x1B[39m - \x1B[91m{1}\x1B[0m", DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff"), rv);
+			Debug.Print("Label Size = {0} - {1}\n---------------", ansiLabel1.Size, rv);
+		}
+
+		private void button16_Click(object sender, EventArgs e)
+		{
+			if (ansiLabel1.Font.Equals(this.Font))
+				ansiLabel1.Font = new Font("微軟正黑體", this.Font.Size);
+			else
+				ansiLabel1.Font = new Font(this.Font, this.Font.Style);
+		}
+
+		private void ansiLabel1_TextChanged(object sender, EventArgs e)
+		{
+			WK.AnsiLabel lab = (WK.AnsiLabel)sender;
+			Debug.Print("{0} TextChanged : {1}", lab.Name, lab.Text.Replace("\x1B", "\\x1B"));
+		}
+
+		private void ansiLabel1_Resize(object sender, EventArgs e)
+		{
+			WK.AnsiLabel lab = (WK.AnsiLabel)sender;
+			Debug.Print("{0} Resize : {1}", lab.Name, lab.Size);
+		}
+
+		private void ansiLabel1_Paint(object sender, PaintEventArgs e)
+		{
+			WK.AnsiLabel lab = (WK.AnsiLabel)sender;
+			Debug.Print("{0} Paint", lab.Name);
 		}
 	}
 }

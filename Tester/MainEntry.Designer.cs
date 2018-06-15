@@ -28,6 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainEntry));
 			this.button1 = new System.Windows.Forms.Button();
 			this.button2 = new System.Windows.Forms.Button();
 			this.button3 = new System.Windows.Forms.Button();
@@ -120,13 +121,13 @@
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
-			this.label24 = new System.Windows.Forms.Label();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.tabPage3 = new System.Windows.Forms.TabPage();
 			this.tabPage4 = new System.Windows.Forms.TabPage();
 			this.label13 = new System.Windows.Forms.Label();
 			this.label12 = new System.Windows.Forms.Label();
 			this.tabPage5 = new System.Windows.Forms.TabPage();
+			this.rbMsgCsiSample6 = new System.Windows.Forms.RadioButton();
 			this.rbMsgCsiSample5 = new System.Windows.Forms.RadioButton();
 			this.rbMsgCsiSample4 = new System.Windows.Forms.RadioButton();
 			this.rbMsgCsiSample3 = new System.Windows.Forms.RadioButton();
@@ -147,8 +148,18 @@
 			this.txtAnsiCode = new System.Windows.Forms.TextBox();
 			this.label18 = new System.Windows.Forms.Label();
 			this.tabPage7 = new System.Windows.Forms.TabPage();
+			this.label26 = new System.Windows.Forms.Label();
+			this.button16 = new System.Windows.Forms.Button();
+			this.button15 = new System.Windows.Forms.Button();
 			this.tabPage8 = new System.Windows.Forms.TabPage();
-			this.rbMsgCsiSample6 = new System.Windows.Forms.RadioButton();
+			this.button14 = new System.Windows.Forms.Button();
+			this.txtAnsi = new System.Windows.Forms.TextBox();
+			this.tabPage9 = new System.Windows.Forms.TabPage();
+			this.label25 = new System.Windows.Forms.Label();
+			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+			this.ansiLabel2 = new CJF.Utility.WinKits.AnsiLabel();
+			this.ansiLabel1 = new CJF.Utility.WinKits.AnsiLabel();
+			this.ansiViewer1 = new CJF.Utility.WinKits.AnsiBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox4.SuspendLayout();
@@ -164,6 +175,7 @@
 			this.tabPage6.SuspendLayout();
 			this.tabPage7.SuspendLayout();
 			this.tabPage8.SuspendLayout();
+			this.tabPage9.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// button1
@@ -808,7 +820,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtTarget.Location = new System.Drawing.Point(69, 82);
 			this.txtTarget.Name = "txtTarget";
-			this.txtTarget.Size = new System.Drawing.Size(500, 22);
+			this.txtTarget.Size = new System.Drawing.Size(515, 22);
 			this.txtTarget.TabIndex = 7;
 			// 
 			// label7
@@ -826,7 +838,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.txtSource.Location = new System.Drawing.Point(69, 54);
 			this.txtSource.Name = "txtSource";
-			this.txtSource.Size = new System.Drawing.Size(500, 22);
+			this.txtSource.Size = new System.Drawing.Size(515, 22);
 			this.txtSource.TabIndex = 5;
 			// 
 			// label6
@@ -877,7 +889,7 @@
 			// btnDecrypt
 			// 
 			this.btnDecrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnDecrypt.Location = new System.Drawing.Point(321, 25);
+			this.btnDecrypt.Location = new System.Drawing.Point(365, 25);
 			this.btnDecrypt.Name = "btnDecrypt";
 			this.btnDecrypt.Size = new System.Drawing.Size(52, 23);
 			this.btnDecrypt.TabIndex = 9;
@@ -888,7 +900,7 @@
 			// btnEncrypt
 			// 
 			this.btnEncrypt.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnEncrypt.Location = new System.Drawing.Point(263, 25);
+			this.btnEncrypt.Location = new System.Drawing.Point(307, 25);
 			this.btnEncrypt.Name = "btnEncrypt";
 			this.btnEncrypt.Size = new System.Drawing.Size(52, 23);
 			this.btnEncrypt.TabIndex = 8;
@@ -1139,6 +1151,7 @@
 			this.tabControl1.Controls.Add(this.tabPage6);
 			this.tabControl1.Controls.Add(this.tabPage7);
 			this.tabControl1.Controls.Add(this.tabPage8);
+			this.tabControl1.Controls.Add(this.tabPage9);
 			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.tabControl1.Location = new System.Drawing.Point(5, 5);
 			this.tabControl1.Name = "tabControl1";
@@ -1169,19 +1182,11 @@
 			this.flowLayoutPanel1.Controls.Add(this.button5);
 			this.flowLayoutPanel1.Controls.Add(this.button8);
 			this.flowLayoutPanel1.Controls.Add(this.button10);
-			this.flowLayoutPanel1.Controls.Add(this.label24);
 			this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.flowLayoutPanel1.Location = new System.Drawing.Point(10, 10);
 			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
 			this.flowLayoutPanel1.Size = new System.Drawing.Size(577, 242);
 			this.flowLayoutPanel1.TabIndex = 25;
-			// 
-			// label24
-			// 
-			this.label24.Location = new System.Drawing.Point(3, 112);
-			this.label24.Name = "label24";
-			this.label24.Size = new System.Drawing.Size(261, 26);
-			this.label24.TabIndex = 25;
 			// 
 			// tabPage2
 			// 
@@ -1294,10 +1299,23 @@
 			this.tabPage5.Text = "MessageBox";
 			this.tabPage5.UseVisualStyleBackColor = true;
 			// 
+			// rbMsgCsiSample6
+			// 
+			this.rbMsgCsiSample6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.rbMsgCsiSample6.AutoSize = true;
+			this.rbMsgCsiSample6.Location = new System.Drawing.Point(523, 140);
+			this.rbMsgCsiSample6.Name = "rbMsgCsiSample6";
+			this.rbMsgCsiSample6.Size = new System.Drawing.Size(66, 16);
+			this.rbMsgCsiSample6.TabIndex = 9;
+			this.rbMsgCsiSample6.Text = "Sample 6";
+			this.rbMsgCsiSample6.UseVisualStyleBackColor = true;
+			this.rbMsgCsiSample6.CheckedChanged += new System.EventHandler(this.rbMsgCsiSample_CheckedChanged);
+			// 
 			// rbMsgCsiSample5
 			// 
+			this.rbMsgCsiSample5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.rbMsgCsiSample5.AutoSize = true;
-			this.rbMsgCsiSample5.Location = new System.Drawing.Point(519, 118);
+			this.rbMsgCsiSample5.Location = new System.Drawing.Point(524, 118);
 			this.rbMsgCsiSample5.Name = "rbMsgCsiSample5";
 			this.rbMsgCsiSample5.Size = new System.Drawing.Size(66, 16);
 			this.rbMsgCsiSample5.TabIndex = 9;
@@ -1307,8 +1325,9 @@
 			// 
 			// rbMsgCsiSample4
 			// 
+			this.rbMsgCsiSample4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.rbMsgCsiSample4.AutoSize = true;
-			this.rbMsgCsiSample4.Location = new System.Drawing.Point(519, 96);
+			this.rbMsgCsiSample4.Location = new System.Drawing.Point(524, 96);
 			this.rbMsgCsiSample4.Name = "rbMsgCsiSample4";
 			this.rbMsgCsiSample4.Size = new System.Drawing.Size(66, 16);
 			this.rbMsgCsiSample4.TabIndex = 9;
@@ -1318,8 +1337,9 @@
 			// 
 			// rbMsgCsiSample3
 			// 
+			this.rbMsgCsiSample3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.rbMsgCsiSample3.AutoSize = true;
-			this.rbMsgCsiSample3.Location = new System.Drawing.Point(519, 74);
+			this.rbMsgCsiSample3.Location = new System.Drawing.Point(524, 74);
 			this.rbMsgCsiSample3.Name = "rbMsgCsiSample3";
 			this.rbMsgCsiSample3.Size = new System.Drawing.Size(66, 16);
 			this.rbMsgCsiSample3.TabIndex = 9;
@@ -1329,8 +1349,9 @@
 			// 
 			// rbMsgCsiSample2
 			// 
+			this.rbMsgCsiSample2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.rbMsgCsiSample2.AutoSize = true;
-			this.rbMsgCsiSample2.Location = new System.Drawing.Point(519, 52);
+			this.rbMsgCsiSample2.Location = new System.Drawing.Point(524, 52);
 			this.rbMsgCsiSample2.Name = "rbMsgCsiSample2";
 			this.rbMsgCsiSample2.Size = new System.Drawing.Size(66, 16);
 			this.rbMsgCsiSample2.TabIndex = 9;
@@ -1340,8 +1361,9 @@
 			// 
 			// rbMsgCsiSample1
 			// 
+			this.rbMsgCsiSample1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.rbMsgCsiSample1.AutoSize = true;
-			this.rbMsgCsiSample1.Location = new System.Drawing.Point(519, 30);
+			this.rbMsgCsiSample1.Location = new System.Drawing.Point(524, 30);
 			this.rbMsgCsiSample1.Name = "rbMsgCsiSample1";
 			this.rbMsgCsiSample1.Size = new System.Drawing.Size(66, 16);
 			this.rbMsgCsiSample1.TabIndex = 9;
@@ -1496,6 +1518,12 @@
 			// 
 			// tabPage7
 			// 
+			this.tabPage7.Controls.Add(this.label26);
+			this.tabPage7.Controls.Add(this.richTextBox1);
+			this.tabPage7.Controls.Add(this.ansiLabel2);
+			this.tabPage7.Controls.Add(this.ansiLabel1);
+			this.tabPage7.Controls.Add(this.button16);
+			this.tabPage7.Controls.Add(this.button15);
 			this.tabPage7.Controls.Add(this.txtTarget);
 			this.tabPage7.Controls.Add(this.label7);
 			this.tabPage7.Controls.Add(this.txtKey);
@@ -1514,28 +1542,122 @@
 			this.tabPage7.Text = "Security";
 			this.tabPage7.UseVisualStyleBackColor = true;
 			// 
+			// label26
+			// 
+			this.label26.AutoSize = true;
+			this.label26.Location = new System.Drawing.Point(22, 162);
+			this.label26.Name = "label26";
+			this.label26.Size = new System.Drawing.Size(289, 12);
+			this.label26.TabIndex = 12;
+			this.label26.Text = "-----1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ...";
+			// 
+			// button16
+			// 
+			this.button16.Location = new System.Drawing.Point(105, 110);
+			this.button16.Name = "button16";
+			this.button16.Size = new System.Drawing.Size(75, 23);
+			this.button16.TabIndex = 11;
+			this.button16.Text = "Change Font";
+			this.button16.UseVisualStyleBackColor = true;
+			this.button16.Click += new System.EventHandler(this.button16_Click);
+			// 
+			// button15
+			// 
+			this.button15.Location = new System.Drawing.Point(24, 110);
+			this.button15.Name = "button15";
+			this.button15.Size = new System.Drawing.Size(75, 23);
+			this.button15.TabIndex = 11;
+			this.button15.Text = "Update Text";
+			this.button15.UseVisualStyleBackColor = true;
+			this.button15.Click += new System.EventHandler(this.button15_Click);
+			// 
 			// tabPage8
 			// 
-			this.tabPage8.Controls.Add(this.groupBox4);
-			this.tabPage8.Controls.Add(this.button6);
+			this.tabPage8.Controls.Add(this.ansiViewer1);
+			this.tabPage8.Controls.Add(this.button14);
+			this.tabPage8.Controls.Add(this.txtAnsi);
 			this.tabPage8.Location = new System.Drawing.Point(4, 22);
 			this.tabPage8.Name = "tabPage8";
-			this.tabPage8.Padding = new System.Windows.Forms.Padding(10);
 			this.tabPage8.Size = new System.Drawing.Size(597, 262);
-			this.tabPage8.TabIndex = 7;
-			this.tabPage8.Text = "Other";
+			this.tabPage8.TabIndex = 8;
+			this.tabPage8.Text = "AnsiViewer";
 			this.tabPage8.UseVisualStyleBackColor = true;
 			// 
-			// rbMsgCsiSample6
+			// button14
 			// 
-			this.rbMsgCsiSample6.AutoSize = true;
-			this.rbMsgCsiSample6.Location = new System.Drawing.Point(518, 140);
-			this.rbMsgCsiSample6.Name = "rbMsgCsiSample6";
-			this.rbMsgCsiSample6.Size = new System.Drawing.Size(66, 16);
-			this.rbMsgCsiSample6.TabIndex = 9;
-			this.rbMsgCsiSample6.Text = "Sample 6";
-			this.rbMsgCsiSample6.UseVisualStyleBackColor = true;
-			this.rbMsgCsiSample6.CheckedChanged += new System.EventHandler(this.rbMsgCsiSample_CheckedChanged);
+			this.button14.Location = new System.Drawing.Point(506, 223);
+			this.button14.Name = "button14";
+			this.button14.Size = new System.Drawing.Size(75, 21);
+			this.button14.TabIndex = 2;
+			this.button14.Text = "Append";
+			this.button14.UseVisualStyleBackColor = true;
+			this.button14.Click += new System.EventHandler(this.button14_Click);
+			// 
+			// txtAnsi
+			// 
+			this.txtAnsi.Location = new System.Drawing.Point(17, 223);
+			this.txtAnsi.Name = "txtAnsi";
+			this.txtAnsi.Size = new System.Drawing.Size(483, 22);
+			this.txtAnsi.TabIndex = 1;
+			// 
+			// tabPage9
+			// 
+			this.tabPage9.Controls.Add(this.label25);
+			this.tabPage9.Controls.Add(this.groupBox4);
+			this.tabPage9.Controls.Add(this.button6);
+			this.tabPage9.Location = new System.Drawing.Point(4, 22);
+			this.tabPage9.Name = "tabPage9";
+			this.tabPage9.Padding = new System.Windows.Forms.Padding(10);
+			this.tabPage9.Size = new System.Drawing.Size(597, 262);
+			this.tabPage9.TabIndex = 7;
+			this.tabPage9.Text = "Other";
+			this.tabPage9.UseVisualStyleBackColor = true;
+			// 
+			// label25
+			// 
+			this.label25.Location = new System.Drawing.Point(13, 155);
+			this.label25.Name = "label25";
+			this.label25.Size = new System.Drawing.Size(500, 96);
+			this.label25.TabIndex = 22;
+			this.label25.Text = resources.GetString("label25.Text");
+			// 
+			// richTextBox1
+			// 
+			this.richTextBox1.Location = new System.Drawing.Point(24, 184);
+			this.richTextBox1.Name = "richTextBox1";
+			this.richTextBox1.Size = new System.Drawing.Size(560, 65);
+			this.richTextBox1.TabIndex = 17;
+			this.richTextBox1.Text = "1234567890";
+			// 
+			// ansiLabel2
+			// 
+			this.ansiLabel2.Location = new System.Drawing.Point(197, 114);
+			this.ansiLabel2.MaximumSize = new System.Drawing.Size(60, 19);
+			this.ansiLabel2.MinimumSize = new System.Drawing.Size(60, 19);
+			this.ansiLabel2.Name = "ansiLabel2";
+			this.ansiLabel2.Size = new System.Drawing.Size(60, 19);
+			this.ansiLabel2.TabIndex = 16;
+			this.ansiLabel2.Text = "ansiLabel2";
+			// 
+			// ansiLabel1
+			// 
+			this.ansiLabel1.BackColor = System.Drawing.SystemColors.Window;
+			this.ansiLabel1.Location = new System.Drawing.Point(24, 140);
+			this.ansiLabel1.MaximumSize = new System.Drawing.Size(297, 19);
+			this.ansiLabel1.MinimumSize = new System.Drawing.Size(297, 19);
+			this.ansiLabel1.Name = "ansiLabel1";
+			this.ansiLabel1.Size = new System.Drawing.Size(297, 19);
+			this.ansiLabel1.TabIndex = 15;
+			this.ansiLabel1.Text = "-----\\x1B[91m1234567890\\x1B[94mABCDEFGHIJKLMNOPQRSTUVWXYZ\\x1B[0m...";
+			// 
+			// ansiViewer1
+			// 
+			this.ansiViewer1.Font = new System.Drawing.Font("微軟正黑體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+			this.ansiViewer1.Location = new System.Drawing.Point(17, 16);
+			this.ansiViewer1.Name = "ansiViewer1";
+			this.ansiViewer1.Size = new System.Drawing.Size(564, 201);
+			this.ansiViewer1.TabIndex = 3;
+			this.ansiViewer1.Text = resources.GetString("ansiViewer1.Text");
 			// 
 			// MainEntry
 			// 
@@ -1574,6 +1696,8 @@
 			this.tabPage7.ResumeLayout(false);
 			this.tabPage7.PerformLayout();
 			this.tabPage8.ResumeLayout(false);
+			this.tabPage8.PerformLayout();
+			this.tabPage9.ResumeLayout(false);
 			this.ResumeLayout(false);
 
 		}
@@ -1677,7 +1801,7 @@
 		private System.Windows.Forms.TabPage tabPage5;
 		private System.Windows.Forms.TabPage tabPage6;
 		private System.Windows.Forms.TabPage tabPage7;
-		private System.Windows.Forms.TabPage tabPage8;
+		private System.Windows.Forms.TabPage tabPage9;
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.Label label13;
@@ -1693,7 +1817,6 @@
 		private System.Windows.Forms.Label label20;
 		private System.Windows.Forms.Label labDialogResult;
 		private System.Windows.Forms.Label label23;
-		private System.Windows.Forms.Label label24;
 		private System.Windows.Forms.RadioButton rbMsgCsiSample4;
 		private System.Windows.Forms.RadioButton rbMsgCsiSample3;
 		private System.Windows.Forms.RadioButton rbMsgCsiSample2;
@@ -1701,5 +1824,16 @@
 		private System.Windows.Forms.Button btnOpenConsole;
 		private System.Windows.Forms.RadioButton rbMsgCsiSample5;
 		private System.Windows.Forms.RadioButton rbMsgCsiSample6;
+		private System.Windows.Forms.TabPage tabPage8;
+		private System.Windows.Forms.Button button14;
+		private System.Windows.Forms.TextBox txtAnsi;
+		private System.Windows.Forms.Label label25;
+		private System.Windows.Forms.Button button15;
+		private System.Windows.Forms.Label label26;
+		private System.Windows.Forms.Button button16;
+		private CJF.Utility.WinKits.AnsiBox ansiViewer1;
+		private CJF.Utility.WinKits.AnsiLabel ansiLabel1;
+		private CJF.Utility.WinKits.AnsiLabel ansiLabel2;
+		private System.Windows.Forms.RichTextBox richTextBox1;
 	}
 }
