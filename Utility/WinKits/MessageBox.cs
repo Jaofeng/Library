@@ -13,6 +13,240 @@ using CJF.Utility.Ansi;
 
 namespace CJF.Utility.WinKits
 {
+	#region Public Static Class : MessageBox
+	/// <summary>自訂類別 MessageBox</summary>
+	public static class MessageBox
+	{
+		#region Public Static Property : Font Font(R/W)
+		/// <summary>設定或取得訊息窗的字型</summary>
+		public static Font Font
+		{
+			get { return MsgDialog.TextFont; }
+			set { MsgDialog.TextFont = value; }
+		}
+		#endregion
+
+		#region Public Static Property : int DialogMaximumWidth(R/W)
+		/// <summary>設定或取得視窗最大範圍</summary>
+		public static int DialogMaximumWidth
+		{
+			get { return MsgDialog.DialogMaxSize; }
+			set { MsgDialog.DialogMaxSize = value; }
+		}
+		#endregion
+
+		#region Public Static Property : string ButtonOK
+		/// <summary>設定或取得「確定」鈕的文字</summary>
+		public static string ButtonOK
+		{
+			get { return MsgDialog.ButtonOK; }
+			set { MsgDialog.ButtonOK = value; }
+		}
+		#endregion
+
+		#region Public Static Property : string ButtonCancel
+		/// <summary>設定或取得「取消」鈕的文字</summary>
+		public static string ButtonCancel
+		{
+			get { return MsgDialog.ButtonCancel; }
+			set { MsgDialog.ButtonCancel = value; }
+		}
+		#endregion
+
+		#region Public Static Property : string ButtonYes
+		/// <summary>設定或取得「是」鈕的文字</summary>
+		public static string ButtonYes
+		{
+			get { return MsgDialog.ButtonYes; }
+			set { MsgDialog.ButtonYes = value; }
+		}
+		#endregion
+
+		#region Public Static Property : string ButtonNo
+		/// <summary>設定或取得「否」鈕的文字</summary>
+		public static string ButtonNo
+		{
+			get { return MsgDialog.ButtonNo; }
+			set { MsgDialog.ButtonNo = value; }
+		}
+		#endregion
+
+		#region Public Static Property : string ButtonRetry
+		/// <summary>設定或取得「重試」鈕的文字</summary>
+		public static string ButtonRetry
+		{
+			get { return MsgDialog.ButtonRetry; }
+			set { MsgDialog.ButtonRetry = value; }
+		}
+		#endregion
+
+		#region Public Static Property : string ButtonAbort
+		/// <summary>設定或取得「中止」鈕的文字</summary>
+		public static string ButtonAbort
+		{
+			get { return MsgDialog.ButtonAbort; }
+			set { MsgDialog.ButtonAbort = value; }
+		}
+		#endregion
+
+		#region Public Static Property : string ButtonIgnore
+		/// <summary>設定或取得「忽略」鈕的文字</summary>
+		public static string ButtonIgnore
+		{
+			get { return MsgDialog.ButtonIgnore; }
+			set { MsgDialog.ButtonIgnore = value; }
+		}
+		#endregion
+
+		#region Public Static Method : DialogResult Show(string text)
+		/// <summary>顯示含有指定文字的訊息方塊。</summary>
+		/// <param name="text">要顯示在訊息方塊中的文字。</param>
+		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
+		public static DialogResult Show(string text)
+		{
+			return MsgDialog.ShowBox(null, text);
+		}
+		#endregion
+
+		#region Public Static Method : DialogResult Show(string text, string caption)
+		/// <summary>顯示含有指定文字和標題的訊息方塊。</summary>
+		/// <param name="text">要顯示在訊息方塊中的文字。</param>
+		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
+		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
+		public static DialogResult Show(string text, string caption)
+		{
+			return MsgDialog.ShowBox(null, text, caption);
+		}
+		#endregion
+
+		#region Public Static Method : DialogResult Show(string text, string caption, MessageBoxButtons button)
+		/// <summary>顯示含有指定文字、標題和按鈕的訊息方塊。</summary>
+		/// <param name="text">要顯示在訊息方塊中的文字。</param>
+		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
+		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
+		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
+		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
+		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
+		/// </exception>
+		public static DialogResult Show(string text, string caption, MessageBoxButtons button)
+		{
+			return MsgDialog.ShowBox(null, text, caption, button);
+		}
+		#endregion
+
+		#region Public Static Method : DialogResult Show(string text, string caption, MessageBoxButtons button, MessageBoxIcon icon)
+		/// <summary>顯示含有指定文字、標題、按鈕和圖示的訊息方塊。</summary>
+		/// <param name="text">要顯示在訊息方塊中的文字。</param>
+		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
+		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
+		/// <param name="icon">其中一個 System.Windows.Forms.MessageBoxIcon 值，指定那個圖示要顯示在訊息方塊中。</param>
+		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
+		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
+		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
+		/// <para>-或-指定的 icon 參數不是 System.Windows.Forms.MessageBoxIcon 的成員。</para>
+		/// </exception>
+		public static DialogResult Show(string text, string caption, MessageBoxButtons button, MessageBoxIcon icon)
+		{
+			return MsgDialog.ShowBox(null, text, caption, button, icon);
+		}
+		#endregion
+
+		#region Public Static Method : DialogResult Show(string text, string caption, MessageBoxButtons button, MessageBoxIcon icon, MessageBoxDefaultButton defButton)
+		/// <summary>顯示含有指定文字、標題、圖示和預設按鈕的訊息方塊。</summary>
+		/// <param name="text">要顯示在訊息方塊中的文字。</param>
+		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
+		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
+		/// <param name="icon">其中一個 System.Windows.Forms.MessageBoxIcon 值，指定那個圖示要顯示在訊息方塊中。</param>
+		/// <param name="defButton">其中一個 System.Windows.Forms.MessageBoxDefaultButton 值，指定訊息方塊的預設按鈕。</param>
+		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
+		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
+		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
+		/// <para>-或-指定的 icon 參數不是 System.Windows.Forms.MessageBoxIcon 的成員。</para>
+		/// </exception>
+		public static DialogResult Show(string text, string caption, MessageBoxButtons button, MessageBoxIcon icon, MessageBoxDefaultButton defButton)
+		{
+			return MsgDialog.ShowBox(null, text, caption, button, icon, defButton);
+		}
+		#endregion
+
+		#region Public Static Method : DialogResult Show(IWin32Window owner, string text)
+		/// <summary>在指定物件的前面顯示含有指定文字的訊息方塊。</summary>
+		/// <param name="owner">System.Windows.Forms.IWin32Window 實作，將擁有強制回應對話方塊。</param>
+		/// <param name="text">要顯示在訊息方塊中的文字。</param>
+		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
+		public static DialogResult Show(IWin32Window owner, string text)
+		{
+			return MsgDialog.ShowBox(owner, text);
+		}
+		#endregion
+
+		#region Public Static Method : DialogResult Show(IWin32Window owner, string text, string caption)
+		/// <summary>在指定物件的前面顯示含有指定文字和標題的訊息方塊。</summary>
+		/// <param name="owner">System.Windows.Forms.IWin32Window 實作，將擁有強制回應對話方塊。</param>
+		/// <param name="text">要顯示在訊息方塊中的文字。</param>
+		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
+		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
+		public static DialogResult Show(IWin32Window owner, string text, string caption)
+		{
+			return MsgDialog.ShowBox(owner, text, caption);
+		}
+		#endregion
+
+		#region Public Static Method : DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button)
+		/// <summary>在指定物件的前面顯示含有指定文字、標題和按鈕的訊息方塊。</summary>
+		/// <param name="owner">System.Windows.Forms.IWin32Window 實作，將擁有強制回應對話方塊。</param>
+		/// <param name="text">要顯示在訊息方塊中的文字。</param>
+		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
+		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
+		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
+		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
+		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
+		/// </exception>
+		public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button)
+		{
+			return MsgDialog.ShowBox(owner, text, caption, button);
+		}
+		#endregion
+
+		#region Public Static Method : DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button, MessageBoxIcon icon)
+		/// <summary>在指定物件的前面顯示含有指定文字、標題、按鈕和圖示的訊息方塊。</summary>
+		/// <param name="owner">System.Windows.Forms.IWin32Window 實作，將擁有強制回應對話方塊。</param>
+		/// <param name="text">要顯示在訊息方塊中的文字。</param>
+		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
+		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
+		/// <param name="icon">其中一個 System.Windows.Forms.MessageBoxIcon 值，指定那個圖示要顯示在訊息方塊中。</param>
+		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
+		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
+		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
+		/// <para>-或-指定的 icon 參數不是 System.Windows.Forms.MessageBoxIcon 的成員。</para>
+		/// </exception>
+		public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button, MessageBoxIcon icon)
+		{
+			return MsgDialog.ShowBox(owner, text, caption, button, icon);
+		}
+		#endregion
+
+		#region Public Static Method : DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button, MessageBoxIcon icon, MessageBoxDefaultButton defButton)
+		/// <summary>在指定物件的前面顯示含有指定文字、標題、圖示和預設按鈕的訊息方塊。</summary>
+		/// <param name="owner">System.Windows.Forms.IWin32Window 實作，將擁有強制回應對話方塊。</param>
+		/// <param name="text">要顯示在訊息方塊中的文字。</param>
+		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
+		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
+		/// <param name="icon">其中一個 System.Windows.Forms.MessageBoxIcon 值，指定那個圖示要顯示在訊息方塊中。</param>
+		/// <param name="defButton">其中一個 System.Windows.Forms.MessageBoxDefaultButton 值，指定訊息方塊的預設按鈕。</param>
+		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
+		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
+		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
+		/// <para>-或-指定的 icon 參數不是 System.Windows.Forms.MessageBoxIcon 的成員。</para>
+		/// </exception>
+		public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button, MessageBoxIcon icon, MessageBoxDefaultButton defButton)
+		{
+			return MsgDialog.ShowBox(owner, text, caption, button, icon, defButton);
+		}
+		#endregion
+	}
+	#endregion
+
 	#region Private Class : MsgDialog
 	class MsgDialog : Form
 	{
@@ -750,12 +984,7 @@ namespace CJF.Utility.WinKits
 		}
 		#endregion
 
-		#region Windows Form Designer generated code
-
-		/// <summary>
-		/// Required method for Designer support - do not modify
-		/// the contents of this method with the code editor.
-		/// </summary>
+		#region Private Method : void InitializeComponent()
 		private void InitializeComponent()
 		{
 			this.btn3 = new System.Windows.Forms.Button();
@@ -835,240 +1064,6 @@ namespace CJF.Utility.WinKits
 		}
 		#endregion
 
-	}
-	#endregion
-
-	#region Public Static Class : MessageBox
-	/// <summary>自訂類別 MessageBox</summary>
-	public static class MessageBox
-	{
-		#region Public Static Property : Font Font(R/W)
-		/// <summary>設定或取得訊息窗的字型</summary>
-		public static Font Font
-		{
-			get { return MsgDialog.TextFont; }
-			set { MsgDialog.TextFont = value; }
-		}
-		#endregion
-
-		#region Public Static Property : int DialogMaximumWidth(R/W)
-		/// <summary>設定或取得視窗最大範圍</summary>
-		public static int DialogMaximumWidth
-		{
-			get { return MsgDialog.DialogMaxSize; }
-			set { MsgDialog.DialogMaxSize = value; }
-		}
-		#endregion
-
-		#region Public Static Property : string ButtonOK
-		/// <summary>設定或取得「確定」鈕的文字</summary>
-		public static string ButtonOK
-		{
-			get { return MsgDialog.ButtonOK; }
-			set { MsgDialog.ButtonOK = value; }
-		}
-		#endregion
-
-		#region Public Static Property : string ButtonCancel
-		/// <summary>設定或取得「取消」鈕的文字</summary>
-		public static string ButtonCancel
-		{
-			get { return MsgDialog.ButtonCancel; }
-			set { MsgDialog.ButtonCancel = value; }
-		}
-		#endregion
-
-		#region Public Static Property : string ButtonYes
-		/// <summary>設定或取得「是」鈕的文字</summary>
-		public static string ButtonYes
-		{
-			get { return MsgDialog.ButtonYes; }
-			set { MsgDialog.ButtonYes = value; }
-		}
-		#endregion
-
-		#region Public Static Property : string ButtonNo
-		/// <summary>設定或取得「否」鈕的文字</summary>
-		public static string ButtonNo
-		{
-			get { return MsgDialog.ButtonNo; }
-			set { MsgDialog.ButtonNo = value; }
-		}
-		#endregion
-
-		#region Public Static Property : string ButtonRetry
-		/// <summary>設定或取得「重試」鈕的文字</summary>
-		public static string ButtonRetry
-		{
-			get { return MsgDialog.ButtonRetry; }
-			set { MsgDialog.ButtonRetry = value; }
-		}
-		#endregion
-
-		#region Public Static Property : string ButtonAbort
-		/// <summary>設定或取得「中止」鈕的文字</summary>
-		public static string ButtonAbort
-		{
-			get { return MsgDialog.ButtonAbort; }
-			set { MsgDialog.ButtonAbort = value; }
-		}
-		#endregion
-
-		#region Public Static Property : string ButtonIgnore
-		/// <summary>設定或取得「忽略」鈕的文字</summary>
-		public static string ButtonIgnore
-		{
-			get { return MsgDialog.ButtonIgnore; }
-			set { MsgDialog.ButtonIgnore = value; }
-		}
-		#endregion
-
-		#region Public Static Method : DialogResult Show(string text)
-		/// <summary>顯示含有指定文字的訊息方塊。</summary>
-		/// <param name="text">要顯示在訊息方塊中的文字。</param>
-		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
-		public static DialogResult Show(string text)
-		{
-			return MsgDialog.ShowBox(null, text);
-		}
-		#endregion
-
-		#region Public Static Method : DialogResult Show(string text, string caption)
-		/// <summary>顯示含有指定文字和標題的訊息方塊。</summary>
-		/// <param name="text">要顯示在訊息方塊中的文字。</param>
-		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
-		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
-		public static DialogResult Show(string text, string caption)
-		{
-			return MsgDialog.ShowBox(null, text, caption);
-		}
-		#endregion
-
-		#region Public Static Method : DialogResult Show(string text, string caption, MessageBoxButtons button)
-		/// <summary>顯示含有指定文字、標題和按鈕的訊息方塊。</summary>
-		/// <param name="text">要顯示在訊息方塊中的文字。</param>
-		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
-		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
-		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
-		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
-		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
-		/// </exception>
-		public static DialogResult Show(string text, string caption, MessageBoxButtons button)
-		{
-			return MsgDialog.ShowBox(null, text, caption, button);
-		}
-		#endregion
-
-		#region Public Static Method : DialogResult Show(string text, string caption, MessageBoxButtons button, MessageBoxIcon icon)
-		/// <summary>顯示含有指定文字、標題、按鈕和圖示的訊息方塊。</summary>
-		/// <param name="text">要顯示在訊息方塊中的文字。</param>
-		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
-		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
-		/// <param name="icon">其中一個 System.Windows.Forms.MessageBoxIcon 值，指定那個圖示要顯示在訊息方塊中。</param>
-		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
-		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
-		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
-		/// <para>-或-指定的 icon 參數不是 System.Windows.Forms.MessageBoxIcon 的成員。</para>
-		/// </exception>
-		public static DialogResult Show(string text, string caption, MessageBoxButtons button, MessageBoxIcon icon)
-		{
-			return MsgDialog.ShowBox(null, text, caption, button, icon);
-		}
-		#endregion
-
-		#region Public Static Method : DialogResult Show(string text, string caption, MessageBoxButtons button, MessageBoxIcon icon, MessageBoxDefaultButton defButton)
-		/// <summary>顯示含有指定文字、標題、圖示和預設按鈕的訊息方塊。</summary>
-		/// <param name="text">要顯示在訊息方塊中的文字。</param>
-		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
-		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
-		/// <param name="icon">其中一個 System.Windows.Forms.MessageBoxIcon 值，指定那個圖示要顯示在訊息方塊中。</param>
-		/// <param name="defButton">其中一個 System.Windows.Forms.MessageBoxDefaultButton 值，指定訊息方塊的預設按鈕。</param>
-		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
-		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
-		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
-		/// <para>-或-指定的 icon 參數不是 System.Windows.Forms.MessageBoxIcon 的成員。</para>
-		/// </exception>
-		public static DialogResult Show(string text, string caption, MessageBoxButtons button, MessageBoxIcon icon, MessageBoxDefaultButton defButton)
-		{
-			return MsgDialog.ShowBox(null, text, caption, button, icon, defButton);
-		}
-		#endregion
-
-		#region Public Static Method : DialogResult Show(IWin32Window owner, string text)
-		/// <summary>在指定物件的前面顯示含有指定文字的訊息方塊。</summary>
-		/// <param name="owner">System.Windows.Forms.IWin32Window 實作，將擁有強制回應對話方塊。</param>
-		/// <param name="text">要顯示在訊息方塊中的文字。</param>
-		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
-		public static DialogResult Show(IWin32Window owner, string text)
-		{
-			return MsgDialog.ShowBox(owner, text);
-		}
-		#endregion
-
-		#region Public Static Method : DialogResult Show(IWin32Window owner, string text, string caption)
-		/// <summary>在指定物件的前面顯示含有指定文字和標題的訊息方塊。</summary>
-		/// <param name="owner">System.Windows.Forms.IWin32Window 實作，將擁有強制回應對話方塊。</param>
-		/// <param name="text">要顯示在訊息方塊中的文字。</param>
-		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
-		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
-		public static DialogResult Show(IWin32Window owner, string text, string caption)
-		{
-			return MsgDialog.ShowBox(owner, text, caption);
-		}
-		#endregion
-
-		#region Public Static Method : DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button)
-		/// <summary>在指定物件的前面顯示含有指定文字、標題和按鈕的訊息方塊。</summary>
-		/// <param name="owner">System.Windows.Forms.IWin32Window 實作，將擁有強制回應對話方塊。</param>
-		/// <param name="text">要顯示在訊息方塊中的文字。</param>
-		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
-		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
-		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
-		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
-		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
-		/// </exception>
-		public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button)
-		{
-			return MsgDialog.ShowBox(owner, text, caption, button);
-		}
-		#endregion
-
-		#region Public Static Method : DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button, MessageBoxIcon icon)
-		/// <summary>在指定物件的前面顯示含有指定文字、標題、按鈕和圖示的訊息方塊。</summary>
-		/// <param name="owner">System.Windows.Forms.IWin32Window 實作，將擁有強制回應對話方塊。</param>
-		/// <param name="text">要顯示在訊息方塊中的文字。</param>
-		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
-		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
-		/// <param name="icon">其中一個 System.Windows.Forms.MessageBoxIcon 值，指定那個圖示要顯示在訊息方塊中。</param>
-		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
-		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
-		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
-		/// <para>-或-指定的 icon 參數不是 System.Windows.Forms.MessageBoxIcon 的成員。</para>
-		/// </exception>
-		public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button, MessageBoxIcon icon)
-		{
-			return MsgDialog.ShowBox(owner, text, caption, button, icon);
-		}
-		#endregion
-
-		#region Public Static Method : DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button, MessageBoxIcon icon, MessageBoxDefaultButton defButton)
-		/// <summary>在指定物件的前面顯示含有指定文字、標題、圖示和預設按鈕的訊息方塊。</summary>
-		/// <param name="owner">System.Windows.Forms.IWin32Window 實作，將擁有強制回應對話方塊。</param>
-		/// <param name="text">要顯示在訊息方塊中的文字。</param>
-		/// <param name="caption">要顯示在訊息方塊標題列中的文字。</param>
-		/// <param name="button">其中一個 System.Windows.Forms.MessageBoxButtons 值，指定要在訊息方塊中顯示哪些按鈕。</param>
-		/// <param name="icon">其中一個 System.Windows.Forms.MessageBoxIcon 值，指定那個圖示要顯示在訊息方塊中。</param>
-		/// <param name="defButton">其中一個 System.Windows.Forms.MessageBoxDefaultButton 值，指定訊息方塊的預設按鈕。</param>
-		/// <returns>其中一個 System.Windows.Forms.DialogResult 值。</returns>
-		/// <exception cref="System.ComponentModel.InvalidEnumArgumentException">
-		/// 指定的 buttons 參數不是 System.Windows.Forms.MessageBoxButtons 的成員。
-		/// <para>-或-指定的 icon 參數不是 System.Windows.Forms.MessageBoxIcon 的成員。</para>
-		/// </exception>
-		public static DialogResult Show(IWin32Window owner, string text, string caption, MessageBoxButtons button, MessageBoxIcon icon, MessageBoxDefaultButton defButton)
-		{
-			return MsgDialog.ShowBox(owner, text, caption, button, icon, defButton);
-		}
-		#endregion
 	}
 	#endregion
 }
