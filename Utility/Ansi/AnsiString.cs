@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace CJF.Utility
+namespace CJF.Utility.Ansi
 {
 	/// <summary>提供協助 TelnetServer 輸出 ANSI 相關控制碼</summary>
 	[Obsolete("請改用 CJF.Utility.Ansi.CsiBuilder", false)]
@@ -215,39 +215,73 @@ namespace CJF.Utility
 		public static string Conceal { get { return _AnsiTable["{conceal}"].Code; } }
 		/// <summary>取得ANSI控制碼:刪除線(未廣泛支援)</summary>
 		public static string Strikethrough { get { return _AnsiTable["{strike}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorBlack { get { return _AnsiTable["{black}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorDarkRed { get { return _AnsiTable["{d_red}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorDarkGreen { get { return _AnsiTable["{d_green}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorDarkYellow { get { return _AnsiTable["{d_yellow}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorDarkBlue { get { return _AnsiTable["{d_blue}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorDarkMagenta { get { return _AnsiTable["{d_magenta}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorDarkCyan { get { return _AnsiTable["{b_cyan}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorGray { get { return _AnsiTable["{gray}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorDarkGray { get { return _AnsiTable["{d_gray}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorRed { get { return _AnsiTable["{red}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorGreen { get { return _AnsiTable["{green}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorYellow { get { return _AnsiTable["{yellow}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorBlue { get { return _AnsiTable["{blue}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorMagenta { get { return _AnsiTable["{magenta}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorCyan { get { return _AnsiTable["{cyan}"].Code; } }
+		/// <summary></summary>
 		public static string ForeColorWhite { get { return _AnsiTable["{white}"].Code; } }
+		/// <summary></summary>
 		public static string DefaultForeColor { get { return _AnsiTable["{defcolor}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorBlack { get { return _AnsiTable["{!black}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorDarkRed { get { return _AnsiTable["{!d_red}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorDarkGreen { get { return _AnsiTable["{!d_green}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorDarkYellow { get { return _AnsiTable["{!d_yellow}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorDarkBlue { get { return _AnsiTable["{!d_blue}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorDarkMagenta { get { return _AnsiTable["{!d_magenta}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorDarkCyan { get { return _AnsiTable["{!b_cyan}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorGray { get { return _AnsiTable["{!gray}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorDarkGray { get { return _AnsiTable["{!d_gray}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorRed { get { return _AnsiTable["{!red}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorGreen { get { return _AnsiTable["{!green}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorYellow { get { return _AnsiTable["{!yellow}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorBlue { get { return _AnsiTable["{!blue}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorMagenta { get { return _AnsiTable["{!magenta}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorCyan { get { return _AnsiTable["{!cyan}"].Code; } }
+		/// <summary></summary>
 		public static string BackColorWhite { get { return _AnsiTable["{!white}"].Code; } }
+		/// <summary></summary>
 		public static string DefaultBackColor { get { return _AnsiTable["{!defcolor}"].Code; } }
 		/// <summary>取得ANSI控制碼的所有關鍵字</summary>
 		public static string[] AllKeyWords
