@@ -1061,6 +1061,7 @@ namespace CJF.Utility.Extensions
 	#endregion
 
 	#region Public Static Class : ObjectExtension
+	/// <summary>物件資料類型擴充函示</summary>
 	public static class ObjectExtension
 	{
 		#region Public Static Method : bool IsNumeric(this object o)

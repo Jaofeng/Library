@@ -58,6 +58,8 @@ namespace CJF.Utility.ThreadSafe
 	#endregion
 
 	#region Public Sealed Class : ThreadSafeEnumerator<T>
+	/// <summary></summary>
+	/// <typeparam name="T"></typeparam>
 	public sealed class ThreadSafeEnumerator<T> : IEnumerator<T>, IDisposable
 	{
 		// Fields         
@@ -67,6 +69,9 @@ namespace CJF.Utility.ThreadSafe
 		private bool _disposed = false;
 
 		// Constructor
+		/// <summary></summary>
+		/// <param name="getEnumeratorDelegate"></param>
+		/// <param name="readerWriterLock"></param>
 		public ThreadSafeEnumerator(Func<IEnumerator<T>> getEnumeratorDelegate, ThreadSafeReaderWriterLock readerWriterLock)
 		{
 			#region Require
@@ -82,6 +87,7 @@ namespace CJF.Utility.ThreadSafe
 			_component = getEnumeratorDelegate();
 		}
 
+		/// <summary></summary>
 		public void Dispose()
 		{
 			// Require
@@ -100,11 +106,14 @@ namespace CJF.Utility.ThreadSafe
 
 
 		// Properties
+		/// <summary></summary>
 		public T Current { get { return _component.Current; } }
 		object System.Collections.IEnumerator.Current { get { return this.Current; } }
 
 		// Methods
+		/// <summary></summary>
 		public bool MoveNext() { return _component.MoveNext(); }
+		/// <summary></summary>
 		public void Reset() { _component.Reset(); }
 	}
 	#endregion
@@ -120,8 +129,10 @@ namespace CJF.Utility.ThreadSafe
 		private readonly object _syncRoot = new object();
 		private bool _disposed = false;
 
-		protected ThreadSafeEnumerable() : this(new List<T>()) { }
 		// Constructor
+		/// <summary></summary>
+		protected ThreadSafeEnumerable() : this(new List<T>()) { }
+		/// <summary></summary>
 		protected ThreadSafeEnumerable(IEnumerable<T> component)
 		{
 			#region Require
@@ -151,10 +162,15 @@ namespace CJF.Utility.ThreadSafe
 		}
 
 		// Methods
+		/// <summary></summary>
 		protected void EnterReadLock() { _readerWriterLock.EnterReadLock(); }
+		/// <summary></summary>
 		protected void ExitReadLock() { _readerWriterLock.ExitReadLock(); }
+		/// <summary></summary>
 		protected void EnterWriteLock() { _readerWriterLock.EnterWriteLock(); }
+		/// <summary></summary>
 		protected void ExitWriteLock() { _readerWriterLock.ExitWriteLock(); }
+		/// <summary></summary>
 		public IEnumerator<T> GetEnumerator() { return new ThreadSafeEnumerator<T>(_component.GetEnumerator, _readerWriterLock); }
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() { return this.GetEnumerator(); }
 	}
