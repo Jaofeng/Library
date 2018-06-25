@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Net;
 using System.Net.Sockets;
+using System.Net.Security;
 using System.Collections.Concurrent;
 
 namespace CJF.Net
@@ -277,6 +278,49 @@ namespace CJF.Net
 		public System.Net.NetworkInformation.IPStatus Status { get; internal set; }
 		/// <summary>取得值，錯誤發生時，將利用此屬性回傳。</summary>
 		public Exception Exception { get; private set; }
+	}
+	#endregion
+
+	#region EventArgs For SslTcpServer
+	/// <summary>SslTcpEventArgs 類別，供 SslTcpServer 產生事件用</summary>
+	public class SslTcpEventArgs : EventArgs
+	{
+		private byte[] _Data = null;
+		private Exception _Exception = null;
+		private EndPoint _RemoteEndPoint = null;
+
+		/// <summary>取得值，接收或傳送的位元組陣列資料</summary>
+		public byte[] Data { get { return _Data; } }
+		/// <summary>取得值，錯誤發生時，將利用此屬性回傳</summary>
+		public Exception Exception { get { return _Exception; } }
+		/// <summary>取得值，遠端端點資訊</summary>
+		public EndPoint RemoteEndPoint { get { return _RemoteEndPoint; } }
+
+		/// <summary>建立新的 SslTcpEventArgs 類別</summary>
+		/// <param name="ep">遠端使用者連線端點。</param>
+		/// <param name="data">封包資料內容。</param>
+		/// <param name="ex">錯誤類別。</param>
+		public SslTcpEventArgs(EndPoint ep, byte[] data, Exception ex)
+		{
+			_RemoteEndPoint = ep;
+			if (data != null)
+			{
+				_Data = new byte[data.Length];
+				Array.Copy(data, _Data, data.Length);
+			}
+			else
+				_Data = null;
+			_Exception = ex;
+		}
+
+		/// <summary>建立新的 SslTcpEventArgs 類別</summary>
+		/// <param name="ep">遠端使用者連線端點。</param>
+		public SslTcpEventArgs(EndPoint ep) : this(ep, null, null) { }
+
+		/// <summary>建立新的 SslTcpEventArgs 類別。</summary>
+		/// <param name="ep">遠端使用者連線端點。</param>
+		/// <param name="data">封包資料內容。</param>
+		public SslTcpEventArgs(EndPoint ep, byte[] data) : this(ep, data, null) { }
 	}
 	#endregion
 
