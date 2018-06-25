@@ -35,13 +35,19 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.txtPfx = new System.Windows.Forms.TextBox();
+			this.label18 = new System.Windows.Forms.Label();
+			this.txtPfxPwd = new System.Windows.Forms.TextBox();
+			this.label19 = new System.Windows.Forms.Label();
 			this.txtSvcNames = new System.Windows.Forms.TextBox();
 			this.label9 = new System.Windows.Forms.Label();
 			this.btnStop = new System.Windows.Forms.Button();
 			this.btnStart = new System.Windows.Forms.Button();
-			this.txtPath = new System.Windows.Forms.TextBox();
+			this.txtUrl = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.gbForm = new System.Windows.Forms.GroupBox();
+			this.txtCer = new System.Windows.Forms.TextBox();
+			this.label20 = new System.Windows.Forms.Label();
 			this.txtUserAgent = new System.Windows.Forms.TextBox();
 			this.label17 = new System.Windows.Forms.Label();
 			this.btnExtWebClientUpload = new System.Windows.Forms.Button();
@@ -73,6 +79,9 @@
 			this.label12 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
+			this.label21 = new System.Windows.Forms.Label();
+			this.cbCertServer = new System.Windows.Forms.ComboBox();
+			this.cbCertClient = new System.Windows.Forms.ComboBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.gbForm.SuspendLayout();
@@ -82,9 +91,9 @@
 			// 
 			this.groupBox1.Controls.Add(this.rtbLog);
 			this.groupBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.groupBox1.Location = new System.Drawing.Point(10, 278);
+			this.groupBox1.Location = new System.Drawing.Point(10, 305);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(838, 263);
+			this.groupBox1.Size = new System.Drawing.Size(838, 236);
 			this.groupBox1.TabIndex = 4;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Log Message";
@@ -97,13 +106,13 @@
 			this.rtbLog.Font = new System.Drawing.Font("細明體", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
 			this.rtbLog.Location = new System.Drawing.Point(3, 18);
 			this.rtbLog.Name = "rtbLog";
-			this.rtbLog.Size = new System.Drawing.Size(832, 242);
+			this.rtbLog.Size = new System.Drawing.Size(832, 215);
 			this.rtbLog.TabIndex = 0;
 			this.rtbLog.Text = "";
 			// 
 			// txtPort
 			// 
-			this.txtPort.Location = new System.Drawing.Point(217, 21);
+			this.txtPort.Location = new System.Drawing.Point(390, 20);
 			this.txtPort.Name = "txtPort";
 			this.txtPort.Size = new System.Drawing.Size(50, 22);
 			this.txtPort.TabIndex = 3;
@@ -112,7 +121,7 @@
 			// txtIP
 			// 
 			this.txtIP.BackColor = System.Drawing.SystemColors.Window;
-			this.txtIP.Location = new System.Drawing.Point(57, 21);
+			this.txtIP.Location = new System.Drawing.Point(230, 20);
 			this.txtIP.Name = "txtIP";
 			this.txtIP.Size = new System.Drawing.Size(88, 22);
 			this.txtIP.TabIndex = 1;
@@ -121,7 +130,7 @@
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(158, 26);
+			this.label2.Location = new System.Drawing.Point(331, 25);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(53, 12);
 			this.label2.TabIndex = 2;
@@ -130,7 +139,7 @@
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(12, 26);
+			this.label1.Location = new System.Drawing.Point(185, 25);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(39, 12);
 			this.label1.TabIndex = 0;
@@ -138,36 +147,80 @@
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.cbCertServer);
+			this.groupBox2.Controls.Add(this.txtPfx);
+			this.groupBox2.Controls.Add(this.label18);
+			this.groupBox2.Controls.Add(this.txtPfxPwd);
+			this.groupBox2.Controls.Add(this.label19);
 			this.groupBox2.Controls.Add(this.txtSvcNames);
 			this.groupBox2.Controls.Add(this.label9);
 			this.groupBox2.Controls.Add(this.btnStop);
 			this.groupBox2.Controls.Add(this.btnStart);
 			this.groupBox2.Controls.Add(this.txtIP);
 			this.groupBox2.Controls.Add(this.txtPort);
+			this.groupBox2.Controls.Add(this.label21);
 			this.groupBox2.Controls.Add(this.label1);
 			this.groupBox2.Controls.Add(this.label2);
 			this.groupBox2.Dock = System.Windows.Forms.DockStyle.Top;
 			this.groupBox2.Location = new System.Drawing.Point(10, 10);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Size = new System.Drawing.Size(838, 56);
+			this.groupBox2.Size = new System.Drawing.Size(838, 83);
 			this.groupBox2.TabIndex = 0;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Http Server";
+			// 
+			// txtPfx
+			// 
+			this.txtPfx.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtPfx.Location = new System.Drawing.Point(456, 49);
+			this.txtPfx.Name = "txtPfx";
+			this.txtPfx.Size = new System.Drawing.Size(158, 22);
+			this.txtPfx.TabIndex = 7;
+			this.txtPfx.Text = "CJF.Net.SslTcpServer.pfx";
+			// 
+			// label18
+			// 
+			this.label18.AutoSize = true;
+			this.label18.Location = new System.Drawing.Point(409, 54);
+			this.label18.Name = "label18";
+			this.label18.Size = new System.Drawing.Size(41, 12);
+			this.label18.TabIndex = 6;
+			this.label18.Text = "憑證檔";
+			// 
+			// txtPfxPwd
+			// 
+			this.txtPfxPwd.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtPfxPwd.Location = new System.Drawing.Point(694, 49);
+			this.txtPfxPwd.Name = "txtPfxPwd";
+			this.txtPfxPwd.Size = new System.Drawing.Size(127, 22);
+			this.txtPfxPwd.TabIndex = 7;
+			this.txtPfxPwd.Text = "CJF.Net.SslTcpServer";
+			// 
+			// label19
+			// 
+			this.label19.AutoSize = true;
+			this.label19.Location = new System.Drawing.Point(635, 54);
+			this.label19.Name = "label19";
+			this.label19.Size = new System.Drawing.Size(53, 12);
+			this.label19.TabIndex = 6;
+			this.label19.Text = "憑證密碼";
 			// 
 			// txtSvcNames
 			// 
 			this.txtSvcNames.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtSvcNames.Location = new System.Drawing.Point(342, 21);
+			this.txtSvcNames.Location = new System.Drawing.Point(71, 49);
 			this.txtSvcNames.Name = "txtSvcNames";
-			this.txtSvcNames.Size = new System.Drawing.Size(317, 22);
+			this.txtSvcNames.Size = new System.Drawing.Size(313, 22);
 			this.txtSvcNames.TabIndex = 7;
 			this.txtSvcNames.Text = "upload;remotelog";
 			// 
 			// label9
 			// 
 			this.label9.AutoSize = true;
-			this.label9.Location = new System.Drawing.Point(283, 26);
+			this.label9.Location = new System.Drawing.Point(12, 54);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(53, 12);
 			this.label9.TabIndex = 6;
@@ -177,7 +230,7 @@
 			// 
 			this.btnStop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnStop.Enabled = false;
-			this.btnStop.Location = new System.Drawing.Point(746, 21);
+			this.btnStop.Location = new System.Drawing.Point(746, 20);
 			this.btnStop.Name = "btnStop";
 			this.btnStop.Size = new System.Drawing.Size(75, 23);
 			this.btnStop.TabIndex = 5;
@@ -188,7 +241,7 @@
 			// btnStart
 			// 
 			this.btnStart.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnStart.Location = new System.Drawing.Point(665, 21);
+			this.btnStart.Location = new System.Drawing.Point(665, 20);
 			this.btnStart.Name = "btnStart";
 			this.btnStart.Size = new System.Drawing.Size(75, 23);
 			this.btnStart.TabIndex = 4;
@@ -196,16 +249,16 @@
 			this.btnStart.UseVisualStyleBackColor = true;
 			this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
 			// 
-			// txtPath
+			// txtUrl
 			// 
-			this.txtPath.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+			this.txtUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtPath.BackColor = System.Drawing.SystemColors.Window;
-			this.txtPath.Location = new System.Drawing.Point(57, 21);
-			this.txtPath.Name = "txtPath";
-			this.txtPath.Size = new System.Drawing.Size(421, 22);
-			this.txtPath.TabIndex = 1;
-			this.txtPath.Text = "http://127.0.0.1:8080/upload";
+			this.txtUrl.BackColor = System.Drawing.SystemColors.Window;
+			this.txtUrl.Location = new System.Drawing.Point(163, 21);
+			this.txtUrl.Name = "txtUrl";
+			this.txtUrl.Size = new System.Drawing.Size(219, 22);
+			this.txtUrl.TabIndex = 1;
+			this.txtUrl.Text = "http://127.0.0.1:8080/upload";
 			// 
 			// label4
 			// 
@@ -218,6 +271,9 @@
 			// 
 			// gbForm
 			// 
+			this.gbForm.Controls.Add(this.cbCertClient);
+			this.gbForm.Controls.Add(this.txtCer);
+			this.gbForm.Controls.Add(this.label20);
 			this.gbForm.Controls.Add(this.txtUserAgent);
 			this.gbForm.Controls.Add(this.label17);
 			this.gbForm.Controls.Add(this.btnExtWebClientUpload);
@@ -226,7 +282,7 @@
 			this.gbForm.Controls.Add(this.label7);
 			this.gbForm.Controls.Add(this.btnWebClientGet);
 			this.gbForm.Controls.Add(this.btnWebClientPost);
-			this.gbForm.Controls.Add(this.txtPath);
+			this.gbForm.Controls.Add(this.txtUrl);
 			this.gbForm.Controls.Add(this.label4);
 			this.gbForm.Controls.Add(this.txtVal4);
 			this.gbForm.Controls.Add(this.pbPercentage);
@@ -251,7 +307,7 @@
 			this.gbForm.Controls.Add(this.label12);
 			this.gbForm.Dock = System.Windows.Forms.DockStyle.Top;
 			this.gbForm.Enabled = false;
-			this.gbForm.Location = new System.Drawing.Point(10, 74);
+			this.gbForm.Location = new System.Drawing.Point(10, 101);
 			this.gbForm.Margin = new System.Windows.Forms.Padding(3, 10, 3, 3);
 			this.gbForm.Name = "gbForm";
 			this.gbForm.Size = new System.Drawing.Size(838, 196);
@@ -259,18 +315,37 @@
 			this.gbForm.TabStop = false;
 			this.gbForm.Text = "WebClient Post Data and File";
 			// 
+			// txtCer
+			// 
+			this.txtCer.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.txtCer.Location = new System.Drawing.Point(435, 21);
+			this.txtCer.Name = "txtCer";
+			this.txtCer.Size = new System.Drawing.Size(136, 22);
+			this.txtCer.TabIndex = 7;
+			this.txtCer.Text = "CJF.Net.SslTcpServer.cer";
+			// 
+			// label20
+			// 
+			this.label20.AutoSize = true;
+			this.label20.Location = new System.Drawing.Point(388, 26);
+			this.label20.Name = "label20";
+			this.label20.Size = new System.Drawing.Size(41, 12);
+			this.label20.TabIndex = 6;
+			this.label20.Text = "憑證檔";
+			// 
 			// txtUserAgent
 			// 
 			this.txtUserAgent.BackColor = System.Drawing.SystemColors.Window;
-			this.txtUserAgent.Location = new System.Drawing.Point(579, 21);
+			this.txtUserAgent.Location = new System.Drawing.Point(637, 21);
 			this.txtUserAgent.Name = "txtUserAgent";
-			this.txtUserAgent.Size = new System.Drawing.Size(242, 22);
+			this.txtUserAgent.Size = new System.Drawing.Size(184, 22);
 			this.txtUserAgent.TabIndex = 3;
 			// 
 			// label17
 			// 
 			this.label17.AutoSize = true;
-			this.label17.Location = new System.Drawing.Point(519, 26);
+			this.label17.Location = new System.Drawing.Point(577, 26);
 			this.label17.Name = "label17";
 			this.label17.Size = new System.Drawing.Size(54, 12);
 			this.label17.TabIndex = 2;
@@ -524,7 +599,7 @@
 			// label5
 			// 
 			this.label5.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label5.Location = new System.Drawing.Point(10, 66);
+			this.label5.Location = new System.Drawing.Point(10, 93);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(838, 8);
 			this.label5.TabIndex = 1;
@@ -532,10 +607,44 @@
 			// label6
 			// 
 			this.label6.Dock = System.Windows.Forms.DockStyle.Top;
-			this.label6.Location = new System.Drawing.Point(10, 270);
+			this.label6.Location = new System.Drawing.Point(10, 297);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(838, 8);
 			this.label6.TabIndex = 3;
+			// 
+			// label21
+			// 
+			this.label21.AutoSize = true;
+			this.label21.Location = new System.Drawing.Point(36, 25);
+			this.label21.Name = "label21";
+			this.label21.Size = new System.Drawing.Size(29, 12);
+			this.label21.TabIndex = 0;
+			this.label21.Text = "類型";
+			// 
+			// cbCertServer
+			// 
+			this.cbCertServer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbCertServer.FormattingEnabled = true;
+			this.cbCertServer.Items.AddRange(new object[] {
+            "http",
+            "https"});
+			this.cbCertServer.Location = new System.Drawing.Point(71, 21);
+			this.cbCertServer.Name = "cbCertServer";
+			this.cbCertServer.Size = new System.Drawing.Size(100, 20);
+			this.cbCertServer.TabIndex = 8;
+			// 
+			// cbCertClient
+			// 
+			this.cbCertClient.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbCertClient.FormattingEnabled = true;
+			this.cbCertClient.Items.AddRange(new object[] {
+            "http",
+            "https"});
+			this.cbCertClient.Location = new System.Drawing.Point(57, 22);
+			this.cbCertClient.Name = "cbCertClient";
+			this.cbCertClient.Size = new System.Drawing.Size(100, 20);
+			this.cbCertClient.TabIndex = 8;
+			this.cbCertClient.SelectedIndexChanged += new System.EventHandler(this.cbCertClient_SelectedIndexChanged);
 			// 
 			// FHttpService
 			// 
@@ -576,7 +685,7 @@
 		private System.Windows.Forms.GroupBox gbForm;
 		private System.Windows.Forms.Button btnWebClientUpload;
 		private System.Windows.Forms.Button btnFile1;
-		private System.Windows.Forms.TextBox txtPath;
+		private System.Windows.Forms.TextBox txtUrl;
 		private System.Windows.Forms.Label label4;
 		private System.Windows.Forms.TextBox txtFile1;
 		private System.Windows.Forms.Label label3;
@@ -610,5 +719,14 @@
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.TextBox txtUserAgent;
 		private System.Windows.Forms.Label label17;
+		private System.Windows.Forms.TextBox txtPfx;
+		private System.Windows.Forms.Label label18;
+		private System.Windows.Forms.TextBox txtPfxPwd;
+		private System.Windows.Forms.Label label19;
+		private System.Windows.Forms.TextBox txtCer;
+		private System.Windows.Forms.Label label20;
+		private System.Windows.Forms.ComboBox cbCertServer;
+		private System.Windows.Forms.Label label21;
+		private System.Windows.Forms.ComboBox cbCertClient;
 	}
 }

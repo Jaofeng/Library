@@ -591,5 +591,17 @@ D:\WorkSpace\Source\Common\Library\Tester\MainEntry.cs \x1B[94mLine:394, Colume:
 			WK.AnsiLabel lab = (WK.AnsiLabel)sender;
 			Debug.Print("{0} Paint", lab.Name);
 		}
+
+		private void button17_Click(object sender, EventArgs e)
+		{
+			FSslTcpServer fp = new FSslTcpServer();
+			fp.Show();
+		}
+
+		private void button18_Click(object sender, EventArgs e)
+		{
+			FSslTcpClient fp = new FSslTcpClient();
+			fp.Show();
+		}
 	}
 }

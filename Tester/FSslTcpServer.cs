@@ -14,18 +14,14 @@ using CJF.Utility.Extensions;
 
 namespace Tester
 {
-	public partial class FWebSocketServer : Form
+	public partial class FSslTcpServer : Form
 	{
-		WebSocketServer _Server = null;
+		SslTcpServer _Server = null;
 
-		/// <summary>SHA1 加密類別</summary>
-		SHA1 m_sha = null;
 
-		public FWebSocketServer()
+		public FSslTcpServer()
 		{
 			InitializeComponent();
-			m_sha = SHA1CryptoServiceProvider.Create();
-			Process.Start(System.IO.Path.Combine(Environment.CurrentDirectory, "web", "Test.htm"));
 		}
 
 		#region WriteLog
@@ -56,45 +52,33 @@ namespace Tester
 		#endregion
 
 		#region Server Actions
-		void Server_OnShutdown(object sender, SocketServerEventArgs e)
+		void Server_OnShutdown(object sender, EventArgs e)
 		{
-			WriteLog("M:伺服器已關閉");
+			WriteLog("伺服器已關閉");
 		}
 
-		void Server_OnStarted(object sender, SocketServerEventArgs e)
+		void Server_OnStarted(object sender, EventArgs e)
 		{
-			WriteLog("M:伺服器已於 {0} 啟動", _Server.Socket.LocalEndPoint);
-			WriteLog("M:接線池剩餘：{0}", _Server.PoolSurplus);
+			WriteLog("伺服器已於 {0} 啟動", _Server.LocalEndPoint);
 		}
-		void Server_OnClientClosed(object sender, SocketServerEventArgs e)
+		void Server_OnClientClosed(object sender, SslTcpEventArgs e)
 		{
-			WriteLog("M:用戶端 {0} 已關閉連線", e.RemoteEndPoint);
-			if (_Server != null)
-				WriteLog("M:接線池剩餘：{0}", _Server.PoolSurplus);
+			WriteLog("用戶端 {0} 已關閉連線", e.RemoteEndPoint);
 		}
-		void Server_OnClientClosing(object sender, SocketServerEventArgs e)
-		{
-			WriteLog("M:用戶端 {0} 正停止連線", e.RemoteEndPoint);
-		}
-
-		void Server_OnClientConnected(object sender, SocketServerEventArgs e)
+		void Server_OnClientConnected(object sender, SslTcpEventArgs e)
 		{
 			WriteLog("用戶端 {0} 已連線", e.RemoteEndPoint);
-			WriteLog("M:接線池剩餘：{0}", _Server.PoolSurplus);
 		}
-		#endregion
-
-		void Server_OnDataReceived(object sender, SocketServerEventArgs e)
+		void Server_OnDataReceived(object sender, SslTcpEventArgs e)
 		{
 			string data = Encoding.UTF8.GetString(e.Data);
-			WriteLog("收到資料 {0} Bytes", e.Data.Length);
+			WriteLog("自 {0} 收到資料, {1} Bytes", e.RemoteEndPoint, e.Data.Length);
 			if (chkHexString.Checked)
 				WriteLog("Hex:{0}", e.Data.ToHexString());
 			else
 				WriteLog(" > :{0}", data);
 		}
-
-		void Server_OnDataSended(object sender, SocketServerEventArgs e)
+		void Server_OnDataSended(object sender, SslTcpEventArgs e)
 		{
 			WriteLog("送出資料 {0} Bytes", e.Data.Length);
 			if (chkHexString.Checked)
@@ -102,27 +86,38 @@ namespace Tester
 			else
 				WriteLog(" > :{0}", Encoding.Default.GetString(e.Data));
 		}
+		void Server_AuthenticateFail(object sender, SslTcpEventArgs e)
+		{
+			WriteLog("用戶端 {0} 認證失敗", e.RemoteEndPoint);
+		}
+
+		#endregion
 
 		#region Button Events
 		private void btnStart_Click(object sender, EventArgs e)
 		{
 			if (_Server == null)
 			{
-				_Server = new WebSocketServer(Convert.ToInt32(txtMaxConnect.Text));
-				_Server.ClientConnected += new EventHandler<SocketServerEventArgs>(Server_OnClientConnected);
-				_Server.ClientClosing += new EventHandler<SocketServerEventArgs>(Server_OnClientClosing);
-				_Server.ClientClosed += new EventHandler<SocketServerEventArgs>(Server_OnClientClosed);
-				_Server.DataReceived += new EventHandler<SocketServerEventArgs>(Server_OnDataReceived);
-				_Server.DataSended += new EventHandler<SocketServerEventArgs>(Server_OnDataSended);
-				_Server.Started += new EventHandler<SocketServerEventArgs>(Server_OnStarted);
-				_Server.Shutdowned += new EventHandler<SocketServerEventArgs>(Server_OnShutdown);
-				_Server.AppendService("/echo");
+				string pfx = txtPfx.Text;
+				if (string.IsNullOrEmpty(System.IO.Path.GetDirectoryName(pfx)))
+					pfx = System.IO.Path.Combine(Environment.CurrentDirectory, "Web", pfx);
+				if (txtIP.Text.Equals("0.0.0.0"))
+					_Server = new SslTcpServer(IPAddress.Any, Convert.ToInt32(txtPort.Text), pfx, txtPfxPwd.Text);
+				else
+					_Server = new SslTcpServer(txtIP.Text, Convert.ToInt32(txtPort.Text), pfx, txtPfxPwd.Text);
+				_Server.IdleTime = 0;
+				_Server.ClientConnected += new EventHandler<SslTcpEventArgs>(Server_OnClientConnected);
+				_Server.ClientClosed += new EventHandler<SslTcpEventArgs>(Server_OnClientClosed);
+				_Server.DataReceived += new EventHandler<SslTcpEventArgs>(Server_OnDataReceived);
+				_Server.DataSended += new EventHandler<SslTcpEventArgs>(Server_OnDataSended);
+				_Server.AuthenticateFail += new EventHandler<SslTcpEventArgs>(Server_AuthenticateFail);
+				_Server.Started += new EventHandler(Server_OnStarted);
+				_Server.Shutdowned += new EventHandler(Server_OnShutdown);
 			}
-			_Server.Start(new IPEndPoint(IPAddress.Parse(txtIP.Text), Convert.ToInt32(txtPort.Text)));
+			_Server.Start();
 			btnStart.Enabled = false;
 			btnStop.Enabled = true;
 		}
-
 		private void btnStop_Click(object sender, EventArgs e)
 		{
 			SetButtonEnabled(btnStop, false);
@@ -138,7 +133,7 @@ namespace Tester
 		void SetButtonEnabled(Button btn, bool enabled)
 		{
 			if (btn.InvokeRequired)
-				this.Invoke(new SetButtonEnabledCallback(SetButtonEnabled), new object[] { btn, enabled });
+				this.Invoke(new MethodInvoker(() => SetButtonEnabled(btn, enabled)));
 			else
 				btn.Enabled = enabled;
 		}
@@ -146,15 +141,17 @@ namespace Tester
 
 		private void txtSendMsg_KeyDown(object sender, KeyEventArgs e)
 		{
-			if (e.KeyCode == Keys.Enter)
+			if (_Server != null && e.KeyCode == Keys.Enter)
 			{
-				WebSocketClient[] acs = _Server.Clients;
-				for (int i = 0; i < acs.Length; i++)
+				EndPoint[] eps = _Server.GetAllPoints();
+				foreach (EndPoint ep in eps)
 				{
+					if (!_Server[ep].Connected)
+						continue;
 					if (chkHexString.Checked)
-						acs[i].SendData(txtSendMsg.Text.ToByteArray());
+						_Server.SendData(ep, txtSendMsg.Text.ToByteArray());
 					else
-						acs[i].SendData(txtSendMsg.Text);
+						_Server.SendData(ep, Encoding.UTF8.GetBytes(txtSendMsg.Text));
 				}
 				txtSendMsg.SelectAll();
 				e.SuppressKeyPress = true;

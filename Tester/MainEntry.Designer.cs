@@ -121,6 +121,8 @@
 			this.tabControl1 = new System.Windows.Forms.TabControl();
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+			this.button17 = new System.Windows.Forms.Button();
+			this.button18 = new System.Windows.Forms.Button();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.tabPage3 = new System.Windows.Forms.TabPage();
 			this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -149,17 +151,17 @@
 			this.label18 = new System.Windows.Forms.Label();
 			this.tabPage7 = new System.Windows.Forms.TabPage();
 			this.label26 = new System.Windows.Forms.Label();
+			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+			this.ansiLabel2 = new CJF.Utility.WinKits.AnsiLabel();
+			this.ansiLabel1 = new CJF.Utility.WinKits.AnsiLabel();
 			this.button16 = new System.Windows.Forms.Button();
 			this.button15 = new System.Windows.Forms.Button();
 			this.tabPage8 = new System.Windows.Forms.TabPage();
+			this.ansiViewer1 = new CJF.Utility.WinKits.AnsiBox();
 			this.button14 = new System.Windows.Forms.Button();
 			this.txtAnsi = new System.Windows.Forms.TextBox();
 			this.tabPage9 = new System.Windows.Forms.TabPage();
 			this.label25 = new System.Windows.Forms.Label();
-			this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-			this.ansiLabel2 = new CJF.Utility.WinKits.AnsiLabel();
-			this.ansiLabel1 = new CJF.Utility.WinKits.AnsiLabel();
-			this.ansiViewer1 = new CJF.Utility.WinKits.AnsiBox();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox4.SuspendLayout();
@@ -1182,11 +1184,33 @@
 			this.flowLayoutPanel1.Controls.Add(this.button5);
 			this.flowLayoutPanel1.Controls.Add(this.button8);
 			this.flowLayoutPanel1.Controls.Add(this.button10);
+			this.flowLayoutPanel1.Controls.Add(this.button17);
+			this.flowLayoutPanel1.Controls.Add(this.button18);
 			this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
 			this.flowLayoutPanel1.Location = new System.Drawing.Point(10, 10);
 			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
 			this.flowLayoutPanel1.Size = new System.Drawing.Size(577, 242);
 			this.flowLayoutPanel1.TabIndex = 25;
+			// 
+			// button17
+			// 
+			this.button17.Location = new System.Drawing.Point(3, 115);
+			this.button17.Name = "button17";
+			this.button17.Size = new System.Drawing.Size(107, 50);
+			this.button17.TabIndex = 5;
+			this.button17.Text = "SSL TCP Server";
+			this.button17.UseVisualStyleBackColor = true;
+			this.button17.Click += new System.EventHandler(this.button17_Click);
+			// 
+			// button18
+			// 
+			this.button18.Location = new System.Drawing.Point(116, 115);
+			this.button18.Name = "button18";
+			this.button18.Size = new System.Drawing.Size(107, 50);
+			this.button18.TabIndex = 5;
+			this.button18.Text = "SSL TCP Client";
+			this.button18.UseVisualStyleBackColor = true;
+			this.button18.Click += new System.EventHandler(this.button18_Click);
 			// 
 			// tabPage2
 			// 
@@ -1551,6 +1575,35 @@
 			this.label26.TabIndex = 12;
 			this.label26.Text = "-----1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ...";
 			// 
+			// richTextBox1
+			// 
+			this.richTextBox1.Location = new System.Drawing.Point(24, 184);
+			this.richTextBox1.Name = "richTextBox1";
+			this.richTextBox1.Size = new System.Drawing.Size(560, 65);
+			this.richTextBox1.TabIndex = 17;
+			this.richTextBox1.Text = "1234567890";
+			// 
+			// ansiLabel2
+			// 
+			this.ansiLabel2.Location = new System.Drawing.Point(197, 114);
+			this.ansiLabel2.MaximumSize = new System.Drawing.Size(60, 19);
+			this.ansiLabel2.MinimumSize = new System.Drawing.Size(60, 19);
+			this.ansiLabel2.Name = "ansiLabel2";
+			this.ansiLabel2.Size = new System.Drawing.Size(60, 19);
+			this.ansiLabel2.TabIndex = 16;
+			this.ansiLabel2.Text = "ansiLabel2";
+			// 
+			// ansiLabel1
+			// 
+			this.ansiLabel1.BackColor = System.Drawing.SystemColors.Window;
+			this.ansiLabel1.Location = new System.Drawing.Point(24, 140);
+			this.ansiLabel1.MaximumSize = new System.Drawing.Size(297, 19);
+			this.ansiLabel1.MinimumSize = new System.Drawing.Size(297, 19);
+			this.ansiLabel1.Name = "ansiLabel1";
+			this.ansiLabel1.Size = new System.Drawing.Size(297, 19);
+			this.ansiLabel1.TabIndex = 15;
+			this.ansiLabel1.Text = "-----\\x1B[91m1234567890\\x1B[94mABCDEFGHIJKLMNOPQRSTUVWXYZ\\x1B[0m...";
+			// 
 			// button16
 			// 
 			this.button16.Location = new System.Drawing.Point(105, 110);
@@ -1582,6 +1635,15 @@
 			this.tabPage8.TabIndex = 8;
 			this.tabPage8.Text = "AnsiViewer";
 			this.tabPage8.UseVisualStyleBackColor = true;
+			// 
+			// ansiViewer1
+			// 
+			this.ansiViewer1.Font = new System.Drawing.Font("微軟正黑體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+			this.ansiViewer1.Location = new System.Drawing.Point(17, 16);
+			this.ansiViewer1.Name = "ansiViewer1";
+			this.ansiViewer1.Size = new System.Drawing.Size(564, 201);
+			this.ansiViewer1.TabIndex = 3;
+			this.ansiViewer1.Text = resources.GetString("ansiViewer1.Text");
 			// 
 			// button14
 			// 
@@ -1620,44 +1682,6 @@
 			this.label25.Size = new System.Drawing.Size(500, 96);
 			this.label25.TabIndex = 22;
 			this.label25.Text = resources.GetString("label25.Text");
-			// 
-			// richTextBox1
-			// 
-			this.richTextBox1.Location = new System.Drawing.Point(24, 184);
-			this.richTextBox1.Name = "richTextBox1";
-			this.richTextBox1.Size = new System.Drawing.Size(560, 65);
-			this.richTextBox1.TabIndex = 17;
-			this.richTextBox1.Text = "1234567890";
-			// 
-			// ansiLabel2
-			// 
-			this.ansiLabel2.Location = new System.Drawing.Point(197, 114);
-			this.ansiLabel2.MaximumSize = new System.Drawing.Size(60, 19);
-			this.ansiLabel2.MinimumSize = new System.Drawing.Size(60, 19);
-			this.ansiLabel2.Name = "ansiLabel2";
-			this.ansiLabel2.Size = new System.Drawing.Size(60, 19);
-			this.ansiLabel2.TabIndex = 16;
-			this.ansiLabel2.Text = "ansiLabel2";
-			// 
-			// ansiLabel1
-			// 
-			this.ansiLabel1.BackColor = System.Drawing.SystemColors.Window;
-			this.ansiLabel1.Location = new System.Drawing.Point(24, 140);
-			this.ansiLabel1.MaximumSize = new System.Drawing.Size(297, 19);
-			this.ansiLabel1.MinimumSize = new System.Drawing.Size(297, 19);
-			this.ansiLabel1.Name = "ansiLabel1";
-			this.ansiLabel1.Size = new System.Drawing.Size(297, 19);
-			this.ansiLabel1.TabIndex = 15;
-			this.ansiLabel1.Text = "-----\\x1B[91m1234567890\\x1B[94mABCDEFGHIJKLMNOPQRSTUVWXYZ\\x1B[0m...";
-			// 
-			// ansiViewer1
-			// 
-			this.ansiViewer1.Font = new System.Drawing.Font("微軟正黑體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-			this.ansiViewer1.Location = new System.Drawing.Point(17, 16);
-			this.ansiViewer1.Name = "ansiViewer1";
-			this.ansiViewer1.Size = new System.Drawing.Size(564, 201);
-			this.ansiViewer1.TabIndex = 3;
-			this.ansiViewer1.Text = resources.GetString("ansiViewer1.Text");
 			// 
 			// MainEntry
 			// 
@@ -1835,5 +1859,7 @@
 		private CJF.Utility.WinKits.AnsiLabel ansiLabel1;
 		private CJF.Utility.WinKits.AnsiLabel ansiLabel2;
 		private System.Windows.Forms.RichTextBox richTextBox1;
+		private System.Windows.Forms.Button button17;
+		private System.Windows.Forms.Button button18;
 	}
 }

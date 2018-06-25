@@ -22,10 +22,13 @@ namespace Tester
 	public partial class FHttpService : Form
 	{
 		HttpListener _HttpListener = null;
+		string _SvcName = string.Empty;
 
 		public FHttpService()
 		{
 			InitializeComponent();
+			cbCertClient.SelectedIndex = 0;
+			cbCertServer.SelectedIndex = 0;
 		}
 
 		#region Private Method : void btnStart_Click(object sender, EventArgs e)
@@ -35,6 +38,7 @@ namespace Tester
 			btnStart.Enabled = false;
 			btnStop.Enabled = true;
 			gbForm.Enabled = true;
+			_SvcName = txtSvcNames.Text;
 		}
 		#endregion
 
@@ -83,11 +87,11 @@ namespace Tester
 		#region Private Method : void InitHttpListener()
 		private void InitHttpListener()
 		{
-			string prefix = string.Format("http://{0}:{1}/", txtIP.Text, txtPort.Text);
+			string prefix = string.Format("{0}://{1}:{2}/", cbCertServer.Text, txtIP.Text, txtPort.Text);
 			_HttpListener = new HttpListener();
 			_HttpListener.Prefixes.Add(prefix);
 			_HttpListener.Start();
-			IAsyncResult result = _HttpListener.BeginGetContext(new AsyncCallback(WebRequestCallback), _HttpListener);
+			_HttpListener.BeginGetContext(new AsyncCallback(WebRequestCallback), _HttpListener);
 		}
 		#endregion
 
@@ -117,7 +121,8 @@ namespace Tester
 				HttpListenerContext ctx = null;
 				ctx = _HttpListener.EndGetContext(ar);
 				_HttpListener.BeginGetContext(new AsyncCallback(WebRequestCallback), _HttpListener);
-				HttpService http = new HttpService(ctx, txtSvcNames.Text);
+
+				HttpService http = new HttpService(ctx, _SvcName);
 				http.OnPopupMessage += new HttpService.PopupMessageHandler(delegate(object sender, string msg)
 					{
 						Task.Factory.StartNew(() => WriteLog(Color.Blue, msg));
@@ -136,8 +141,8 @@ namespace Tester
 		void WriteLog(Color c, string text)
 		{
 			if (this.InvokeRequired)
-				//this.Invoke(new MethodInvoker(() => WriteLog(c, text)));
-				this.Invoke(new WriteLogCallback(WriteLog), new object[] { c, text });
+				this.Invoke(new MethodInvoker(() => WriteLog(c, text)));
+			//this.Invoke(new WriteLogCallback(WriteLog), new object[] { c, text });
 			else
 			{
 				int origStart = this.rtbLog.SelectionStart;
@@ -201,7 +206,7 @@ namespace Tester
 		#region Private Method : void btnWebClientUpload_Click(object sender, EventArgs e)
 		private void btnWebClientUpload_Click(object sender, EventArgs e)
 		{
-			Uri uri = new Uri(txtPath.Text);
+			Uri uri = new Uri(txtUrl.Text);
 			// 準備檔案
 			bool done = false;
 			using (WebClient wc = new WebClient())
@@ -256,7 +261,7 @@ namespace Tester
 						wc.Headers.Add(HttpRequestHeader.UserAgent, txtUserAgent.Text);
 					else
 						wc.Headers.Add(HttpRequestHeader.UserAgent, "WebClient");
-					byte[] res = wc.UploadValues(txtPath.Text, "POST", nvc);
+					byte[] res = wc.UploadValues(txtUrl.Text, "POST", nvc);
 					WriteLog("# 資料已使用 POST 送出，伺服器回覆：{0}", Encoding.UTF8.GetString(res));
 				}
 			}
@@ -286,7 +291,7 @@ namespace Tester
 						wc.Headers.Add(HttpRequestHeader.UserAgent, txtUserAgent.Text);
 					else
 						wc.Headers.Add(HttpRequestHeader.UserAgent, "WebClient");
-					byte[] res = wc.UploadValues(txtPath.Text, "GET", nvc);
+					byte[] res = wc.DownloadData(txtUrl.Text + HttpService.ToQueryString(nvc));
 					WriteLog("# 資料已使用 GET 送出，伺服器回覆：{0}", Encoding.UTF8.GetString(res));
 				}
 			}
@@ -306,7 +311,7 @@ namespace Tester
 		#region Private Method : void btnExtWebClientUpload_Click(object sender, EventArgs e)
 		private void btnExtWebClientUpload_Click(object sender, EventArgs e)
 		{
-			Uri uri = new Uri(txtPath.Text);
+			Uri uri = new Uri(txtUrl.Text);
 			// 準備檔案
 			bool done = false;
 			using (ExtWebClient wc = new ExtWebClient())
@@ -369,6 +374,12 @@ namespace Tester
 		private void FHttpService_FormClosing(object sender, FormClosingEventArgs e)
 		{
 			btnStop_Click(null, null);
+		}
+
+		private void cbCertClient_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			txtUrl.Text = cbCertClient.Text + Regex.Replace(txtUrl.Text, "http[s]?", "");
+
 		}
 	}
 
@@ -447,7 +458,7 @@ namespace Tester
 	}
 	#endregion
 
-	public class HttpService : HttpServiceBase
+	public class HttpService : HttpBase
 	{
 		#region event & delegate
 		public delegate void APIHandler(object sender, IWebAPI webApi);
@@ -460,7 +471,7 @@ namespace Tester
 
 		string[] _AllowSvcNames = null;
 
-		#region Construct Method : HttpService(HttpListenerContext context, SvcWorker worker)
+		#region Construct Method : HttpService(HttpListenerContext context, string allowSvc)
 		public HttpService(HttpListenerContext context, string allowSvc)
 		{
 			this.Context = context;
@@ -532,7 +543,7 @@ namespace Tester
 				else if (seg.Length >= 2)
 					urlFolder = seg[1].TrimEnd('/').ToLower();
 				urlFile = seg[seg.Length - 1];
-				localFile = Path.Combine(this.RootPath, pageName);
+				localFile = Path.Combine(RootPath, pageName);
 				string ip = this.Context.Request.RemoteEndPoint.Address.ToString();
 				//_log.Write(LogManager.LogLevel.Debug, "{0} GET /{1}{2}", this.Context.Request.RemoteEndPoint, path, ToQueryString(queryString));
 				WriteLog("* 伺服器收到來自 {0} 的 GET 要求", this.Context.Request.RemoteEndPoint);
@@ -737,7 +748,6 @@ namespace Tester
 			handler.EndInvoke(result);
 		}
 		#endregion
-
 	}
 
 

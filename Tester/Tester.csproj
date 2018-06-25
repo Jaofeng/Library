@@ -135,6 +135,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="FSslTcpServer.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FSslTcpServer.Designer.cs">
+      <DependentUpon>FSslTcpServer.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FSslTcpClient.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FSslTcpClient.Designer.cs">
+      <DependentUpon>FSslTcpClient.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FActivePorts.resx">
@@ -177,10 +189,22 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <EmbeddedResource Include="FSslTcpServer.resx">
+      <DependentUpon>FSslTcpServer.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FSslTcpClient.resx">
+      <DependentUpon>FSslTcpClient.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="app.manifest" />
+    <None Include="Web\CJF.Net.SslTcpServer.cer">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Web\CJF.Net.SslTcpServer.pfx">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Modbus\Modbus.csproj">

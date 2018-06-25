@@ -117,26 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ansiViewer1.Text" xml:space="preserve">
-    <value>Message : 
-Colors \x1B[31m[CSI 31 m]Red\x1B[0m, \x1B[32m[CSI 32 m]Green\x1B[0m, \x1B[33m[CSI 33 m]Yellow\x1B[0m, \x1B[34m[CSI 34 m]Blue\x1B[0m
-超長文字：一二三四五六七八九十，一二三四五六七八九十。一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十
-超長文字：一二三四五六七八九\x1B[91m十一二三四五六七八九十\x1B[92m一二三四五六七八九十\x1B[93m一二三四五六七八九十\x1B[94m一二三四五六七八九十
-一二三四五六七八九十
-
-\x1B[1;31m[CSI 1;31 m]Bright Red\x1B[0m, \x1B[1;32m[CSI 1;32 m]Bright Green\x1B[0m, \x1B[1;33m[CSI 1;33 m]Bright Yellow\x1B[0m, \x1B[1;34m[CSI 1;34 m]Bright Blue\x1B[0m
-\x1B[91m[CSI 91 m]亮紅\x1B[0m, \x1B[92m[CSI 92 m]亮綠\x1B[0m, \x1B[93m[CSI 93 m]亮黃\x1B[0m, \x1B[94m[CSI 94 m]亮藍\x1B[39;49m
-</value>
-  </data>
-  <data name="label25.Text" xml:space="preserve">
-    <value>Message : 
-Colors \x1B[31m[CSI 31 m]Red\x1B[0m, \x1B[32m[CSI 32 m]Green\x1B[0m, \x1B[33m[CSI 33 m]Yellow\x1B[0m, \x1B[34m[CSI 34 m]Blue\x1B[0m
-超長文字：一二三四五六七八九十，一二三四五六七八九十。一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十
-超長文字：一二三四五六七八九\x1B[91m十一二三四五六七八九十\x1B[92m一二三四五六七八九十\x1B[93m一二三四五六七八九十\x1B[94m一二三四五六七八九十
-一二三四五六七八九十
-
-\x1B[1;31m[CSI 1;31 m]Bright Red\x1B[0m, \x1B[1;32m[CSI 1;32 m]Bright Green\x1B[0m, \x1B[1;33m[CSI 1;33 m]Bright Yellow\x1B[0m, \x1B[1;34m[CSI 1;34 m]Bright Blue\x1B[0m
-\x1B[91m[CSI 91 m]亮紅\x1B[0m, \x1B[92m[CSI 92 m]亮綠\x1B[0m, \x1B[93m[CSI 93 m]亮黃\x1B[0m, \x1B[94m[CSI 94 m]亮藍\x1B[39;49m
-</value>
-  </data>
 </root>
