@@ -6,31 +6,6 @@ using System.Xml;
 
 namespace CJF.Net.Http
 {
-	#region Public Class : APIFormatException
-	/// <summary>WebAPI格式錯誤類別</summary>
-	public class APIFormatException : Exception
-	{
-		/// <summary>建立新的WebAPI格式錯誤類別</summary>
-		/// <param name="message">錯誤訊息</param>
-		public APIFormatException(string message) : base(message) { }
-		/// <summary>建立新的WebAPI格式錯誤類別</summary>
-		/// <param name="message">錯誤訊息</param>
-		/// <param name="innerException">子錯誤類別</param>
-		public APIFormatException(string message, Exception innerException) : base(message, innerException) { }
-	}
-	#endregion
-
-	#region Public Class : APIMissingFieldException
-	/// <summary>缺少必要欄位的錯誤類別</summary>
-	public class APIMissingFieldException : Exception
-	{
-		/// <summary>產生缺少必要欄位的錯誤</summary>
-		public APIMissingFieldException(string field) : base("缺少必要欄位!") { this.FieldName = field; }
-		/// <summary>必要欄位名稱</summary>
-		public string FieldName { get; private set; }
-	}
-	#endregion
-
 	#region Interface : IWebAPI
 	/// <summary>WebAPI基礎介面</summary>
 	public interface IWebAPI

@@ -12,7 +12,7 @@ using System.Threading;
 using CJF.Utility;
 using CJF.Utility.Extensions;
 
-namespace CJF.Net
+namespace CJF.Net.Http
 {
 	#region Public Class : WebSocketClient
 	/// <summary>
@@ -23,7 +23,8 @@ namespace CJF.Net
 		LogManager _log = new LogManager(typeof(WebSocketClient));
 
 		internal WebSocketClient(Socket sck) : this(sck, null, null) { }
-		internal WebSocketClient(Socket sck, string acceptKey, string url) : base(sck)
+		internal WebSocketClient(Socket sck, string acceptKey, string url)
+			: base(sck)
 		{
 			this.AcceptKey = acceptKey;
 			this.Url = url;
@@ -119,6 +120,8 @@ namespace CJF.Net
 	public class WebSocketServer : AsyncServer, IDisposable
 	{
 		const int BUFFER_SIZE = 1024;
+		const int DEFAULT_MAX_CLIENTS = 10;
+
 		/// <summary>WebSocket 專用 GUID</summary>
 		const string GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
@@ -142,8 +145,9 @@ namespace CJF.Net
 			}
 		}
 
-
-		#region Construct Method : WebSocketServer(int numConnections)
+		#region Construct Method : WebSocketServer(...)
+		/// <summary>建立新的 WebSocketServer 類別，並初始化相關屬性值</summary>
+		public WebSocketServer() : this(DEFAULT_MAX_CLIENTS) { }
 		/// <summary>建立新的 WebSocketServer 類別，並初始化相關屬性值</summary>
 		/// <param name="maxClients">同時可連接的最大連線數</param>
 		public WebSocketServer(int maxClients)

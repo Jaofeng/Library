@@ -13,57 +13,15 @@ using CJF.Utility.Extensions;
 
 namespace CJF.Net.Http
 {
-	#region Struct : ReceivedFileInfo
-	/// <summary>
-	/// 接收的檔案資料類別
-	/// </summary>
-	public struct ReceivedFileInfo
-	{
-		/// <summary>在 Form 中的鍵名</summary>
-		public string FieldKey;
-		/// <summary>原始檔案名稱</summary>
-		public string FileName;
-		/// <summary>包含完整路徑的暫存檔名</summary>
-		public string FullPath;
-		/// <summary>檔案種類</summary>
-		public string ContentType;
-		/// <summary>檔案長度</summary>
-		public long Length;
-	}
-	#endregion
-
-	#region Class : MyMemoryStream
-	internal class MyMemoryStream : MemoryStream
-	{
-		public MyMemoryStream() : base() { }
-		public MyMemoryStream(byte[] buffer) : base(buffer) { }
-		public string ReadLine()
-		{
-			long oldPos = this.Position;
-			while (this.Position < this.Length)
-			{
-				if (this.ReadByte() == 13 && this.ReadByte() == 10)
-					break;
-			}
-			byte[] buf = new byte[(int)(this.Position - oldPos - 2)];
-			this.Position = oldPos;
-			this.Read(buf, 0, buf.Length);
-			this.Position += 2;
-			return Encoding.UTF8.GetString(buf);
-		}
-	}
-	#endregion
-
 	/// <summary>HTTP 連線服務類別</summary>
 	[Serializable]
-	public class HttpServiceBase : IDisposable
+	public class HttpBase : IDisposable
 	{
 		/// <summary>網頁預設根目錄</summary>
 		const string ROOT_PATH = "Web";
 
-		LogManager _log = new LogManager(typeof(HttpServiceBase));
+		LogManager _log = new LogManager(typeof(HttpBase));
 		bool isDisposed = false;
-		bool _SendMail = false;
 		Random rndKey = new Random(DateTime.Now.Millisecond);
 
 		/// <summary>取得HttpListenerContext類別</summary>
@@ -72,27 +30,24 @@ namespace CJF.Net.Http
 		public IPEndPoint ClientPoint { get { return this.Context.Request.RemoteEndPoint; } }
 		/// <summary>取得接收的檔案資訊</summary>
 		public List<ReceivedFileInfo> ReceivedFiles { get; protected set; }
-		/// <summary>設定或取得。當錯誤發生時，除記錄至事件檔外，是否發送Mail</summary>
-		public bool SendMailWhenException { get { return _SendMail; } set { _SendMail = value; } }
-		/// <summary>網頁根目錄。絕對路徑或相對路徑皆可。
+
+		/// <summary>設定或取得錯誤發生時，除記錄至事件檔外，是否發送Mail</summary>
+		public static bool SendMailWhenException = false;
+		/// <summary>設定或取得網頁預設根目錄。絕對路徑或相對路徑皆可。
 		/// <para>預設值：Web</para></summary>
-		public string RootPath { get; set; }
+		public static string RootPath = ROOT_PATH;
 
 		#region Construct Method : HttpService(HttpListenerContext context)
 		/// <summary></summary>
-		public HttpServiceBase()
-		{
-			this.RootPath = ROOT_PATH;
-		}
+		protected HttpBase() { }
 		/// <summary></summary>
 		/// <param name="context"></param>
-		public HttpServiceBase(HttpListenerContext context)
+		public HttpBase(HttpListenerContext context)
 		{
-			this.RootPath = ROOT_PATH;
 			this.Context = context;
 		}
 		/// <summary></summary>
-		~HttpServiceBase()
+		~HttpBase()
 		{
 			Dispose(false);
 		}
@@ -148,7 +103,7 @@ namespace CJF.Net.Http
 		protected virtual void HttpHeadMethod(string path, NameValueCollection queryString)
 		{
 			string file = path.Replace("/", "\\").ToLower();
-			file = Path.Combine(this.RootPath, file);
+			file = Path.Combine(RootPath, file);
 			ResponseHead(file);
 		}
 		#endregion
@@ -160,7 +115,7 @@ namespace CJF.Net.Http
 		protected virtual void HttpGetMethod(string path, NameValueCollection queryString)
 		{
 			string file = path.Replace("/", "\\").ToLower();
-			file = Path.Combine(this.RootPath, file);
+			file = Path.Combine(RootPath, file);
 			ResponseFile(file);
 		}
 		#endregion
@@ -216,7 +171,7 @@ namespace CJF.Net.Http
 			catch (Exception ex)
 			{
 				_log.Write(LogManager.LogLevel.Debug, "From:HttpPostMethod:{0}", path);
-				_log.WriteException(ex, _SendMail);
+				_log.WriteException(ex, SendMailWhenException);
 			}
 		}
 		#endregion
@@ -297,13 +252,13 @@ namespace CJF.Net.Http
 					else
 					{
 						_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-						_log.WriteException(ex, _SendMail);
+						_log.WriteException(ex, SendMailWhenException);
 					}
 				}
 				catch (Exception ex)
 				{
 					_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-					_log.WriteException(ex, _SendMail);
+					_log.WriteException(ex, SendMailWhenException);
 				}
 				finally
 				{
@@ -329,24 +284,24 @@ namespace CJF.Net.Http
 		}
 		#endregion
 
-		#region Public Virtual Method : bool ResponseFile(string fileName, int speed)
+		#region Public Virtual Method : bool ResponseFile(string fileName, int pause)
 		/// <summary>傳送檔案至終端</summary>
 		/// <param name="fileName">檔案路徑</param>
-		/// <param name="speed">傳輸暫停時間，單位豪秒。本值越短，傳輸速度越快</param>
+		/// <param name="pause">傳輸暫停時間，單位豪秒。數值越小，傳輸速度越快，但負載也越大。最小值為 10ms。</param>
 		/// <returns>是否正確傳送</returns>
-		public virtual bool ResponseFile(string fileName, int speed)
+		public virtual bool ResponseFile(string fileName, int pause)
 		{
-			return ResponseFile(fileName, speed, 8192);
+			return ResponseFile(fileName, pause, 8192);
 		}
 		#endregion
 
-		#region Public Virtual Method : bool ResponseFile(string fileName, int speed, int packageSize)
+		#region Public Virtual Method : bool ResponseFile(string fileName, int pause, int packageSize)
 		/// <summary>傳送檔案至終端</summary>
 		/// <param name="fileName">檔案路徑</param>
-		/// <param name="speed">傳輸暫停時間，單位豪秒。本值越短，傳輸速度越快</param>
+		/// <param name="pause">傳輸暫停時間，單位豪秒。數值越小，傳輸速度越快，但負載也越大。最小值為 10ms。</param>
 		/// <param name="packageSize">傳輸的封包大小，單位Bytes</param>
 		/// <returns>是否正確傳送</returns>
-		public virtual bool ResponseFile(string fileName, int speed, int packageSize)
+		public virtual bool ResponseFile(string fileName, int pause, int packageSize)
 		{
 			bool result = false;
 			if (!File.Exists(fileName))
@@ -366,11 +321,12 @@ namespace CJF.Net.Http
 							this.Context.Response.AddHeader("content-disposition", "attachment;filename=" + HttpUtility.UrlEncode(Path.GetFileName(fileName)));
 						byte[] buffer = new byte[packageSize];
 						int read;
+						if (pause < 10)
+							pause = 10;
 						while ((read = fs.Read(buffer, 0, packageSize)) > 0)
 						{
 							this.Context.Response.OutputStream.Write(buffer, 0, read);
-							if (speed != 0)
-								System.Threading.Thread.Sleep(speed);
+							System.Threading.Thread.Sleep(pause);
 						}
 					}
 					this.Context.Response.OutputStream.Close();
@@ -383,13 +339,13 @@ namespace CJF.Net.Http
 					else
 					{
 						_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-						_log.WriteException(ex, _SendMail);
+						_log.WriteException(ex, SendMailWhenException);
 					}
 				}
 				catch (Exception ex)
 				{
 					_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-					_log.WriteException(ex, _SendMail);
+					_log.WriteException(ex, SendMailWhenException);
 				}
 				finally
 				{
@@ -420,7 +376,7 @@ namespace CJF.Net.Http
 		/// <summary>傳送檔案至終端</summary>
 		/// <param name="stream">檔案串流</param>
 		/// <param name="fileName">檔案路徑</param>
-		/// <param name="speed">傳送間隔，單位豪秒，值越大速度越慢</param>
+		/// <param name="speed">傳輸暫停時間，單位豪秒。數值越小，傳輸速度越快，但負載也越大。最小值為 10ms。</param>
 		/// <returns>是否正確傳送</returns>
 		public virtual bool ResponseFile(MemoryStream stream, string fileName, int speed)
 		{
@@ -428,14 +384,14 @@ namespace CJF.Net.Http
 		}
 		#endregion
 
-		#region Public Virtual Method : bool ResponseFile(MemoryStream stream, string fileName, int speed, int packageSize)
+		#region Public Virtual Method : bool ResponseFile(MemoryStream stream, string fileName, int pause, int packageSize)
 		/// <summary>傳送檔案至終端</summary>
 		/// <param name="stream">檔案串流</param>
 		/// <param name="fileName">檔案路徑</param>
-		/// <param name="speed">傳送間隔，單位豪秒，值越大速度越慢</param>
+		/// <param name="pause">傳輸暫停時間，單位豪秒。數值越小，傳輸速度越快，但負載也越大。最小值為 10ms。</param>
 		/// <param name="packageSize">傳輸的封包大小，單位Bytes，預設為8192</param>
 		/// <returns>是否正確傳送</returns>
-		public virtual bool ResponseFile(MemoryStream stream, string fileName, int speed, int packageSize)
+		public virtual bool ResponseFile(MemoryStream stream, string fileName, int pause, int packageSize)
 		{
 			bool result = false;
 			if (stream == null || stream.Length == 0)
@@ -452,18 +408,12 @@ namespace CJF.Net.Http
 						this.Context.Response.AddHeader("content-disposition", "attachment;filename=" + HttpUtility.UrlEncode(Path.GetFileName(fileName)));
 					byte[] buffer = new byte[packageSize];
 					int read;
-					if (speed != 0)
+					if (pause < 10)
+						pause = 10;
+					while ((read = stream.Read(buffer, 0, packageSize)) > 0)
 					{
-						while ((read = stream.Read(buffer, 0, packageSize)) > 0)
-						{
-							this.Context.Response.OutputStream.Write(buffer, 0, read);
-							System.Threading.Thread.Sleep(speed);
-						}
-					}
-					else
-					{
-						while ((read = stream.Read(buffer, 0, packageSize)) > 0)
-							this.Context.Response.OutputStream.Write(buffer, 0, read);
+						this.Context.Response.OutputStream.Write(buffer, 0, read);
+						System.Threading.Thread.Sleep(pause);
 					}
 					this.Context.Response.OutputStream.Close();
 					result = true;
@@ -475,13 +425,13 @@ namespace CJF.Net.Http
 					else
 					{
 						_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-						_log.WriteException(ex, _SendMail);
+						_log.WriteException(ex, SendMailWhenException);
 					}
 				}
 				catch (Exception ex)
 				{
 					_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-					_log.WriteException(ex, _SendMail);
+					_log.WriteException(ex, SendMailWhenException);
 				}
 				finally
 				{
@@ -582,13 +532,13 @@ namespace CJF.Net.Http
 				else
 				{
 					_log.Write(LogManager.LogLevel.Debug, "From:ResponseBitmap");
-					_log.WriteException(ex, _SendMail);
+					_log.WriteException(ex, SendMailWhenException);
 				}
 			}
 			catch (Exception ex)
 			{
 				_log.Write(LogManager.LogLevel.Debug, "From:ResponseBitmap");
-				_log.WriteException(ex, _SendMail);
+				_log.WriteException(ex, SendMailWhenException);
 			}
 			finally
 			{
@@ -657,13 +607,13 @@ namespace CJF.Net.Http
 				else
 				{
 					_log.Write(LogManager.LogLevel.Debug, "From:ResponseBinary");
-					_log.WriteException(ex, _SendMail);
+					_log.WriteException(ex, SendMailWhenException);
 				}
 			}
 			catch (Exception ex)
 			{
 				_log.Write(LogManager.LogLevel.Debug, "From:ResponseBinary");
-				_log.WriteException(ex, _SendMail);
+				_log.WriteException(ex, SendMailWhenException);
 			}
 			finally
 			{
@@ -726,7 +676,7 @@ namespace CJF.Net.Http
 			catch (Exception ex)
 			{
 				_log.Write(LogManager.LogLevel.Debug, "From:ResponseXML");
-				_log.WriteException(ex, _SendMail);
+				_log.WriteException(ex, SendMailWhenException);
 				return false;
 			}
 		}
@@ -811,22 +761,6 @@ namespace CJF.Net.Http
 		}
 		#endregion
 
-		#region Protected Virtual Method : string ToQueryString(NameValueCollection nvc)
-		/// <summary>[覆寫]將 NameValueCollection 類別中的值轉成 QueryString 格式</summary>
-		/// <param name="nvc">Key-Value對應的類別</param>
-		/// <returns></returns>
-		protected virtual string ToQueryString(NameValueCollection nvc)
-		{
-			if (nvc == null || nvc.AllKeys.Length == 0)
-				return string.Empty;
-			var array = (from key in nvc.AllKeys
-						 from value in nvc.GetValues(key)
-						 select string.Format("{0}={1}", HttpUtility.UrlEncode(key), HttpUtility.UrlEncode(value)))
-				.ToArray();
-			return "?" + string.Join("&", array);
-		}
-		#endregion
-
 		#region IDisposable 成員
 		/// <summary>清除並釋放 HttpServiceBase 所使用的資源。</summary>
 		public void Dispose()
@@ -848,7 +782,7 @@ namespace CJF.Net.Http
 		#endregion
 
 		#region Protected Virtual Method : void PopulatePostMultiPart(HttpListenerRequest request, out NameValueCollection nvc)
-		/// <summary>拆解 Request 內容</summary>
+		/// <summary>[覆寫]拆解 Request 內容</summary>
 		/// <param name="request">欲拆解的 HttpListenerRequest 類別</param>
 		/// <param name="nvc">輸出成 NameValueCollection 類別</param>
 		protected virtual void PopulatePostMultiPart(HttpListenerRequest request, out NameValueCollection nvc)
@@ -964,7 +898,7 @@ namespace CJF.Net.Http
 		#endregion
 
 		#region Public Virtual Method : void RedirectURL(string url)
-		/// <summary>將回應設定為重新導向用戶端至指定的 URL。</summary>
+		/// <summary>[覆寫]將回應設定為重新導向用戶端至指定的 URL。</summary>
 		/// <param name="url">用戶端應用來尋找所要求之資源的 URL</param>
 		public virtual void RedirectURL(string url)
 		{
@@ -981,13 +915,13 @@ namespace CJF.Net.Http
 				else
 				{
 					_log.Write(LogManager.LogLevel.Debug, "From:RedirectURL");
-					_log.WriteException(ex, _SendMail);
+					_log.WriteException(ex, SendMailWhenException);
 				}
 			}
 			catch (Exception ex)
 			{
 				_log.Write(LogManager.LogLevel.Debug, "From:RedirectURL");
-				_log.WriteException(ex, _SendMail);
+				_log.WriteException(ex, SendMailWhenException);
 			}
 			finally
 			{
@@ -1045,6 +979,22 @@ namespace CJF.Net.Http
 				return File.ReadAllText(fileName, enc);
 			else
 				return File.ReadAllText(fileName);
+		}
+		#endregion
+
+		#region Public Static Method : string ToQueryString(NameValueCollection nvc)
+		/// <summary>將 NameValueCollection 類別中的值轉成 QueryString 格式</summary>
+		/// <param name="nvc">Key-Value對應的類別</param>
+		/// <returns></returns>
+		public static string ToQueryString(NameValueCollection nvc)
+		{
+			if (nvc == null || nvc.AllKeys.Length == 0)
+				return string.Empty;
+			var array = (from key in nvc.AllKeys
+						 from value in nvc.GetValues(key)
+						 select string.Format("{0}={1}", HttpUtility.UrlEncode(key), HttpUtility.UrlEncode(value)))
+				.ToArray();
+			return "?" + string.Join("&", array);
 		}
 		#endregion
 
