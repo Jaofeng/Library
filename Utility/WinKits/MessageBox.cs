@@ -338,11 +338,12 @@ namespace CJF.Utility.WinKits
 				_MaxTextAreaWidth = (int)(sr.Width * MAX_WIDTH_PERCENTAGE);
 			else
 				_MaxTextAreaWidth = DialogMaxSize;
-			_MaxTextAreaWidth -= (SystemInformation.Border3DSize.Width * 2 + _Padding.Horizontal);
+			//_MaxTextAreaWidth -= (SystemInformation.Border3DSize.Width * 2 + _Padding.Horizontal);
 			if (_MsgIcon != MessageBoxIcon.None)
 				_MaxTextAreaWidth -= (_Icon.Width + btn1.Margin.Left);
 			_TextSize = g.MeasureString(_PureText, this.Font, _MaxTextAreaWidth, _DefFormat).ToSize();
 			_TextSize.Height += 3;
+			_TextSize.Width += 3;
 			_HasCsiSgr = !_PureText.Equals(_Message);
 			_ButtonArea = new Size(0, flpButtons.Height);
 
@@ -376,6 +377,9 @@ namespace CJF.Utility.WinKits
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
+			g.Clear(SystemColors.Window);
+			g.DrawLine(new Pen(SystemBrushes.ControlDark, 1), new Point(0, flpButtons.Top - 2), new Point(flpButtons.Width, flpButtons.Top - 2));
+			g.DrawLine(new Pen(SystemBrushes.Window, 1), new Point(0, flpButtons.Top - 1), new Point(flpButtons.Width, flpButtons.Top - 1));
 			if (_HasCsiSgr)
 				DrawAnsiCsiSgrText(g, _Message);
 			else
@@ -553,9 +557,6 @@ namespace CJF.Utility.WinKits
 		#region Private Method : Size DrawNormalText(Graphics g, string text)
 		private Size DrawNormalText(Graphics g, string text)
 		{
-			g.Clear(SystemColors.Window);
-			g.DrawLine(new Pen(SystemBrushes.ControlDark, 1), new Point(0, flpButtons.Top - 2), new Point(flpButtons.Width, flpButtons.Top - 2));
-			g.DrawLine(new Pen(SystemBrushes.Window, 1), new Point(0, flpButtons.Top - 1), new Point(flpButtons.Width, flpButtons.Top - 1));
 			Point leftTop = new Point(_Padding.Left, _Padding.Top);
 			if (_Icon != null)
 				g.DrawIcon(_Icon, leftTop.X, leftTop.Y);
@@ -576,9 +577,6 @@ namespace CJF.Utility.WinKits
 		#region Private Method : Size DrawAnsiCsiSgrText(Graphics grp, string text)
 		private Size DrawAnsiCsiSgrText(Graphics grp, string text)
 		{
-			grp.Clear(SystemColors.Window);
-			grp.DrawLine(new Pen(SystemBrushes.ControlDark, 1), new Point(0, flpButtons.Top - 2), new Point(flpButtons.Width, flpButtons.Top - 2));
-			grp.DrawLine(new Pen(SystemBrushes.Window, 1), new Point(0, flpButtons.Top - 1), new Point(flpButtons.Width, flpButtons.Top - 1));
 			Point leftTop = new Point(_Padding.Left, _Padding.Top);
 
 			// 繪製圖示

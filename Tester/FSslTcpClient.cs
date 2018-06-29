@@ -95,7 +95,7 @@ namespace Tester
 					cer = System.IO.Path.Combine(Environment.CurrentDirectory, "Web", cer);
 				System.Security.Cryptography.X509Certificates.X509Certificate cert =
 					System.Security.Cryptography.X509Certificates.X509Certificate.CreateFromCertFile(cer);
-				SslTcpClient.BypassHostName = cert.Issuer;
+				SslTcpClient.BypassIssuer = cert.Issuer;
 				_Client = SslTcpClient.ConnectTo(new IPEndPoint(IPAddress.Parse(txtIP.Text), Convert.ToInt32(txtPort.Text)), cer);
 				_Client.Connected += new EventHandler<SslTcpEventArgs>(Client_OnConnected);
 				_Client.Closed += new EventHandler<SslTcpEventArgs>(Client_OnClosed);

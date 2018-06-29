@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using System.Collections.Specialized;
 using System.IO;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 using System.Web;
@@ -87,9 +88,14 @@ namespace Tester
 		#region Private Method : void InitHttpListener()
 		private void InitHttpListener()
 		{
-			string prefix = string.Format("{0}://{1}:{2}/", cbCertServer.Text, txtIP.Text, txtPort.Text);
+			string prefix = string.Format("http://{0}:{1}/", txtIP.Text, txtPort.Text);
 			_HttpListener = new HttpListener();
 			_HttpListener.Prefixes.Add(prefix);
+			if (cbCertServer.Text.Equals("https"))
+			{
+				prefix = string.Format("{0}://{1}:{2}/", cbCertServer.Text, txtIP.Text, txtSslPort.Text);
+				_HttpListener.Prefixes.Add(prefix);
+			}
 			_HttpListener.Start();
 			_HttpListener.BeginGetContext(new AsyncCallback(WebRequestCallback), _HttpListener);
 		}
@@ -379,7 +385,11 @@ namespace Tester
 		private void cbCertClient_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			txtUrl.Text = cbCertClient.Text + Regex.Replace(txtUrl.Text, "http[s]?", "");
+		}
 
+		private void cbCertServer_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			txtSslPort.Enabled = label22.Enabled = (cbCertServer.SelectedIndex == 1);
 		}
 	}
 

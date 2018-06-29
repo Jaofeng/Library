@@ -514,12 +514,13 @@ namespace CJF.Net
 			}
 			finally
 			{
-				_Clients.Remove(remote);
+				if (_Clients != null)
+					_Clients.Remove(remote);
 				if (sslStream != null)
 					sslStream.Close();
 				if (client != null && client.Connected)
 					client.Close();
-				if (!client.Connected)
+				if (client != null && !client.Connected)
 					OnClientClosed(remote);
 			}
 		}
@@ -611,8 +612,6 @@ namespace CJF.Net
 	/// <summary>SSL TCP Client</summary>
 	public class SslTcpClient
 	{
-		//private static Hashtable certificateErrors = new Hashtable();
-
 		#region Pbublic Events
 		/// <summary>當連線至伺服器時觸發。</summary>
 		public event EventHandler<SslTcpEventArgs> Connected;
@@ -639,7 +638,7 @@ namespace CJF.Net
 		{
 			if (sslPolicyErrors == SslPolicyErrors.None)
 				return true;
-			else if (!string.IsNullOrEmpty(BypassHostName) && certificate.Issuer.Equals(BypassHostName))
+			else if (!string.IsNullOrEmpty(BypassIssuer) && certificate.Issuer.Equals(BypassIssuer))
 				return true;
 			return false;
 		}
@@ -648,22 +647,34 @@ namespace CJF.Net
 		TcpClient _Client = null;
 		SslStream _Stream = null;
 		bool _IsExit = false;
-
-		public SslTcpClient(IPEndPoint ipp)
+		X509CertificateCollection _X509Certs = null;
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="ipp"></param>
+		/// <param name="certificate"></param>
+		public SslTcpClient(IPEndPoint ipp, string certificate)
 		{
 			this.RemoteEndPoint = ipp;
+			_X509Certs = new X509CertificateCollection();
+			X509Certificate cert = X509Certificate.CreateFromCertFile(certificate);
+			_X509Certs.Add(cert);
+			this.CertIssuer = cert.Issuer;
 		}
-		public SslTcpClient(IPAddress addr, int port)
-		{
-			this.RemoteEndPoint = new IPEndPoint(addr, port);
-		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="addr"></param>
+		/// <param name="port"></param>
+		/// <param name="certificate"></param>
+		public SslTcpClient(IPAddress addr, int port, string certificate) : this(new IPEndPoint(addr, port), certificate) { }
 
 		/// <summary>取得執行個體開啟的遠端伺服器通訊位址端點資訊。</summary>
 		public IPEndPoint RemoteEndPoint { get; private set; }
-		/// <summary>設定或取得憑證名稱。</summary>
-		public string CertificateName { get; set; }
-
-		public static string BypassHostName { get; set; }
+		/// <summary>設定或取得憑證授權單位名稱。</summary>
+		public string CertIssuer { get; private set; }
+		/// <summary>設定或取得忽略的憑證授權單位名稱。</summary>
+		public static string BypassIssuer { get; set; }
 
 		#region Public Static Method : SslTcpClient ConnectTo(IPEndPoint ipp, string certificate)
 		/// <summary>使用憑證檔連線至遠端伺服器。</summary>
@@ -672,16 +683,15 @@ namespace CJF.Net
 		/// <returns>已連線的 CJF.Net.SslTcpClient 執行個體。</returns>
 		public static SslTcpClient ConnectTo(IPEndPoint ipp, string certificate)
 		{
-			SslTcpClient client = new SslTcpClient(ipp);
-			client.Connect(certificate);
+			SslTcpClient client = new SslTcpClient(ipp, certificate);
+			client.Connect();
 			return client;
 		}
 		#endregion
 
 		#region Public Method : void Connect(string certificate)
 		/// <summary>使用憑證連線至遠端伺服器。</summary>
-		/// <param name="certificate">憑證檔案。</param>
-		public void Connect(string certificate)
+		public void Connect()
 		{
 			if (_Client == null)
 				_Client = new TcpClient();
@@ -691,13 +701,9 @@ namespace CJF.Net
 					_Client.EndConnect(result);
 					_Stream = new SslStream(_Client.GetStream(), false, new RemoteCertificateValidationCallback(ValidateServerCertificate), null);
 
-					X509CertificateCollection certs = new X509CertificateCollection();
-					X509Certificate cert = X509Certificate.CreateFromCertFile(certificate);
-					certs.Add(cert);
-
 					try
 					{
-						_Stream.AuthenticateAsClient(cert.Issuer, certs, SslProtocols.Tls, true);
+						_Stream.AuthenticateAsClient(this.CertIssuer, _X509Certs, SslProtocols.Tls, true);
 					}
 					catch (AuthenticationException e)
 					{

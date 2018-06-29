@@ -35,6 +35,7 @@
 			this.label2 = new System.Windows.Forms.Label();
 			this.label1 = new System.Windows.Forms.Label();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.cbCertServer = new System.Windows.Forms.ComboBox();
 			this.txtPfx = new System.Windows.Forms.TextBox();
 			this.label18 = new System.Windows.Forms.Label();
 			this.txtPfxPwd = new System.Windows.Forms.TextBox();
@@ -43,9 +44,11 @@
 			this.label9 = new System.Windows.Forms.Label();
 			this.btnStop = new System.Windows.Forms.Button();
 			this.btnStart = new System.Windows.Forms.Button();
+			this.label21 = new System.Windows.Forms.Label();
 			this.txtUrl = new System.Windows.Forms.TextBox();
 			this.label4 = new System.Windows.Forms.Label();
 			this.gbForm = new System.Windows.Forms.GroupBox();
+			this.cbCertClient = new System.Windows.Forms.ComboBox();
 			this.txtCer = new System.Windows.Forms.TextBox();
 			this.label20 = new System.Windows.Forms.Label();
 			this.txtUserAgent = new System.Windows.Forms.TextBox();
@@ -79,9 +82,8 @@
 			this.label12 = new System.Windows.Forms.Label();
 			this.label5 = new System.Windows.Forms.Label();
 			this.label6 = new System.Windows.Forms.Label();
-			this.label21 = new System.Windows.Forms.Label();
-			this.cbCertServer = new System.Windows.Forms.ComboBox();
-			this.cbCertClient = new System.Windows.Forms.ComboBox();
+			this.txtSslPort = new System.Windows.Forms.TextBox();
+			this.label22 = new System.Windows.Forms.Label();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.gbForm.SuspendLayout();
@@ -125,7 +127,7 @@
 			this.txtIP.Name = "txtIP";
 			this.txtIP.Size = new System.Drawing.Size(88, 22);
 			this.txtIP.TabIndex = 1;
-			this.txtIP.Text = "127.0.0.1";
+			this.txtIP.Text = "192.168.127.100";
 			// 
 			// label2
 			// 
@@ -147,6 +149,8 @@
 			// 
 			// groupBox2
 			// 
+			this.groupBox2.Controls.Add(this.txtSslPort);
+			this.groupBox2.Controls.Add(this.label22);
 			this.groupBox2.Controls.Add(this.cbCertServer);
 			this.groupBox2.Controls.Add(this.txtPfx);
 			this.groupBox2.Controls.Add(this.label18);
@@ -168,6 +172,19 @@
 			this.groupBox2.TabIndex = 0;
 			this.groupBox2.TabStop = false;
 			this.groupBox2.Text = "Http Server";
+			// 
+			// cbCertServer
+			// 
+			this.cbCertServer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbCertServer.FormattingEnabled = true;
+			this.cbCertServer.Items.AddRange(new object[] {
+            "http",
+            "https"});
+			this.cbCertServer.Location = new System.Drawing.Point(71, 21);
+			this.cbCertServer.Name = "cbCertServer";
+			this.cbCertServer.Size = new System.Drawing.Size(100, 20);
+			this.cbCertServer.TabIndex = 8;
+			this.cbCertServer.SelectedIndexChanged += new System.EventHandler(this.cbCertServer_SelectedIndexChanged);
 			// 
 			// txtPfx
 			// 
@@ -249,6 +266,15 @@
 			this.btnStart.UseVisualStyleBackColor = true;
 			this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
 			// 
+			// label21
+			// 
+			this.label21.AutoSize = true;
+			this.label21.Location = new System.Drawing.Point(36, 25);
+			this.label21.Name = "label21";
+			this.label21.Size = new System.Drawing.Size(29, 12);
+			this.label21.TabIndex = 0;
+			this.label21.Text = "類型";
+			// 
 			// txtUrl
 			// 
 			this.txtUrl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -314,6 +340,19 @@
 			this.gbForm.TabIndex = 2;
 			this.gbForm.TabStop = false;
 			this.gbForm.Text = "WebClient Post Data and File";
+			// 
+			// cbCertClient
+			// 
+			this.cbCertClient.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.cbCertClient.FormattingEnabled = true;
+			this.cbCertClient.Items.AddRange(new object[] {
+            "http",
+            "https"});
+			this.cbCertClient.Location = new System.Drawing.Point(57, 22);
+			this.cbCertClient.Name = "cbCertClient";
+			this.cbCertClient.Size = new System.Drawing.Size(100, 20);
+			this.cbCertClient.TabIndex = 8;
+			this.cbCertClient.SelectedIndexChanged += new System.EventHandler(this.cbCertClient_SelectedIndexChanged);
 			// 
 			// txtCer
 			// 
@@ -612,39 +651,24 @@
 			this.label6.Size = new System.Drawing.Size(838, 8);
 			this.label6.TabIndex = 3;
 			// 
-			// label21
+			// txtSslPort
 			// 
-			this.label21.AutoSize = true;
-			this.label21.Location = new System.Drawing.Point(36, 25);
-			this.label21.Name = "label21";
-			this.label21.Size = new System.Drawing.Size(29, 12);
-			this.label21.TabIndex = 0;
-			this.label21.Text = "類型";
+			this.txtSslPort.Enabled = false;
+			this.txtSslPort.Location = new System.Drawing.Point(514, 20);
+			this.txtSslPort.Name = "txtSslPort";
+			this.txtSslPort.Size = new System.Drawing.Size(50, 22);
+			this.txtSslPort.TabIndex = 10;
+			this.txtSslPort.Text = "8081";
 			// 
-			// cbCertServer
+			// label22
 			// 
-			this.cbCertServer.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cbCertServer.FormattingEnabled = true;
-			this.cbCertServer.Items.AddRange(new object[] {
-            "http",
-            "https"});
-			this.cbCertServer.Location = new System.Drawing.Point(71, 21);
-			this.cbCertServer.Name = "cbCertServer";
-			this.cbCertServer.Size = new System.Drawing.Size(100, 20);
-			this.cbCertServer.TabIndex = 8;
-			// 
-			// cbCertClient
-			// 
-			this.cbCertClient.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.cbCertClient.FormattingEnabled = true;
-			this.cbCertClient.Items.AddRange(new object[] {
-            "http",
-            "https"});
-			this.cbCertClient.Location = new System.Drawing.Point(57, 22);
-			this.cbCertClient.Name = "cbCertClient";
-			this.cbCertClient.Size = new System.Drawing.Size(100, 20);
-			this.cbCertClient.TabIndex = 8;
-			this.cbCertClient.SelectedIndexChanged += new System.EventHandler(this.cbCertClient_SelectedIndexChanged);
+			this.label22.AutoSize = true;
+			this.label22.Enabled = false;
+			this.label22.Location = new System.Drawing.Point(462, 25);
+			this.label22.Name = "label22";
+			this.label22.Size = new System.Drawing.Size(46, 12);
+			this.label22.TabIndex = 9;
+			this.label22.Text = "SSL Port";
 			// 
 			// FHttpService
 			// 
@@ -728,5 +752,7 @@
 		private System.Windows.Forms.ComboBox cbCertServer;
 		private System.Windows.Forms.Label label21;
 		private System.Windows.Forms.ComboBox cbCertClient;
+		private System.Windows.Forms.TextBox txtSslPort;
+		private System.Windows.Forms.Label label22;
 	}
 }

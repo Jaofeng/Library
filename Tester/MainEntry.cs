@@ -11,7 +11,8 @@ using CJF.Utility;
 using CJF.Utility.CRC;
 using CJF.Utility.Extensions;
 using CJF.Utility.Ansi;
-using WK = CJF.Utility.WinKits;
+using AnsiLabel = CJF.Utility.WinKits.AnsiLabel;
+using MessageBox = CJF.Utility.WinKits.MessageBox;
 
 namespace Tester
 {
@@ -404,13 +405,13 @@ namespace Tester
 			MessageBoxIcon icon = (MessageBoxIcon)Enum.Parse(typeof(MessageBoxIcon), cbMsgBoxIcon.Text);
 			MessageBoxDefaultButton defBtn = (MessageBoxDefaultButton)Enum.Parse(typeof(MessageBoxDefaultButton), cbMsgBoxDefBtn.Text);
 			if (chkFont.Checked)
-				WK.MessageBox.Font = new Font((FontFamily)cbMsgBoxFont.SelectedItem, (float)cbMsgBoxFontSize.SelectedItem);
-			else if (WK.MessageBox.Font != null)
-				WK.MessageBox.Font = null;
+				MessageBox.Font = new Font((FontFamily)cbMsgBoxFont.SelectedItem, (float)cbMsgBoxFontSize.SelectedItem);
+			else if (MessageBox.Font != null)
+				MessageBox.Font = null;
 			string msg = txtMsgBoxText.Text.Replace("\\x1b", "\\x1B").Replace("\\x1B", "\x1B");
 			MessageBox.Show(CsiBuilder.GetPureText(msg), "System.Windows.Forms.MessageBox", btn, icon, defBtn);
-			labDialogResult.Text = WK.MessageBox.Show(CsiBuilder.GetPureText(msg), txtMsgBoxCaption.Text, btn, icon, defBtn).ToString();
-			labDialogResult.Text = WK.MessageBox.Show(msg, txtMsgBoxCaption.Text, btn, icon, defBtn).ToString();
+			labDialogResult.Text = MessageBox.Show(CsiBuilder.GetPureText(msg), txtMsgBoxCaption.Text, btn, icon, defBtn).ToString();
+			labDialogResult.Text = MessageBox.Show(msg, txtMsgBoxCaption.Text, btn, icon, defBtn).ToString();
 		}
 
 		private void chkFont_CheckedChanged(object sender, EventArgs e)
@@ -576,19 +577,19 @@ D:\WorkSpace\Source\Common\Library\Tester\MainEntry.cs \x1B[94mLine:394, Colume:
 
 		private void ansiLabel1_TextChanged(object sender, EventArgs e)
 		{
-			WK.AnsiLabel lab = (WK.AnsiLabel)sender;
+			AnsiLabel lab = (AnsiLabel)sender;
 			Debug.Print("{0} TextChanged : {1}", lab.Name, lab.Text.Replace("\x1B", "\\x1B"));
 		}
 
 		private void ansiLabel1_Resize(object sender, EventArgs e)
 		{
-			WK.AnsiLabel lab = (WK.AnsiLabel)sender;
+			AnsiLabel lab = (AnsiLabel)sender;
 			Debug.Print("{0} Resize : {1}", lab.Name, lab.Size);
 		}
 
 		private void ansiLabel1_Paint(object sender, PaintEventArgs e)
 		{
-			WK.AnsiLabel lab = (WK.AnsiLabel)sender;
+			AnsiLabel lab = (AnsiLabel)sender;
 			Debug.Print("{0} Paint", lab.Name);
 		}
 
