@@ -15,22 +15,28 @@ using CJF.Utility;
 
 namespace CJF.Net
 {
+    /// <summary></summary>
 	public sealed class SslClientInfo
 	{
 		TcpClient _Client = null;
 		SslStream _Stream = null;
-
+        /// <summary></summary>
+        /// <param name="client"></param>
 		public SslClientInfo(TcpClient client)
 		{
 			_Client = client;
 			_Stream = new SslStream(client.GetStream(), false);
 		}
-
+        /// <summary></summary>
 		public TcpClient Client { get { return _Client; } }
+        /// <summary></summary>
 		public SslStream Stream { get { return _Stream; } }
+        /// <summary></summary>
 		public bool IsAuthenticated { get { return _Stream.IsAuthenticated; } }
+        /// <summary></summary>
 		public bool Connected { get { return _Client.Connected; } }
 
+        /// <summary></summary>
 		public void Close()
 		{
 			_Stream.Close();

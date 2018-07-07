@@ -409,12 +409,13 @@ namespace Tester
 			else if (MessageBox.Font != null)
 				MessageBox.Font = null;
 			string msg = txtMsgBoxText.Text.Replace("\\x1b", "\\x1B").Replace("\\x1B", "\x1B");
-			MessageBox.Show(CsiBuilder.GetPureText(msg), "System.Windows.Forms.MessageBox", btn, icon, defBtn);
-			labDialogResult.Text = MessageBox.Show(CsiBuilder.GetPureText(msg), txtMsgBoxCaption.Text, btn, icon, defBtn).ToString();
+            System.Windows.Forms.MessageBox.Show(msg, "Original MessageBox", btn, icon, defBtn);
+            MessageBox.Show(this, msg, "Owner MessageBox", btn, icon, defBtn);
+            labDialogResult.Text = MessageBox.Show(CsiBuilder.GetPureText(msg), txtMsgBoxCaption.Text, btn, icon, defBtn).ToString();
 			labDialogResult.Text = MessageBox.Show(msg, txtMsgBoxCaption.Text, btn, icon, defBtn).ToString();
-		}
+        }
 
-		private void chkFont_CheckedChanged(object sender, EventArgs e)
+        private void chkFont_CheckedChanged(object sender, EventArgs e)
 		{
 			cbMsgBoxFont.Enabled = cbMsgBoxFontSize.Enabled = chkFont.Checked;
 		}
@@ -604,5 +605,5 @@ D:\WorkSpace\Source\Common\Library\Tester\MainEntry.cs \x1B[94mLine:394, Colume:
 			FSslTcpClient fp = new FSslTcpClient();
 			fp.Show();
 		}
-	}
+    }
 }

@@ -57,7 +57,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="log4net">
-      <HintPath>..\..\..\3Party\log4net\log4net.dll</HintPath>
+      <HintPath>..\..\3Party\log4net\log4net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -86,6 +86,7 @@
     <Compile Include="WinKits\AnsiLabel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="WinKits\_init_.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

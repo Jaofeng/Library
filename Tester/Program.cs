@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace Tester
 {
 	static class Program
 	{
-		[STAThread]
+        [DllImport("user32.dll")]
+        static extern bool SetProcessDPIAware();
+
+        [STAThread]
 		static void Main(string[] args)
 		{
-			Application.EnableVisualStyles();
+            if (Environment.OSVersion.Version.Major >= 6)
+                SetProcessDPIAware();
+            Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 			if (args == null || args.Length == 0)
 			{
