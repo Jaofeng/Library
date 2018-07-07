@@ -11,6 +11,7 @@ namespace CJF.Utility
 {
 	/// <summary>基礎參數類別</summary>
 	[Serializable]
+    [Obsolete("結構變更，不要使用。", true)]
 	public class ConfigBase : IDisposable
 	{
 		#region Static Properties
