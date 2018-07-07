@@ -1,22 +1,17 @@
-﻿using System;
+﻿using CJF.Utility.Ansi;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.ComponentModel.Design.Serialization;
 using System.Drawing;
-using System.Data;
-using System.Runtime.InteropServices;
-using System.Linq;
 using System.Reflection;
-using System.Text;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Windows.Forms;
-using CJF.Utility.Ansi;
 
 namespace CJF.Utility.WinKits
 {
-	/// <summary>表示可支援顯示 ANSI CSI Color Code 的可捲式控制項。</summary>
-	[DefaultEvent("Click"), DefaultProperty("Text")]
+    /// <summary>表示可支援顯示 ANSI CSI Color Code 的可捲式控制項。</summary>
+    [DefaultEvent("Click"), DefaultProperty("Text")]
 	[Description("可支援顯示 ANSI CSI Color Code 的可捲式控制項。")]
 	[ClassInterface(ClassInterfaceType.AutoDispatch)]
 	[ComVisible(true)]
@@ -43,42 +38,42 @@ namespace CJF.Utility.WinKits
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		[DefaultValue(false)]
-		new public bool CausesValidation { get; set; }
+		public new bool CausesValidation { get; set; }
 		/// <summary> 取得或設定控制項的輸入法 (IME) 模式。這個屬性與這個類別無關。</summary>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		new public ImeMode ImeMode { get; set; }
+		public new ImeMode ImeMode { get; set; }
 		#endregion
 
 		#region 事件
 		/// <summary>發生於 CJF.Utility.WinKits.AnsiBox.BackgroundImage 屬性值變更時。這個事件與這個類別無關。</summary>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		new public event EventHandler BackgroundImageChanged;
+		public new event EventHandler BackgroundImageChanged;
 		/// <summary>發生於 CJF.Utility.WinKits.AnsiBox.BackgroundImageLayout 屬性值變更時。這個事件與這個類別無關。</summary>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		new public event EventHandler BackgroundImageLayoutChanged;
+		public new event EventHandler BackgroundImageLayoutChanged;
 		/// <summary>發生於 CJF.Utility.WinKits.AnsiBox.CausesValidation 屬性的值變更時。這個事件與這個類別無關。</summary>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		new public event EventHandler CausesValidationChanged;
+		public new event EventHandler CausesValidationChanged;
 		/// <summary>發生於 CJF.Utility.WinKits.AnsiBox.RightToLeft 屬性的值變更時。這個事件與這個類別無關。</summary>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		new public event EventHandler RightToLeftChanged;
+		public new event EventHandler RightToLeftChanged;
 		/// <summary>發生於控制項完成驗證時。這個事件與這個類別無關。</summary>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		new public event EventHandler Validated;
+		public new event EventHandler Validated;
 		/// <summary>發生於控制項進行驗證時。這個事件與這個類別無關。</summary>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		new public event CancelEventHandler Validating;
+		public new event CancelEventHandler Validating;
 		/// <summary>發生於 CJF.Utility.WinKits.AnsiBox.ImeMode 屬性的值變更時。這個事件與這個類別無關。</summary>
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		new public event EventHandler ImeModeChanged;
+		public new event EventHandler ImeModeChanged;
 		#endregion
 
 		#region 事件方法
@@ -134,10 +129,15 @@ namespace CJF.Utility.WinKits
 		private Panel pWin = null;
 		private PictureBox pPaper = null;
 		private Label labRD = null;
-		#endregion
+        #endregion
 
-		#region 內部變數
-		StringFormat _DefFormat = new StringFormat(StringFormat.GenericTypographic);
+        #region 內部常數或唯讀屬性
+        static readonly SizeF DEF_DPI = new SizeF(96F, 96F);
+        #endregion
+
+        #region 內部變數
+        StringFormat _DefFormat = new StringFormat(StringFormat.GenericTypographic);
+        float _DpiGain = 0;
 		float _LineHeight = 0;
 		PointF _LastLocation = PointF.Empty;
 		#endregion
@@ -202,36 +202,33 @@ namespace CJF.Utility.WinKits
 		}
 		#endregion
 
-		#region New Public Property : Padding Padding(R/W)
+
+		#region public new Property : Padding Padding(R/W)
 		/// <summary>取得或設定控制項內的邊框距離。</summary>
 		[DefaultValue(typeof(Padding), "3, 3, 3, 3")]
-		new public Padding Padding
-		{
-			get { return base.Padding; }
-			set { base.Padding = value; }
-		}
+        public new Padding Padding { get => base.Padding; set => base.Padding = value; }
 		#endregion
 
-		#region New Public Property : Size PreferredSize(R)
+		#region public new Property : Size PreferredSize(R)
 		/// <summary>取得能夠容納控制項的矩形區域的大小。</summary>
 		[Browsable(false)]
-		new public Size PreferredSize { get { return this.pWin.Size; } }
+		public new Size PreferredSize { get { return this.pWin.Size; } }
 		#endregion
 
-		#region New Public Property : string ProductName(R)
+		#region public new Property : string ProductName(R)
 		/// <summary>取得包含控制項的組件的產品名稱。</summary>
 		[Browsable(false)]
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
-		new public string ProductName { get { return this.GetType().ToString(); } }
+		public new string ProductName { get { return this.GetType().ToString(); } }
 		#endregion
 
-		#region New Public Property : string ProductVersion(R)
+		#region public new Property : string ProductVersion(R)
 		/// <summary>取得包含控制項的組件的版本。</summary>
 		[Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		[EditorBrowsable(EditorBrowsableState.Advanced)]
-		new public string ProductVersion
+		public new string ProductVersion
 		{
 			get
 			{
@@ -250,30 +247,18 @@ namespace CJF.Utility.WinKits
 		#region Public Override Property : Color BackColor(R/W)
 		/// <summary>取得或設定控制項的背景色彩。</summary>
 		[DefaultValue(typeof(Color), "Window")]
-		public override Color BackColor
-		{
-			get { return base.BackColor; }
-			set { base.BackColor = value; }
-		}
+		public override Color BackColor { get => base.BackColor; set => base.BackColor = value; }
 		#endregion
 
 		#region Public Override Property : Font Font(R/W)
 		/// <summary>取得或設定控制項顯示之文字字型。</summary>
-		public override Font Font
-		{
-			get { return base.Font; }
-			set { base.Font = value; }
-		}
+		public override Font Font { get => base.Font; set => base.Font = value; }
 		#endregion
 
 		#region Public Override Property : string Text(R/W)
 		/// <summary>取得或設定這個控制項的相關文字。</summary>
 		[Editor("System.ComponentModel.Design.MultilineStringEditor, System.Design, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a", typeof(System.Drawing.Design.UITypeEditor))]
-		public override string Text
-		{
-			get { return base.Text; }
-			set { base.Text = value; }
-		}
+		public override string Text { get => base.Text; set => base.Text = value; }
 		#endregion
 
 
@@ -369,25 +354,37 @@ namespace CJF.Utility.WinKits
 		/// <param name="e">包含事件資料的 System.Windows.Forms.EventArgs。</param>
 		protected override void OnResize(EventArgs e)
 		{
-			ArrangeControls();
-			base.OnResize(e);
+            this.Refresh();
+            base.OnResize(e);
 		}
-		#endregion
+        #endregion
 
-		#region Protected Override Method : void OnTextChanged(EventArgs e)
-		/// <summary>引發 CJF.Utility.WinKits.AnsiLabel.TextChanged 事件。</summary>
-		/// <param name="e">包含事件資料的 System.Windows.Forms.EventArgs。</param>
-		protected override void OnTextChanged(EventArgs e)
+        #region Protected Override Method : void OnSizeChanged(EventArgs e)
+        /// <summary>引發 CJF.Utility.WinKits.AnsiLabel.SizeChanged 事件。</summary>
+        /// <param name="e">包含事件資料的 System.Windows.Forms.EventArgs。</param>
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            this.Refresh();
+            base.OnSizeChanged(e);
+        }
+        #endregion
+
+        #region Protected Override Method : void OnTextChanged(EventArgs e)
+        /// <summary>引發 CJF.Utility.WinKits.AnsiLabel.TextChanged 事件。</summary>
+        /// <param name="e">包含事件資料的 System.Windows.Forms.EventArgs。</param>
+        protected override void OnTextChanged(EventArgs e)
 		{
 			this.Refresh();
 			base.OnTextChanged(e);
 		}
-		#endregion
+        #endregion
 
-		#region Public Override Method : void Refresh()
-		/// <summary>強制控制項使其工作區失效，並且立即重繪其本身和任何子控制項。</summary>
-		public override void Refresh()
+
+        #region Public Override Method : void Refresh()
+        /// <summary>強制控制項使其工作區失效，並且立即重繪其本身和任何子控制項。</summary>
+        public override void Refresh()
 		{
+            ArrangeControls();
 			Font fText = this.Font;
 			SizeF tf = Size.Empty;
 			string text = this.Text.Replace("\\x1b", "\\x1B").Replace("\\x1B", "\x1B");
@@ -414,6 +411,7 @@ namespace CJF.Utility.WinKits
 		}
 		#endregion
 
+
 		#region Protected Override Method : void Dispose(bool disposing)
 		/// <summary> 清除任何使用中的資源。</summary>
 		/// <param name="disposing">如果應該處置 Managed 資源則為 true，否則為 false。</param>
@@ -435,7 +433,6 @@ namespace CJF.Utility.WinKits
 			base.Dispose(disposing);
 		}
 		#endregion
-
 
 
 		#region Private Method : void ArrangeControls()
@@ -983,6 +980,8 @@ namespace CJF.Utility.WinKits
 			this.Controls.Add(hsBar);
 			this.Controls.Add(pWin);
 			this.Controls.Add(labRD);
+
+            ArrangeControls();
 		}
 		#endregion
 
