@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using MessageBox = CJF.Utility.WinKits.MessageBox;
 
 namespace Tester
 {
@@ -18,6 +19,9 @@ namespace Tester
                 SetProcessDPIAware();
             Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
+
+            MessageBox.Show("Custom MessageBox Demo...", Application.ProductName, MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+
 			if (args == null || args.Length == 0)
 			{
 				MainEntry main = new MainEntry(0);

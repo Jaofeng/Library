@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Jaofeng Chen")]
 [assembly: AssemblyProduct("Common Library - Utility")]
-[assembly: AssemblyCopyright("Copyright © 2017 Jaofeng Chen All rights reserved.")]
+[assembly: AssemblyCopyright("Copyright © 2018 Jaofeng Chen All rights reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -31,6 +31,6 @@ using System.Runtime.InteropServices;
 //
 // 您可以指定所有的值，也可以依照以下的方式，使用 '*' 將修訂和組建編號
 // 指定為預設值:
-[assembly: AssemblyVersion("1.36.0707.610")]
-[assembly: AssemblyFileVersion("1.36.0707.610")]
+[assembly: AssemblyVersion("1.36.0717.617")]
+[assembly: AssemblyFileVersion("1.36.0717.617")]
 [assembly: log4net.Config.XmlConfigurator(ConfigFile = "log4net.config", Watch = true)]

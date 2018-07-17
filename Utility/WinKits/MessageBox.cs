@@ -17,11 +17,13 @@ namespace CJF.Utility.WinKits
         static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
         [DllImport("user32.dll")]
         static extern IntPtr RemoveMenu(IntPtr hMenu, uint nPosition, uint wFlags);
-        [DllImport("user32.dll")]
-        static extern bool SetProcessDPIAware();
+        //[DllImport("user32.dll")]
+        //static extern bool SetProcessDpiAwarenessContext(uint value);
+
         internal const uint SC_CLOSE = 0xF060;
         internal const uint MF_GRAYED = 0x00000001;
         internal const uint MF_BYCOMMAND = 0x00000000;
+        const uint DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2 = 0x04;
         #endregion
 
         #region Controls
@@ -157,7 +159,7 @@ namespace CJF.Utility.WinKits
             g.DrawLine(new Pen(SystemBrushes.ControlDark, 1), new Point(0, flpButtons.Top - 2), new Point(flpButtons.Width, flpButtons.Top - 2));
             g.DrawLine(new Pen(SystemBrushes.Window, 1), new Point(0, flpButtons.Top - 1), new Point(flpButtons.Width, flpButtons.Top - 1));
             if (_HasCsiSgr)
-                DrawAnsiCsiSgrText(g, _Message);
+                DrawAnsiCsiSgrText(g, _SgrText);
             else
                 DrawNormalText(g, _Message);
         }
@@ -377,8 +379,8 @@ namespace CJF.Utility.WinKits
         }
         #endregion
 
-        #region Private Method : Size DrawAnsiCsiSgrText(Graphics grp, string text)
-        private Size DrawAnsiCsiSgrText(Graphics grp, string text)
+        #region Private Method : Size DrawAnsiCsiSgrText(Graphics grp, string sgrText)
+        private Size DrawAnsiCsiSgrText(Graphics grp, string sgrText)
         {
             Point leftTop = Canvas_Padding.LeftTop();
 
@@ -389,21 +391,21 @@ namespace CJF.Utility.WinKits
             Brush bFore = SystemBrushes.ControlText;
             Brush bBack = SystemBrushes.Window;
             Font fText = this.Font;
-            MatchCollection mc = Regex.Matches(_SgrText, "\x1B\\[(\\d+)*;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?m", RegexOptions.Multiline);
+            MatchCollection mc = Regex.Matches(sgrText, "\x1B\\[(\\d+)*;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?m", RegexOptions.Multiline);
             PointF loc = _TextArea.Location;
             int idx = 0;
             SizeF f1 = SizeF.Empty, f2 = SizeF.Empty, f3 = SizeF.Empty;
             string txt = string.Empty, tmp = string.Empty, st = string.Empty;
             SizeF lastSize = SizeF.Empty;
             List<string> line = new List<string>();
-            float lineHeight = grp.MeasureString("\r", fText, loc, _DefFormat).Height;
+            float lineHeight = grp.MeasureString("@", fText, loc, _DefFormat).Height;
             bool colorReverse = false;
             foreach (Match m in mc)
             {
                 if (!m.Success) continue;
                 if (idx != m.Index)
                 {
-                    txt = _SgrText.Substring(idx, m.Index - idx);
+                    txt = sgrText.Substring(idx, m.Index - idx);
                     loc = DrawWrapCsiSgrText(grp, txt, fText, bFore, bBack, loc);
                 }
 
@@ -533,9 +535,9 @@ namespace CJF.Utility.WinKits
                 // 偏移位置
                 idx = m.Index + m.Length;
             }
-            if (idx < _SgrText.Length)
+            if (idx < sgrText.Length)
             {
-                txt = _SgrText.Substring(idx, _SgrText.Length - idx);
+                txt = sgrText.Substring(idx, sgrText.Length - idx);
                 loc = DrawWrapCsiSgrText(grp, txt, fText, bFore, bBack, loc);
             }
 
@@ -564,22 +566,22 @@ namespace CJF.Utility.WinKits
             RectangleF tRect;
             PointF backOffset = new PointF(0, 0);
             string[] lines = null;
-            float lineHeight = g.MeasureString("\r", font, loc, _DefFormat).Height;
-            txt = txt.Replace("\n", "\r").Replace("\r\r", "\r");
+            float lineHeight = g.MeasureString("@", font, loc, _DefFormat).Height;
+            txt = txt.Replace("\r\n", "\n");
 
             #region 處理行首的換行符號
-            while (txt.StartsWith("\r"))
+            while (txt.StartsWith("\n"))
             {
                 loc.X = _TextArea.Left;
                 loc.Y += lineHeight;
-                txt = txt.Substring("\r".Length);
+                txt = txt.Substring(1);
             }
             #endregion
 
-            if (txt.IndexOf("\r") != -1)
+            if (txt.IndexOf("\n") != -1)
             {
                 #region 處理多行文字
-                lines = txt.Split('\r');
+                lines = txt.Split('\n');
                 for (int i = 0; i < lines.Length; i++)
                 {
                     if (string.IsNullOrEmpty(lines[i]))
@@ -590,7 +592,7 @@ namespace CJF.Utility.WinKits
                     else
                     {
                         loc = DrawWrapCsiSgrText(g, lines[i], font, bFore, bBack, loc);
-                        if (i < lines.Length - 1 && !string.IsNullOrEmpty(lines[i + 1]))
+                        if (i < lines.Length - 1)
                         {
                             loc.X = _TextArea.Left;
                             loc.Y += lineHeight;
@@ -765,10 +767,13 @@ namespace CJF.Utility.WinKits
                 }
                 else
                 {
-                    if (Environment.OSVersion.Version.Major >= 6)
-                        SetProcessDPIAware();
-                    Application.EnableVisualStyles();
-                    Application.SetCompatibleTextRenderingDefault(false);
+                    //if (Environment.OSVersion.Version.Major >= 6)
+                    //    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+                    if (!Application.RenderWithVisualStyles)
+                    {
+                        Application.EnableVisualStyles();
+                        Application.SetCompatibleTextRenderingDefault(false);
+                    }
                     Application.Run(dg);
                     res = dg.DialogResult;
                 }
@@ -780,7 +785,7 @@ namespace CJF.Utility.WinKits
         #region Private Static Method :void SetDpiGain()
         private static void SetDpiGain()
         {
-            DpiGain = new Label().CreateGraphics().DpiX / DEF_DPI.Width;
+            DpiGain = PrimaryScreen.ScaleX;
             ButtonSize = DEF_BUTTON_SIZE.Gain(DpiGain).ToSize();
             ButtonPanelPadding = DEF_BUTTON_PANEL_PADDING.Gain(DpiGain);
             ButtonPanelSize = new Size(0, ButtonSize.Height + ButtonPanelPadding.Vertical);

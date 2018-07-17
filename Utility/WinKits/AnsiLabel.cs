@@ -128,7 +128,7 @@ namespace CJF.Utility.WinKits
 
         #region Variables
         /// <summary>DPI 放大倍數。</summary>
-        internal static float DpiGain = 0;
+        internal static float DpiGain = PrimaryScreen.ScaleX;
         #endregion
 
         #region 內部變數
@@ -143,7 +143,6 @@ namespace CJF.Utility.WinKits
         /// <summary>以預設值初始化 CJF.Utility.WinKits.AnsiLabel 類別的新執行個體。</summary>
         public AnsiLabel()
         {
-            DpiGain = this.CreateGraphics().DpiX / DEF_DPI.Width;
             InitializeComponent();
         }
         #endregion

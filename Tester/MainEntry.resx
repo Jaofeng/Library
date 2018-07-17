@@ -117,7 +117,7 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="ansiViewer1.Text" xml:space="preserve">
+  <data name="ansiBox1.Text" xml:space="preserve">
     <value>Message : 
 Colors \x1B[31m[CSI 31 m]Red\x1B[0m, \x1B[32m[CSI 32 m]Green\x1B[0m, \x1B[33m[CSI 33 m]Yellow\x1B[0m, \x1B[34m[CSI 34 m]Blue\x1B[0m
 超長文字：一二三四五六七八九十，一二三四五六七八九十。一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十

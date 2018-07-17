@@ -137,7 +137,7 @@ namespace CJF.Utility.WinKits
 
         #region 內部變數
         StringFormat _DefFormat = new StringFormat(StringFormat.GenericTypographic);
-        float _DpiGain = 0;
+        float _DpiGain = PrimaryScreen.ScaleX;
 		float _LineHeight = 0;
 		PointF _LastLocation = PointF.Empty;
 		#endregion
@@ -354,9 +354,9 @@ namespace CJF.Utility.WinKits
 		/// <param name="e">包含事件資料的 System.Windows.Forms.EventArgs。</param>
 		protected override void OnResize(EventArgs e)
 		{
-            this.Refresh();
             base.OnResize(e);
-		}
+            this.Refresh();
+        }
         #endregion
 
         #region Protected Override Method : void OnSizeChanged(EventArgs e)
@@ -438,8 +438,8 @@ namespace CJF.Utility.WinKits
 		#region Private Method : void ArrangeControls()
 		private void ArrangeControls()
 		{
-			this.pWin.Size = this.ClientRectangle.Size;
-			this.pWin.Location = this.ClientRectangle.Location;
+            this.pWin.Size = this.ClientSize;
+            this.pWin.Location = Point.Empty;
 			if (_BorderStyle != BorderStyle.None)
 			{
 				this.pWin.Location = new Point(1, 1);
