@@ -7,8 +7,9 @@ using System.Windows.Forms;
 
 namespace CJF.Utility.WinKits
 {
-    #region Internal Static Class : Extensions
-    static class Extensions
+    #region Public Static Class : Extensions
+    /// <summary></summary>
+    public static class Extensions
     {
         #region Public Static Method : Point LeftTop(this Padding padding)
         /// <summary>取得與邊框距離的左上角座標點。</summary>
@@ -60,6 +61,52 @@ namespace CJF.Utility.WinKits
                 return new Padding((int)(padding.Left * gain), (int)(padding.Top * gain), (int)(padding.Right * gain), (int)(padding.Bottom * gain));
             else
                 return new Padding((int)(padding.All * gain));
+        }
+        #endregion
+
+        #region Public Static Method : Size Addition(this Size size, Size val)
+        /// <summary>將此 System.Drawing.Size 加上以 val 定義的大小。僅進行寬高的增加，並非進行集合處理。</summary>
+        /// <param name="size">原始尺寸。</param>
+        /// <param name="val">增加的尺寸。</param>
+        /// <returns></returns>
+        public static Size Addition(this Size size, Size val)
+        {
+            return new Size(size.Width + val.Width, size.Height + val.Height);
+        }
+        #endregion
+
+        #region Public Static Method : Size Addition(this Size size, int width, int height)
+        /// <summary>將此 System.Drawing.Size 加上以 width 與 height 定義的大小。僅進行寬高的增加，並非進行集合處理。</summary>
+        /// <param name="size">原始尺寸。</param>
+        /// <param name="width">要增加的寬度。</param>
+        /// <param name="height">要增加的高度。</param>
+        /// <returns></returns>
+        public static Size Addition(this Size size, int width, int height)
+        {
+            return new Size(size.Width + width, size.Height + height);
+        }
+        #endregion
+
+        #region Public Static Method : Size Subtract(this Size size, Size val)
+        /// <summary>將此 System.Drawing.Size 減去以 val 定義的大小。僅進行寬高的縮減，並非進行集合處理。</summary>
+        /// <param name="size">原始尺寸。</param>
+        /// <param name="val">減掉的尺寸。</param>
+        /// <returns></returns>
+        public static Size Subtract(this Size size, Size val)
+        {
+            return new Size(size.Width - val.Width, size.Height - val.Height);
+        }
+        #endregion
+
+        #region Public Static Method : Size Subtract(this Size size, int width, int height)
+        /// <summary>將此 System.Drawing.Size 減去以 width 與 height 定義的大小。僅進行寬高的縮減，並非進行集合處理。</summary>
+        /// <param name="size">原始尺寸。</param>
+        /// <param name="width">要減掉的寬度。</param>
+        /// <param name="height">要減掉的高度。</param>
+        /// <returns></returns>
+        public static Size Minus(this Size size, int width, int height)
+        {
+            return new Size(size.Width - width, size.Height - height);
         }
         #endregion
     }
