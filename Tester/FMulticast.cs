@@ -21,7 +21,7 @@ namespace Tester
 			string[] ip = txtSendIP.Text.Split(':');
 			IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip[0]), int.Parse(ip[1]));
 			_Sender = new CastSender(ep, int.Parse(ip[2]));
-			_Sender.OnDataSended += new EventHandler<AsyncUdpEventArgs>(Client_OnDataSended);
+			_Sender.DataSended += new EventHandler<AsyncUdpEventArgs>(Client_DataSended);
 		}
 
 		#region WriteLog
@@ -51,18 +51,18 @@ namespace Tester
 		#endregion
 
 		#region Server Actions
-		void Server_OnShutdown(object sender, AsyncUdpEventArgs e)
+		void Server_Shutdowned(object sender, AsyncUdpEventArgs e)
 		{
 			WriteLog("伺服器已關閉");
 		}
 
-		void Server_OnStarted(object sender, AsyncUdpEventArgs e)
+		void Server_Started(object sender, AsyncUdpEventArgs e)
 		{
 			WriteLog("伺服器已於 {0} 啟動", _Receiver.Socket.LocalEndPoint);
 		}
 		#endregion
 
-		void Server_OnDataReceived(object sender, AsyncUdpEventArgs e)
+		void Server_DataReceived(object sender, AsyncUdpEventArgs e)
 		{
 			WriteLog("收到資料({0}->{1}) {2} Bytes", e.RemoteEndPoint, e.LocalEndPoint, e.Data.Length);
 			WriteLog(" > : {0}", Encoding.Default.GetString(e.Data));
@@ -74,9 +74,9 @@ namespace Tester
 		{
 			if (string.IsNullOrEmpty(cbIP.Text)) return;
 			_Receiver = new CastReceiver(new IPEndPoint(IPAddress.Parse(cbIP.Text), Convert.ToInt32(txtPort.Text)));
-			_Receiver.OnDataReceived += new EventHandler<AsyncUdpEventArgs>(Server_OnDataReceived);
-			_Receiver.OnStarted += new EventHandler<AsyncUdpEventArgs>(Server_OnStarted);
-			_Receiver.OnShutdown += new EventHandler<AsyncUdpEventArgs>(Server_OnShutdown);
+			_Receiver.DataReceived += new EventHandler<AsyncUdpEventArgs>(Server_DataReceived);
+			_Receiver.Started += new EventHandler<AsyncUdpEventArgs>(Server_Started);
+			_Receiver.Shutdowned += new EventHandler<AsyncUdpEventArgs>(Server_Shutdowned);
 			string[] ips = txtIP.Text.Split(',');
 			foreach (string ip in ips)
 			{
@@ -108,7 +108,7 @@ namespace Tester
 				if (_Sender != null)
 					_Sender.Dispose();
 				_Sender = new CastSender(ep, int.Parse(ip[2]));
-				_Sender.OnDataSended += new EventHandler<AsyncUdpEventArgs>(Client_OnDataSended);
+				_Sender.DataSended += new EventHandler<AsyncUdpEventArgs>(Client_DataSended);
 			}
 			byte[] buf = null;
 			if (chkHexString.Checked)
@@ -120,7 +120,7 @@ namespace Tester
 			e.SuppressKeyPress = true;
 		}
 
-		void Client_OnDataSended(object sender, AsyncUdpEventArgs e)
+		void Client_DataSended(object sender, AsyncUdpEventArgs e)
 		{
 			WriteLog("發送資料 {0} Bytes", e.Data.Length);
 			WriteLog(" < : {0}", Encoding.Default.GetString(e.Data));

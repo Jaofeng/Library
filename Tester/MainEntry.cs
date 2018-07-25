@@ -16,7 +16,8 @@ using MessageBox = CJF.Utility.WinKits.MessageBox;
 
 namespace Tester
 {
-	public partial class MainEntry : Form
+    #pragma warning disable IDE1006
+    public partial class MainEntry : Form
 	{
 
 		[DllImport("kernel32.dll", SetLastError = true)]
@@ -423,7 +424,8 @@ namespace Tester
 		private void button7_Click(object sender, EventArgs e)
 		{
 			lstAnsi.Items.Clear();
-			foreach (string s in AnsiString.AllKeyWords)
+            #pragma warning disable 0618
+            foreach (string s in AnsiString.AllKeyWords)
 				lstAnsi.Items.Add(s);
 		}
 
@@ -527,8 +529,7 @@ D:\WorkSpace\Source\Common\Library\Tester\MainEntry.cs \x1B[94mLine:394, Colume:
 				});
 
 			var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-			uint outConsoleMode = 0;
-			if (!GetConsoleMode(iStdOut, out outConsoleMode))
+			if (!GetConsoleMode(iStdOut, out uint outConsoleMode))
 			{
 				Console.WriteLine("failed to get output console mode");
 				Console.ReadKey();
@@ -549,8 +550,8 @@ D:\WorkSpace\Source\Common\Library\Tester\MainEntry.cs \x1B[94mLine:394, Colume:
 		{
 			for (int i = 0; i < 100; i++)
 			{
-				ansiViewer1.Append(Environment.NewLine + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " " + txtAnsi.Text);
-				ansiViewer1.ScrollToEnd();
+				ansiBox1.Append(Environment.NewLine + DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss.fff") + " " + txtAnsi.Text);
+				ansiBox1.ScrollToEnd();
 				Application.DoEvents();
 			}
 		}

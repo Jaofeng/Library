@@ -14,7 +14,8 @@ using CJF.Utility.Extensions;
 
 namespace Tester
 {
-	public partial class FSslTcpServer : Form
+    #pragma warning disable IDE1006
+    public partial class FSslTcpServer : Form
 	{
 		SslTcpServer _Server = null;
 
@@ -96,7 +97,8 @@ namespace Tester
 		#region Button Events
 		private void btnStart_Click(object sender, EventArgs e)
 		{
-			if (_Server == null)
+            btnStart.Enabled = false;
+            if (_Server == null)
 			{
 				string pfx = txtPfx.Text;
 				if (string.IsNullOrEmpty(System.IO.Path.GetDirectoryName(pfx)))
@@ -114,9 +116,16 @@ namespace Tester
 				_Server.Started += new EventHandler(Server_OnStarted);
 				_Server.Shutdowned += new EventHandler(Server_OnShutdown);
 			}
-			_Server.Start();
-			btnStart.Enabled = false;
-			btnStop.Enabled = true;
+            try { _Server.Start(); }
+            catch (NotSupportedException)
+            {
+                MessageBox.Show($"伺服器並未安裝此憑證 {txtPfx.Text}", "SslTcpServer", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                _Server.Dispose();
+                _Server = null;
+                btnStart.Enabled = true;
+                return;
+            }
+            btnStop.Enabled = true;
 		}
 		private void btnStop_Click(object sender, EventArgs e)
 		{
@@ -143,8 +152,7 @@ namespace Tester
 		{
 			if (_Server != null && e.KeyCode == Keys.Enter)
 			{
-				EndPoint[] eps = _Server.GetAllPoints();
-				foreach (EndPoint ep in eps)
+				foreach (EndPoint ep in _Server.GetAllPoints())
 				{
 					if (!_Server[ep].Connected)
 						continue;

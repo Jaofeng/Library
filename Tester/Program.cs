@@ -15,12 +15,12 @@ namespace Tester
         [STAThread]
 		static void Main(string[] args)
 		{
-            if (Environment.OSVersion.Version.Major >= 6)
-                SetProcessDPIAware();
+            //if (Environment.OSVersion.Version.Major >= 6)
+            //    SetProcessDPIAware();
             Application.EnableVisualStyles();
 			Application.SetCompatibleTextRenderingDefault(false);
 
-            MessageBox.Show("Custom MessageBox Demo...", Application.ProductName, MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
+            //MessageBox.Show("Custom MessageBox Demo...", Application.ProductName, MessageBoxButtons.OKCancel, MessageBoxIcon.Information);
 
 			if (args == null || args.Length == 0)
 			{
@@ -43,6 +43,9 @@ namespace Tester
 						if (args.Length >= 2 && int.TryParse(args[1], out idx))
 							f = new MainEntry(idx);
 						break;
+                    case "-ssl":
+                        Application.Run(new MyApplicationContext(new FSslTcpServer(), new FSslTcpClient()));
+                        return;
 					default:
 						break;
 				}
@@ -53,4 +56,20 @@ namespace Tester
 			}
 		}
 	}
+
+    class MyApplicationContext : ApplicationContext
+    {
+        int formCount = 0;
+        public MyApplicationContext(params Form[] forms)
+        {
+            Application.ApplicationExit += (s, e) => ExitThread();
+            foreach (Form f in forms)
+            {
+                f.FormClosed += (s, e) => { formCount--; if (formCount == 0) ExitThread(); };
+                f.Show();
+                formCount++;
+            }
+        }
+    }
+
 }
