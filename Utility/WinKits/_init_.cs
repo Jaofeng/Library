@@ -55,6 +55,10 @@ namespace CJF.Utility.WinKits
         #endregion
 
         #region Public Static Method : Padding Gain(this Padding padding, float gain)
+        /// <summary>將 System.Windows.Forms.Padding 內邊界距離以 gain 比例值進行縮放。</summary>
+        /// <param name="padding">內邊界距離類別。</param>
+        /// <param name="gain">縮放比例值。</param>
+        /// <returns>已縮放的內邊界距離結構。</returns>
         public static Padding Gain(this Padding padding, float gain)
         {
             if (padding.All == -1)
@@ -151,9 +155,11 @@ namespace CJF.Utility.WinKits
             get
             {
                 IntPtr hdc = GetDC(IntPtr.Zero);
-                Size size = new Size();
-                size.Width = GetDeviceCaps(hdc, HORZRES);
-                size.Height = GetDeviceCaps(hdc, VERTRES);
+                Size size = new Size()
+                {
+                    Width = GetDeviceCaps(hdc, HORZRES),
+                    Height = GetDeviceCaps(hdc, VERTRES)
+                };
                 ReleaseDC(IntPtr.Zero, hdc);
                 return size;
             }
@@ -195,9 +201,11 @@ namespace CJF.Utility.WinKits
             get
             {
                 IntPtr hdc = GetDC(IntPtr.Zero);
-                Size size = new Size();
-                size.Width = GetDeviceCaps(hdc, DESKTOPHORZRES);
-                size.Height = GetDeviceCaps(hdc, DESKTOPVERTRES);
+                Size size = new Size()
+                {
+                    Width = GetDeviceCaps(hdc, DESKTOPHORZRES),
+                    Height = GetDeviceCaps(hdc, DESKTOPVERTRES)
+                };
                 ReleaseDC(IntPtr.Zero, hdc);
                 return size;
             }

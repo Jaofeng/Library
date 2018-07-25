@@ -257,18 +257,16 @@ namespace CJF.Net.Http
 						WebSocketClient ac = ShakeHands(s);
 						if (ac == null) return;
 						readEventArgs.UserToken = new AsyncUserToken(s, BUFFER_SIZE);
-						if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.PoolUsed] != null)
-							m_Counters[ServerCounterType.PoolUsed].Increment();
-						if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.RateOfPoolUse] != null)
-							m_Counters[ServerCounterType.RateOfPoolUse].Increment();
-						if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.TotalRequest] != null)
-							m_Counters[ServerCounterType.TotalRequest].Increment();
-						if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.RateOfRequest] != null)
-							m_Counters[ServerCounterType.RateOfRequest].Increment();
-						if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.Connections] != null)
-							m_Counters[ServerCounterType.Connections].Increment();
+						if (!m_IsShutdown && !m_IsDisposed)
+                        {
+                            m_Counters[ServerCounterType.PoolUsed]?.Increment();
+                            m_Counters[ServerCounterType.RateOfPoolUse]?.Increment();
+                            m_Counters[ServerCounterType.TotalRequest]?.Increment();
+                            m_Counters[ServerCounterType.RateOfRequest]?.Increment();
+                            m_Counters[ServerCounterType.Connections]?.Increment();
+                        }
 
-						base.OnClientConnected(ac);
+                        base.OnClientConnected(ac);
 						try
 						{
 							if (!s.ReceiveAsync(readEventArgs))
@@ -384,13 +382,14 @@ namespace CJF.Net.Http
 
 						if (ac != null)
 							Interlocked.Add(ref ac.m_ReceiveByteCount, count);
-						if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.TotalReceivedBytes] != null)
-							m_Counters[ServerCounterType.TotalReceivedBytes].IncrementBy(count);
-						if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.RateOfReceivedBytes] != null)
-							m_Counters[ServerCounterType.RateOfReceivedBytes].IncrementBy(count);
+						if (!m_IsShutdown && !m_IsDisposed)
+                        {
+                            m_Counters[ServerCounterType.TotalReceivedBytes]?.IncrementBy(count);
+                            m_Counters[ServerCounterType.RateOfReceivedBytes]?.IncrementBy(count);
+                        }
 
-						#region 解析封包內容
-						byte[] data = rec.ToArray();
+                        #region 解析封包內容
+                        byte[] data = rec.ToArray();
 						if (!((data[0] & 0x80) == 0x80))
 						{
 							_log.Write("Exceed 1 Frame. Not Handle");
@@ -532,14 +531,14 @@ namespace CJF.Net.Http
 					int count = e.BytesTransferred;
 					Interlocked.Add(ref ac.m_SendByteCount, count);
 					Interlocked.Add(ref ac.m_WaittingSend, -count);
-					if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.TotalSendedBytes] != null)
-						m_Counters[ServerCounterType.TotalSendedBytes].IncrementBy(count);
-					if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.RateOfSendedBytes] != null)
-						m_Counters[ServerCounterType.RateOfSendedBytes].IncrementBy(count);
-					if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.BytesOfSendQueue] != null)
-						m_Counters[ServerCounterType.BytesOfSendQueue].IncrementBy(-count);
+					if (!m_IsShutdown && !m_IsDisposed)
+                    {
+                        m_Counters[ServerCounterType.TotalSendedBytes]?.IncrementBy(count);
+                        m_Counters[ServerCounterType.RateOfSendedBytes]?.IncrementBy(count);
+                        m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(-count);
+                    }
 
-					int head = 0;
+                    int head = 0;
 					if (count < 126)
 						head = 2;
 					else if (count <= 65535)
@@ -568,8 +567,8 @@ namespace CJF.Net.Http
 		{
 			try
 			{
-				if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.BytesOfSendQueue] != null)
-					m_Counters[ServerCounterType.BytesOfSendQueue].IncrementBy(e.Data.Length);
+				if (!m_IsShutdown && !m_IsDisposed)
+					m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(e.Data.Length);
 			}
 			catch (Exception ex) { _log.WriteException(ex); }
 		}
@@ -581,13 +580,13 @@ namespace CJF.Net.Http
 			try
 			{
 				int count = e.Data.Length;
-				if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.TotalSendedBytes] != null)
-					m_Counters[ServerCounterType.TotalSendedBytes].IncrementBy(count);
-				if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.RateOfSendedBytes] != null)
-					m_Counters[ServerCounterType.RateOfSendedBytes].IncrementBy(count);
-				if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.BytesOfSendQueue] != null)
-					m_Counters[ServerCounterType.BytesOfSendQueue].IncrementBy(-count);
-			}
+				if (!m_IsShutdown && !m_IsDisposed)
+                {
+                    m_Counters[ServerCounterType.TotalSendedBytes]?.IncrementBy(count);
+                    m_Counters[ServerCounterType.RateOfSendedBytes]?.IncrementBy(count);
+                    m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(-count);
+                }
+            }
 			catch (Exception ex) { _log.WriteException(ex); }
 
 			base.OnDataSended((WebSocketClient)sender, e.Data, e.ExtraInfo);
@@ -599,16 +598,15 @@ namespace CJF.Net.Http
 		{
 			try
 			{
-				if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.SendFail] != null)
-					m_Counters[ServerCounterType.SendFail].Increment();
-				if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.RateOfSendFail] != null)
-					m_Counters[ServerCounterType.RateOfSendFail].Increment();
-				if (!m_IsShutdown && !m_IsDisposed && m_Counters[ServerCounterType.BytesOfSendQueue] != null)
-					m_Counters[ServerCounterType.BytesOfSendQueue].IncrementBy(-e.Data.Length);
-			}
+				if (!m_IsShutdown && !m_IsDisposed)
+                {
+                    m_Counters[ServerCounterType.SendFail]?.Increment();
+                    m_Counters[ServerCounterType.RateOfSendFail]?.Increment();
+                    m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(-e.Data.Length);
+                }
+            }
 			catch (Exception ex) { _log.WriteException(ex); }
-
-			base.OnSendedFail((WebSocketClient)sender, e.Data, e.ExtraInfo);
+            base.OnSendedFail((WebSocketClient)sender, e.Data, e.ExtraInfo);
 		}
 		#endregion
 

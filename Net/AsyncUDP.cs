@@ -229,8 +229,7 @@ namespace CJF.Net
 			arg.RemoteEndPoint = remoteEndPoint;
 			arg.UserToken = extraInfo;
 			Interlocked.Add(ref m_WaittingSend, data.Length);
-			if (m_Counters[ServerCounterType.BytesOfSendQueue] != null)
-				m_Counters[ServerCounterType.BytesOfSendQueue].IncrementBy(data.Length);
+			m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(data.Length);
 			arg.SetBuffer(data, 0, data.Length);
 			if (m_Debug.HasFlag(SocketDebugType.Send))
 			{
@@ -245,12 +244,9 @@ namespace CJF.Net
 			catch (Exception)
 			{
 				Interlocked.Add(ref m_WaittingSend, -data.Length);
-				if (m_Counters[ServerCounterType.BytesOfSendQueue] != null)
-					m_Counters[ServerCounterType.BytesOfSendQueue].IncrementBy(-data.Length);
-				if (m_Counters[ServerCounterType.SendFail] != null)
-					m_Counters[ServerCounterType.SendFail].Increment();
-				if (m_Counters[ServerCounterType.RateOfSendFail] != null)
-					m_Counters[ServerCounterType.RateOfSendFail].Increment();
+				m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(-data.Length);
+				m_Counters[ServerCounterType.SendFail]?.Increment();
+				m_Counters[ServerCounterType.RateOfSendFail]?.Increment();
 				this.ProcessError(arg);
 			}
 			if (m_Debug.HasFlag(SocketDebugType.Send))
@@ -273,8 +269,7 @@ namespace CJF.Net
 			SocketAsyncEventArgs arg = new SocketAsyncEventArgs();
 			arg.RemoteEndPoint = new IPEndPoint(IPAddress.Broadcast, port);
 			Interlocked.Add(ref m_WaittingSend, data.Length);
-			if (m_Counters[ServerCounterType.BytesOfSendQueue] != null)
-				m_Counters[ServerCounterType.BytesOfSendQueue].IncrementBy(data.Length);
+			m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(data.Length);
 			arg.SetBuffer(data, 0, data.Length);
 			if (m_Debug.HasFlag(SocketDebugType.Send))
 			{
@@ -289,12 +284,9 @@ namespace CJF.Net
 			catch (Exception)
 			{
 				Interlocked.Add(ref m_WaittingSend, -data.Length);
-				if (m_Counters[ServerCounterType.BytesOfSendQueue] != null)
-					m_Counters[ServerCounterType.BytesOfSendQueue].IncrementBy(-data.Length);
-				if (m_Counters[ServerCounterType.SendFail] != null)
-					m_Counters[ServerCounterType.SendFail].Increment();
-				if (m_Counters[ServerCounterType.RateOfSendFail] != null)
-					m_Counters[ServerCounterType.RateOfSendFail].Increment();
+				m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(-data.Length);
+				m_Counters[ServerCounterType.SendFail]?.Increment();
+				m_Counters[ServerCounterType.RateOfSendFail]?.Increment();
 				this.ProcessError(arg);
 			}
 			if (m_Debug.HasFlag(SocketDebugType.Send))
@@ -466,10 +458,8 @@ namespace CJF.Net
 					Socket s = token.Client;
 					int count = e.BytesTransferred;
 					Interlocked.Add(ref m_ReceiveByteCount, count);
-					if (m_Counters[ServerCounterType.TotalReceivedBytes] != null)
-						m_Counters[ServerCounterType.TotalReceivedBytes].IncrementBy(count);
-					if (m_Counters[ServerCounterType.RateOfReceivedBytes] != null)
-						m_Counters[ServerCounterType.RateOfReceivedBytes].IncrementBy(count);
+					m_Counters[ServerCounterType.TotalReceivedBytes]?.IncrementBy(count);
+					m_Counters[ServerCounterType.RateOfReceivedBytes]?.IncrementBy(count);
 					List<byte> rec = new List<byte>();
 					bool isSameRemote = true;
 					string rip = null;
@@ -547,10 +537,8 @@ namespace CJF.Net
 						int count = e.BytesTransferred;
 						Interlocked.Add(ref m_SendByteCount, count);
 						Interlocked.Add(ref m_WaittingSend, -count);
-						if (m_Counters[ServerCounterType.TotalSendedBytes] != null)
-							m_Counters[ServerCounterType.TotalSendedBytes].IncrementBy(count);
-						if (m_Counters[ServerCounterType.BytesOfSendQueue] != null)
-							m_Counters[ServerCounterType.BytesOfSendQueue].IncrementBy(-count);
+						m_Counters[ServerCounterType.TotalSendedBytes]?.IncrementBy(count);
+						m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(-count);
 						byte[] buffer = new byte[count];
 						Array.Copy(e.Buffer, buffer, count);
 						this.OnDataSended(buffer, e.RemoteEndPoint, e.UserToken);

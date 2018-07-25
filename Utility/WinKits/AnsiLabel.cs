@@ -47,6 +47,7 @@ namespace CJF.Utility.WinKits
         #endregion
 
         #region 事件
+        #pragma warning disable 0067
         /// <summary>發生於 CJF.Utility.WinKits.AnsiViewer.BackgroundImage 屬性值變更時。這個事件與這個類別無關。</summary>
         [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
         [DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]

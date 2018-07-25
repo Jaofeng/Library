@@ -87,6 +87,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="WinKits\_init_.cs" />
+    <Compile Include="_init_.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">

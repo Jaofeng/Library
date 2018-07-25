@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace CJF.Utility.WinKits
 {
+    #pragma warning disable IDE1006
     /// <summary>表示可支援顯示 ANSI CSI Color Code 的可捲式控制項。</summary>
     [DefaultEvent("Click"), DefaultProperty("Text")]
 	[Description("可支援顯示 ANSI CSI Color Code 的可捲式控制項。")]
@@ -43,11 +44,12 @@ namespace CJF.Utility.WinKits
 		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new ImeMode ImeMode { get; set; }
-		#endregion
+        #endregion
 
-		#region 事件
-		/// <summary>發生於 CJF.Utility.WinKits.AnsiBox.BackgroundImage 屬性值變更時。這個事件與這個類別無關。</summary>
-		[EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
+        #region 事件
+        #pragma warning disable 0067
+        /// <summary>發生於 CJF.Utility.WinKits.AnsiBox.BackgroundImage 屬性值變更時。這個事件與這個類別無關。</summary>
+        [EditorBrowsable(EditorBrowsableState.Never), Browsable(false)]
 		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public new event EventHandler BackgroundImageChanged;
 		/// <summary>發生於 CJF.Utility.WinKits.AnsiBox.BackgroundImageLayout 屬性值變更時。這個事件與這個類別無關。</summary>
@@ -137,7 +139,6 @@ namespace CJF.Utility.WinKits
 
         #region 內部變數
         StringFormat _DefFormat = new StringFormat(StringFormat.GenericTypographic);
-        float _DpiGain = PrimaryScreen.ScaleX;
 		float _LineHeight = 0;
 		PointF _LastLocation = PointF.Empty;
 		#endregion
@@ -954,26 +955,32 @@ namespace CJF.Utility.WinKits
 			// Canvas Panel
 			this.pWin = new Panel();
 			this.pWin.Controls.Add(this.pPaper);
-			// Label
-			this.labRD = new Label();
-			this.labRD.BackColor = SystemColors.Control;
-			this.labRD.AutoSize = false;
-			this.labRD.Visible = false;
-			// VScroll Bar
-			this.vsBar = new VScrollBar();
-			this.vsBar.Visible = false;
-			this.vsBar.Location = new Point(this.ClientRectangle.Width - this.vsBar.Width, 0);
-			this.vsBar.Height = this.ClientRectangle.Height - 2;
-			this.vsBar.Maximum = 0;
-			this.vsBar.SmallChange = 1;
-			this.vsBar.LargeChange = 1;
+            // Label
+            this.labRD = new Label()
+            {
+                BackColor = SystemColors.Control,
+                AutoSize = false,
+                Visible = false
+            };
+            // VScroll Bar
+            this.vsBar = new VScrollBar()
+            {
+                Visible = false,
+                Maximum = 0,
+                SmallChange = 1,
+                LargeChange = 1,
+                Height = this.ClientRectangle.Height - 2
+            };
+            this.vsBar.Location = new Point(this.ClientRectangle.Width - this.vsBar.Width, 0);
 			this.vsBar.ValueChanged += new EventHandler(vsBar_ValueChanged);
-			// HScroll Bar
-			this.hsBar = new HScrollBar();
-			this.hsBar.Visible = false;
-			this.hsBar.Location = new Point(0, this.ClientRectangle.Bottom - this.hsBar.Height);
-			this.hsBar.Width = this.ClientRectangle.Width - 2;
-			this.hsBar.Maximum = 0;
+            // HScroll Bar
+            this.hsBar = new HScrollBar()
+            {
+                Visible = false,
+                Width = this.ClientRectangle.Width - 2,
+                Maximum = 0
+            };
+            this.hsBar.Location = new Point(0, this.ClientRectangle.Bottom - this.hsBar.Height);
 			this.hsBar.ValueChanged += new EventHandler(hsBar_ValueChanged);
 
 			this.Controls.Add(vsBar);
