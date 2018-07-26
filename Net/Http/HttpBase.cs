@@ -1,4 +1,36 @@
-﻿using System;
+﻿/* 欲使用 SSL，請先確定以下幾件事：
+ * 1. 是否已產生憑證
+ *    在 Visual Studio Command Prompt 中使用 makecert 指令。
+ *    如：makecert -r -pe -n "CN=SslSocket" -ss My -sky exchange
+ *        -r  ：建立自動簽名的憑證。
+ *        -pe ：將產生的私密金鑰標記為可匯出。如此可在憑證中加入私密金鑰。
+ *        -n  ：指定主體的憑證名稱，使用雙引號包覆名稱開頭必須加CN=。
+ *        -ss ：指定主體的憑證存放區名稱，其儲存輸出憑證，My為憑證存放區的個人存放區。
+ *        -sky exchange ：指定收受者的金鑰類型，必須是下列之一：
+ *                        signature（表示今要用於數位簽章）；
+ *                        exchange（表示金鑰用於金鑰加密和金鑰交換），或一個代表提供程式類型的整數。
+ *    詳細作法可參閱 https://dotblogs.com.tw/joysdw12/archive/2013/05/18/104476.aspx
+ * 2. 是否已將憑證匯入「本機」存放區中
+ *    開啟 MMC 將憑證(*.pfx)匯入「本機電腦」的「個人」中
+ * 3. 綁定憑證到系統中
+ *    Windows XP 以前作業系統，在 Visual Studio Command Prompt 中使用 httpcfg 指令
+ *    如：httpcfg set ssl -i 0.0.0.0:8443 -h 0000000000003ed9cd0c315bbb6dc1c08da5e6
+ *        -i 0.0.0.0:8443 -> 為註冊的位址與埠號
+ *        -h 0000000000003ed9cd0c315bbb6dc1c08da5e6 -> 為憑證的指紋碼
+ *        詳細用法請參閱 httpcfg
+ *    Vista 以後版本的作業系統，改用 netsh 指令
+ *    如：netsh http add sslcert ipport=0.0.0.0:8443 certhash=0000000000003ed9cd0c315bbb6dc1c08da5e6 appid={00112233-4455-6677-8899-AABBCCDDEEFF} certstorename=MY
+ *        ipport=0.0.0.0:8443 -> 為註冊的位址與埠號
+ *        certhash=0000000000003ed9cd0c315bbb6dc1c08da5e6 -> 為憑證的指紋碼
+ *        appid={00112233-4455-6677-8899-AABBCCDDEEFF} -> 為應用程式的 GUID
+ *        certstorename=MY -> 指定憑證的所在區域(個人)
+ *        詳細用法請參閱 netsh
+ * 4. 執行程式即可使用
+ */
+
+using CJF.Utility;
+using CJF.Utility.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Drawing;
@@ -8,13 +40,11 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
-using CJF.Utility;
-using CJF.Utility.Extensions;
 
 namespace CJF.Net.Http
 {
-	/// <summary>HTTP 連線服務類別</summary>
-	[Serializable]
+    /// <summary>HTTP 連線服務類別</summary>
+    [Serializable]
 	public class HttpBase : IDisposable
 	{
 		/// <summary>網頁預設根目錄</summary>
@@ -22,24 +52,27 @@ namespace CJF.Net.Http
 
 		LogManager _log = new LogManager(typeof(HttpBase));
 		bool isDisposed = false;
-		Random rndKey = new Random(DateTime.Now.Millisecond);
 
-		/// <summary>取得HttpListenerContext類別</summary>
-		public HttpListenerContext Context { get; protected set; }
+        #region Public Properties
+        /// <summary>取得HttpListenerContext類別</summary>
+        public HttpListenerContext Context { get; protected set; }
 		/// <summary>取得遠端IP資訊</summary>
-		public IPEndPoint ClientPoint { get { return this.Context.Request.RemoteEndPoint; } }
+		public IPEndPoint ClientPoint { get => Context.Request.RemoteEndPoint; } 
 		/// <summary>取得接收的檔案資訊</summary>
 		public List<ReceivedFileInfo> ReceivedFiles { get; protected set; }
+        #endregion
 
-		/// <summary>設定或取得錯誤發生時，除記錄至事件檔外，是否發送Mail</summary>
-		public static bool SendMailWhenException = false;
-		/// <summary>設定或取得網頁預設根目錄。絕對路徑或相對路徑皆可。
-		/// <para>預設值：Web</para></summary>
-		public static string RootPath = ROOT_PATH;
+        #region Public Static Properties
+        /// <summary>設定或取得網頁預設根目錄。絕對路徑或相對路徑皆可。
+        /// <para>預設值：Web</para></summary>
+        public static string RootPath { get; set; } = ROOT_PATH;
+        /// <summary>設定或取得錯誤發生時，除記錄至事件檔外，是否發送Mail</summary>
+        public static bool SendMailWhenException { get; set; } = false;
+        #endregion
 
-		#region Construct Method : HttpService(HttpListenerContext context)
-		/// <summary></summary>
-		protected HttpBase() { }
+        #region Construct Method : HttpService(HttpListenerContext context)
+        /// <summary></summary>
+        protected HttpBase() { }
 		/// <summary></summary>
 		/// <param name="context"></param>
 		public HttpBase(HttpListenerContext context)
@@ -58,7 +91,7 @@ namespace CJF.Net.Http
 		public virtual void ProcessRequest()
 		{
 			HttpListenerRequest request = this.Context.Request;
-			string rawUrl = request.RawUrl;
+            string rawUrl = request.RawUrl;
 			string pageUrl = rawUrl.Split('?')[0].TrimStart('/');
 			// [Remote IP] - [Method] [RawUrl] [HTTP/Ver] - [User Agent]
 			string format = "{0} - {1} {2} HTTP/{3}.{4} - {5}";
@@ -932,13 +965,13 @@ namespace CJF.Net.Http
 				}
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Public Static Method : NameValueCollection ViewStateToNameValueCollection(string viewState)
-		/// <summary>將頁面中的VIEWSTATE資料轉為鍵值索引集合</summary>
-		/// <param name="viewState">VIEWSTATE字串</param>
-		/// <returns>鍵值索引集合</returns>
-		public static NameValueCollection ViewStateToNameValueCollection(string viewState)
+        #region Public Static Method : NameValueCollection ViewStateToNameValueCollection(string viewState)
+        /// <summary>將頁面中的VIEWSTATE資料轉為鍵值索引集合</summary>
+        /// <param name="viewState">VIEWSTATE字串</param>
+        /// <returns>鍵值索引集合</returns>
+        public static NameValueCollection ViewStateToNameValueCollection(string viewState)
 		{
 			if (viewState == "##VIEWSTATE##")
 				return new NameValueCollection();
@@ -1008,6 +1041,5 @@ namespace CJF.Net.Http
 			return null;
 		}
 		#endregion
-
 	}
 }
