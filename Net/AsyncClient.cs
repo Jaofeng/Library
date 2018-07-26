@@ -26,9 +26,6 @@ namespace CJF.Net
 		SocketAsyncEventArgs m_AsyncArg = null;
 		int m_SendBufferSize = 2048;
 		int m_ReceiveBufferSize = 2048;
-		internal long m_SendByteCount = 0;
-		internal long m_ReceiveByteCount = 0;
-		internal long m_WaittingSend = 0;
 		[NonSerialized]
 		Socket m_Socket = null;
 		IntPtr m_Handle = IntPtr.Zero;
@@ -39,9 +36,13 @@ namespace CJF.Net
 		bool m_ExecutingCounter = false;
 		DateTime m_LastAction = DateTime.MinValue;
 
-		#region Event Handler
-		/// <summary>當資料送達至遠端時產生</summary>
-		public event EventHandler<AsyncClientEventArgs> DataSended;
+        internal long m_SendByteCount = 0;
+        internal long m_ReceiveByteCount = 0;
+        internal long m_WaittingSend = 0;
+
+        #region Event Handler
+        /// <summary>當資料送達至遠端時產生</summary>
+        public event EventHandler<AsyncClientEventArgs> DataSended;
 		/// <summary>當接收到遠端資料時產生<br />勿忘處理黏包、斷包的狀況</summary>
 		public event EventHandler<AsyncClientEventArgs> DataReceived;
 		/// <summary>當與遠端連線時產生</summary>
