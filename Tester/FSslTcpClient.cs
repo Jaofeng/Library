@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 using CJF.Net;
-using CJF.Net.Http;
+using CJF.Net.Ssl;
 using CJF.Utility;
 using CJF.Utility.Extensions;
 

@@ -46,6 +46,9 @@ namespace Tester
                     case "-ssl":
                         Application.Run(new MyApplicationContext(new FSslTcpServer(), new FSslTcpClient()));
                         return;
+                    case "-http":
+                        f = new FHttpService();
+                        break;
 					default:
 						break;
 				}

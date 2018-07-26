@@ -8,7 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Forms;
 using CJF.Net;
-using CJF.Net.Http;
+using CJF.Net.Ssl;
 using CJF.Utility;
 using CJF.Utility.Extensions;
 
@@ -115,11 +115,21 @@ namespace Tester
 				_Server.AuthenticateFail += new EventHandler<SslTcpEventArgs>(Server_AuthenticateFail);
 				_Server.Started += new EventHandler(Server_OnStarted);
 				_Server.Shutdowned += new EventHandler(Server_OnShutdown);
+                //_Server.CertificateStoreName = System.Security.Cryptography.X509Certificates.StoreName.TrustedPeople;
+                _Server.CertificateValid = false;
 			}
             try { _Server.Start(); }
+            catch (NotImplementedException)
+            {
+                MessageBox.Show($"伺服器並未安裝此憑證 {txtPfx.Text}，或該憑證不在 SslTcpServer.CertificateStoreName 指定的區域內。", "SslTcpServer", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                _Server.Dispose();
+                _Server = null;
+                btnStart.Enabled = true;
+                return;
+            }
             catch (NotSupportedException)
             {
-                MessageBox.Show($"伺服器並未安裝此憑證 {txtPfx.Text}", "SslTcpServer", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show($"此憑證 {txtPfx.Text} 為非信任憑證，無法使用該憑證。\n請將 SslTcpServer.CertificateValid 設為 false，或將該憑證移至新任區域。", "SslTcpServer", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 _Server.Dispose();
                 _Server = null;
                 btnStart.Enabled = true;
