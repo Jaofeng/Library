@@ -74,21 +74,22 @@ namespace CJF.Utility.WinKits
         #endregion
 
         #region Private Variables
-        string _Message = string.Empty;
-        string _SgrText = string.Empty;
-        string _PureText = string.Empty;
+        private readonly string _Message = string.Empty;
+        private readonly string _SgrText = string.Empty;
+        private readonly string _PureText = string.Empty;
+        private readonly bool _HasCsiSgr = false;
 
         MessageBoxButtons _Buttons = MessageBoxButtons.OK;
         MessageBoxDefaultButton _DefButton = MessageBoxDefaultButton.Button1;
         MessageBoxIcon _MsgIcon = MessageBoxIcon.None;
         Size _TextSize = Size.Empty;
-        bool _HasCsiSgr = false;
         Icon _Icon = null;
         Size _CanvasArea = Size.Empty;
-        Size _MaxTextArea = Size.Empty;
         Size _ButtonArea = Size.Empty;
         RectangleF _TextArea = RectangleF.Empty;
         StringFormat _DefFormat = new StringFormat(StringFormat.GenericTypographic);
+        int _MaxTextWidth = 0;
+        Bitmap _Buffer = null;
         #endregion
 
         #region Construct Method : dgMsg(string text, string caption, MessageBoxButtons button, MessageBoxIcon icon, MessageBoxDefaultButton defButton)
@@ -102,7 +103,6 @@ namespace CJF.Utility.WinKits
         {
             InitializeComponent();
             ResetControlsSize();
-
             this.DialogResult = DialogResult.None;
             this.Text = caption;
             if (TextFont != null)
@@ -113,23 +113,27 @@ namespace CJF.Utility.WinKits
             _Buttons = button;
             _DefButton = defButton;
             _DefFormat.FormatFlags |= StringFormatFlags.MeasureTrailingSpaces;
-            Graphics g = this.CreateGraphics();
-            Rectangle sr = Screen.GetWorkingArea(this);
 
+            Rectangle sr = Screen.GetWorkingArea(this);
             _Message = text;
             _MsgIcon = icon;
             _SgrText = Regex.Replace(_Message, "\x1B\\[(\\d+)*;?(\\d+)?([ABCDEFGHJKSTfsu])", "");           // 移除非 SGR 指令
             _PureText = CsiBuilder.GetPureText(_Message);
             _Icon = GetIcon(icon);
             if (DialogMaxSize.IsEmpty)
-                _MaxTextArea = new Size((int)(sr.Width * MAX_WIDTH_PERCENTAGE), 0);
+                _MaxTextWidth = (int)(sr.Width * MAX_WIDTH_PERCENTAGE);
             else
-                _MaxTextArea = new Size(DialogMaxSize.Width, 0);
+                _MaxTextWidth = DialogMaxSize.Width;
             if (_MsgIcon != MessageBoxIcon.None)
-                _MaxTextArea -= new Size(IconSize.Width + btn1.Margin.Left, 0);
-            _TextSize = g.MeasureString(_PureText, this.Font, _MaxTextArea, _DefFormat).ToSize();
-            _TextSize.Height += (int)(3 * DpiGain);
-            _TextSize.Width += (int)(3 * DpiGain);
+                _MaxTextWidth -= (IconSize.Width + btn1.Margin.Left);
+            float lineHeight = 0;
+            using (Graphics g = this.CreateGraphics())
+            {
+                _TextSize = g.MeasureString(_PureText, this.Font, _MaxTextWidth, _DefFormat).ToSize();
+                lineHeight = g.MeasureString("@", this.Font, Point.Empty, _DefFormat).Height;
+            }
+            _TextSize.Height += (int)(5 * DpiGain);
+            _TextSize.Width += (int)(5 * DpiGain);
             _HasCsiSgr = !_PureText.Equals(_Message);
 
             Point msgLoc = Canvas_Padding.LeftTop();
@@ -148,6 +152,23 @@ namespace CJF.Utility.WinKits
                 _CanvasArea.Height = _TextSize.Height;
             }
             _TextArea = new RectangleF(msgLoc, _TextSize);
+
+            #region Draw Text to Buffer
+            using (Bitmap bitmap = new Bitmap(_CanvasArea.Width + Canvas_Padding.Horizontal, _CanvasArea.Height + (int)(lineHeight * 5) ))
+            {
+                using (Graphics g = Graphics.FromImage(bitmap))
+                {
+                    g.Clear(SystemColors.Window);
+                    g.DrawLine(new Pen(SystemBrushes.ControlDark, 1), new Point(0, flpButtons.Top - 2), new Point(flpButtons.Width, flpButtons.Top - 2));
+                    g.DrawLine(new Pen(SystemBrushes.Window, 1), new Point(0, flpButtons.Top - 1), new Point(flpButtons.Width, flpButtons.Top - 1));
+                    if (_HasCsiSgr)
+                        DrawAnsiCsiSgrText(g, _SgrText);
+                    else
+                        DrawNormalText(g, _Message);
+                }
+                _Buffer = bitmap.Clone(new Rectangle(Point.Empty, bitmap.Size), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+            }
+            #endregion
         }
         #endregion
 
@@ -156,12 +177,29 @@ namespace CJF.Utility.WinKits
         {
             Graphics g = e.Graphics;
             g.Clear(SystemColors.Window);
+            g.DrawImage(_Buffer, PointF.Empty);
             g.DrawLine(new Pen(SystemBrushes.ControlDark, 1), new Point(0, flpButtons.Top - 2), new Point(flpButtons.Width, flpButtons.Top - 2));
             g.DrawLine(new Pen(SystemBrushes.Window, 1), new Point(0, flpButtons.Top - 1), new Point(flpButtons.Width, flpButtons.Top - 1));
-            if (_HasCsiSgr)
-                DrawAnsiCsiSgrText(g, _SgrText);
+
+            #region For Debug - Draw Message Area Border
+#if DEBUG
+            Point leftTop = Canvas_Padding.LeftTop();
+            g.DrawRectangle(new Pen(Color.Green), Rectangle.Round(_TextArea));
+            g.DrawRectangle(new Pen(Color.Red), new Rectangle(leftTop, _CanvasArea));
+            g.DrawRectangle(new Pen(Color.Blue, 3), _TextArea.Location.X, _TextArea.Location.Y, 3, 3);
+#endif
+            #endregion
+        }
+        #endregion
+
+        #region Protected Override Method : void OnResize(EventArgs e)
+        protected override void OnResize(EventArgs e)
+        {
+            if (Owner is null)
+                this.CenterToParent();
             else
-                DrawNormalText(g, _Message);
+                this.CenterToScreen();
+            base.OnResize(e);
         }
         #endregion
 
@@ -169,7 +207,6 @@ namespace CJF.Utility.WinKits
         protected override void OnShown(EventArgs e)
         {
             SetButtons(_Buttons, _DefButton);
-            // 計算按鍵區寬度
             _ButtonArea = ButtonPanelSize;
             _ButtonArea.Width = btn1.Width + (btn2.Visible ? btn2.Width + btn2.Margin.Horizontal : 0) + (btn3.Visible ? btn3.Width + btn3.Margin.Horizontal : 0);
             _ButtonArea.Width += ButtonPanelPadding.Horizontal;
@@ -178,10 +215,7 @@ namespace CJF.Utility.WinKits
                 Width = (_ButtonArea.Width > _CanvasArea.Width ? _ButtonArea.Width : _CanvasArea.Width) + SystemInformation.Border3DSize.Width * 2 + Canvas_Padding.Horizontal,
                 Height = flpButtons.Height + _CanvasArea.Height + SystemInformation.Border3DSize.Height + SystemInformation.CaptionHeight + Canvas_Padding.Vertical
             };
-            if (Owner is null)
-                this.CenterToParent();
-            else
-                this.CenterToScreen();
+            // 計算按鍵區寬度
             switch (_MsgIcon)
             {
                 case MessageBoxIcon.Asterisk:
@@ -197,6 +231,7 @@ namespace CJF.Utility.WinKits
                     System.Media.SystemSounds.Exclamation.Play();
                     break;
             }
+            base.OnShown(e);
         }
         #endregion
 
@@ -391,6 +426,7 @@ namespace CJF.Utility.WinKits
             Brush bFore = SystemBrushes.ControlText;
             Brush bBack = SystemBrushes.Window;
             Font fText = this.Font;
+
             MatchCollection mc = Regex.Matches(sgrText, "\x1B\\[(\\d+)*;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?m", RegexOptions.Multiline);
             PointF loc = _TextArea.Location;
             int idx = 0;
@@ -541,16 +577,19 @@ namespace CJF.Utility.WinKits
                 loc = DrawWrapCsiSgrText(grp, txt, fText, bFore, bBack, loc);
             }
 
-            #region For Debug - Draw Message Area Border
-#if DEBUG
-            grp.DrawRectangle(new Pen(Color.Green), Rectangle.Round(_TextArea));
-            grp.DrawRectangle(new Pen(Color.Red), new Rectangle(leftTop, _CanvasArea));
-            grp.DrawRectangle(new Pen(Color.Blue, 3), loc.X, loc.Y, 3, 3);
-#endif
-            #endregion
-
             if (loc.Y + lineHeight > _TextArea.Bottom)
+            {
                 _CanvasArea.Height += (int)(loc.Y + lineHeight - _TextArea.Bottom);
+                //int h = flpButtons.Height + _CanvasArea.Height + SystemInformation.Border3DSize.Height + SystemInformation.CaptionHeight + Canvas_Padding.Vertical;
+                //if (h > this.Height)
+                //    this.Height = h;
+            }
+            if (!bFore.Equals(SystemBrushes.ControlText))
+                bFore?.Dispose();
+            if (!bBack.Equals(SystemBrushes.Window))
+                bBack?.Dispose();
+            if (!fText.Equals(this.Font))
+                fText?.Dispose();
 
             return _CanvasArea;
         }
@@ -709,7 +748,8 @@ namespace CJF.Utility.WinKits
                             tRect.Offset(backOffset);
                             g.FillRectangle(bBack, tRect);
                             g.DrawString(txt.Substring(idx), font, bFore, loc, _DefFormat);
-                            loc.X += g.MeasureString(txt.Substring(idx), font, loc, _DefFormat).Width;
+                            //loc.X += g.MeasureString(txt.Substring(idx), font, loc, _DefFormat).Width;
+                            loc.X += f1.Width;
                         }
                         #endregion
                     }
@@ -767,8 +807,6 @@ namespace CJF.Utility.WinKits
                 }
                 else
                 {
-                    //if (Environment.OSVersion.Version.Major >= 6)
-                    //    SetProcessDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
                     if (!Application.RenderWithVisualStyles)
                     {
                         Application.EnableVisualStyles();
@@ -802,7 +840,14 @@ namespace CJF.Utility.WinKits
         {
             if (disposing && (components != null))
             {
+                _Buffer?.Dispose();
+                _Icon?.Dispose();
+                _DefFormat?.Dispose();
                 components.Dispose();
+                btn1?.Dispose();
+                btn2?.Dispose();
+                btn3?.Dispose();
+                flpButtons?.Dispose();
             }
             base.Dispose(disposing);
         }
