@@ -157,10 +157,10 @@
             this.button16 = new System.Windows.Forms.Button();
             this.button15 = new System.Windows.Forms.Button();
             this.tabPage8 = new System.Windows.Forms.TabPage();
+            this.ansiBox1 = new CJF.Utility.WinKits.AnsiBox();
             this.button14 = new System.Windows.Forms.Button();
             this.txtAnsi = new System.Windows.Forms.TextBox();
             this.tabPage9 = new System.Windows.Forms.TabPage();
-            this.ansiBox1 = new CJF.Utility.WinKits.AnsiBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -183,7 +183,7 @@
             // 
             this.button1.Location = new System.Drawing.Point(3, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(100, 39);
+            this.button1.Size = new System.Drawing.Size(120, 45);
             this.button1.TabIndex = 0;
             this.button1.Text = "AsyncServer";
             this.button1.UseVisualStyleBackColor = true;
@@ -191,9 +191,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(109, 3);
+            this.button2.Location = new System.Drawing.Point(129, 3);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(100, 39);
+            this.button2.Size = new System.Drawing.Size(120, 45);
             this.button2.TabIndex = 1;
             this.button2.Text = "AsyncClient";
             this.button2.UseVisualStyleBackColor = true;
@@ -201,9 +201,9 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(215, 3);
+            this.button3.Location = new System.Drawing.Point(255, 3);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(100, 39);
+            this.button3.Size = new System.Drawing.Size(120, 45);
             this.button3.TabIndex = 2;
             this.button3.Text = "AsyncUdpServer";
             this.button3.UseVisualStyleBackColor = true;
@@ -211,9 +211,9 @@
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(427, 3);
+            this.button4.Location = new System.Drawing.Point(3, 54);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(100, 39);
+            this.button4.Size = new System.Drawing.Size(120, 45);
             this.button4.TabIndex = 3;
             this.button4.Text = "Multicast Test";
             this.button4.UseVisualStyleBackColor = true;
@@ -221,9 +221,9 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(215, 48);
+            this.button5.Location = new System.Drawing.Point(381, 54);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(100, 39);
+            this.button5.Size = new System.Drawing.Size(120, 45);
             this.button5.TabIndex = 4;
             this.button5.Text = "Ping Test";
             this.button5.UseVisualStyleBackColor = true;
@@ -331,15 +331,15 @@
             this.lstAnsi.ItemHeight = 12;
             this.lstAnsi.Location = new System.Drawing.Point(15, 52);
             this.lstAnsi.Name = "lstAnsi";
-            this.lstAnsi.Size = new System.Drawing.Size(115, 172);
+            this.lstAnsi.Size = new System.Drawing.Size(115, 160);
             this.lstAnsi.TabIndex = 16;
             this.lstAnsi.DoubleClick += new System.EventHandler(this.lstAnsi_DoubleClick);
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(321, 48);
+            this.button8.Location = new System.Drawing.Point(3, 105);
             this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(100, 39);
+            this.button8.Size = new System.Drawing.Size(120, 45);
             this.button8.TabIndex = 4;
             this.button8.Text = "Active Ports";
             this.button8.UseVisualStyleBackColor = true;
@@ -347,9 +347,9 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(321, 3);
+            this.button9.Location = new System.Drawing.Point(381, 3);
             this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(100, 39);
+            this.button9.Size = new System.Drawing.Size(120, 45);
             this.button9.TabIndex = 4;
             this.button9.Text = "Telnet Server";
             this.button9.UseVisualStyleBackColor = true;
@@ -491,7 +491,7 @@
             // 
             // btnCrcFile
             // 
-            this.btnCrcFile.Location = new System.Drawing.Point(623, 159);
+            this.btnCrcFile.Location = new System.Drawing.Point(610, 162);
             this.btnCrcFile.Name = "btnCrcFile";
             this.btnCrcFile.Size = new System.Drawing.Size(23, 23);
             this.btnCrcFile.TabIndex = 28;
@@ -504,7 +504,7 @@
             // 
             this.txtCrcFile.Location = new System.Drawing.Point(81, 163);
             this.txtCrcFile.Name = "txtCrcFile";
-            this.txtCrcFile.Size = new System.Drawing.Size(537, 22);
+            this.txtCrcFile.Size = new System.Drawing.Size(523, 22);
             this.txtCrcFile.TabIndex = 27;
             // 
             // labCrc32Time
@@ -637,12 +637,12 @@
             // 
             this.txtCrcSource.Location = new System.Drawing.Point(81, 25);
             this.txtCrcSource.Name = "txtCrcSource";
-            this.txtCrcSource.Size = new System.Drawing.Size(467, 22);
+            this.txtCrcSource.Size = new System.Drawing.Size(454, 22);
             this.txtCrcSource.TabIndex = 15;
             // 
             // btnCRC16
             // 
-            this.btnCRC16.Location = new System.Drawing.Point(553, 23);
+            this.btnCRC16.Location = new System.Drawing.Point(541, 25);
             this.btnCRC16.Name = "btnCRC16";
             this.btnCRC16.Size = new System.Drawing.Size(92, 23);
             this.btnCRC16.TabIndex = 11;
@@ -701,9 +701,9 @@
             // 
             // button11
             // 
-            this.button11.Location = new System.Drawing.Point(3, 48);
+            this.button11.Location = new System.Drawing.Point(129, 54);
             this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(100, 39);
+            this.button11.Size = new System.Drawing.Size(120, 45);
             this.button11.TabIndex = 5;
             this.button11.Text = "HttpService Test";
             this.button11.UseVisualStyleBackColor = true;
@@ -904,9 +904,9 @@
             // button10
             // 
             this.button10.Enabled = false;
-            this.button10.Location = new System.Drawing.Point(427, 48);
+            this.button10.Location = new System.Drawing.Point(129, 105);
             this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(100, 39);
+            this.button10.Size = new System.Drawing.Size(120, 45);
             this.button10.TabIndex = 4;
             this.button10.Text = "ModbusTCP Master\r\n(Unfinish)";
             this.button10.UseVisualStyleBackColor = true;
@@ -914,9 +914,9 @@
             // 
             // button12
             // 
-            this.button12.Location = new System.Drawing.Point(109, 48);
+            this.button12.Location = new System.Drawing.Point(255, 54);
             this.button12.Name = "button12";
-            this.button12.Size = new System.Drawing.Size(100, 39);
+            this.button12.Size = new System.Drawing.Size(120, 45);
             this.button12.TabIndex = 24;
             this.button12.Text = "WebSocket Server";
             this.button12.UseVisualStyleBackColor = true;
@@ -1015,6 +1015,7 @@
             this.txtMsgBoxText.Size = new System.Drawing.Size(469, 137);
             this.txtMsgBoxText.TabIndex = 3;
             this.txtMsgBoxText.WordWrap = false;
+            this.txtMsgBoxText.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MultiLineTextBox_KeyDown);
             // 
             // txtMsgBoxCaption
             // 
@@ -1146,19 +1147,21 @@
             this.tabControl1.Controls.Add(this.tabPage8);
             this.tabControl1.Controls.Add(this.tabPage9);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabControl1.ItemSize = new System.Drawing.Size(74, 24);
             this.tabControl1.Location = new System.Drawing.Point(5, 5);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(655, 287);
+            this.tabControl1.SizeMode = System.Windows.Forms.TabSizeMode.FillToRight;
             this.tabControl1.TabIndex = 27;
             // 
             // tabPage1
             // 
             this.tabPage1.Controls.Add(this.flowLayoutPanel1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Location = new System.Drawing.Point(4, 28);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(11, 9, 11, 9);
-            this.tabPage1.Size = new System.Drawing.Size(647, 261);
+            this.tabPage1.Size = new System.Drawing.Size(647, 255);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Network Test";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -1180,14 +1183,14 @@
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(11, 9);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(625, 243);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(625, 237);
             this.flowLayoutPanel1.TabIndex = 25;
             // 
             // button17
             // 
-            this.button17.Location = new System.Drawing.Point(3, 93);
+            this.button17.Location = new System.Drawing.Point(255, 105);
             this.button17.Name = "button17";
-            this.button17.Size = new System.Drawing.Size(100, 39);
+            this.button17.Size = new System.Drawing.Size(120, 45);
             this.button17.TabIndex = 5;
             this.button17.Text = "SSL TCP Server";
             this.button17.UseVisualStyleBackColor = true;
@@ -1195,9 +1198,9 @@
             // 
             // button18
             // 
-            this.button18.Location = new System.Drawing.Point(109, 93);
+            this.button18.Location = new System.Drawing.Point(381, 105);
             this.button18.Name = "button18";
-            this.button18.Size = new System.Drawing.Size(100, 39);
+            this.button18.Size = new System.Drawing.Size(120, 45);
             this.button18.TabIndex = 5;
             this.button18.Text = "SSL TCP Client";
             this.button18.UseVisualStyleBackColor = true;
@@ -1207,10 +1210,10 @@
             // 
             this.tabPage2.Controls.Add(this.groupBox5);
             this.tabPage2.Controls.Add(this.groupBox1);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Location = new System.Drawing.Point(4, 28);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(11, 9, 11, 9);
-            this.tabPage2.Size = new System.Drawing.Size(647, 261);
+            this.tabPage2.Size = new System.Drawing.Size(647, 255);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Utility Test";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -1219,10 +1222,10 @@
             // 
             this.tabPage3.Controls.Add(this.groupBox2);
             this.tabPage3.Controls.Add(this.Xor);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Location = new System.Drawing.Point(4, 28);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(11, 9, 11, 9);
-            this.tabPage3.Size = new System.Drawing.Size(647, 261);
+            this.tabPage3.Size = new System.Drawing.Size(647, 255);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Extensions";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -1256,10 +1259,10 @@
             this.tabPage4.Controls.Add(this.label14);
             this.tabPage4.Controls.Add(this.labCrc32Res);
             this.tabPage4.Controls.Add(this.labCrc32Byte);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Location = new System.Drawing.Point(4, 28);
             this.tabPage4.Name = "tabPage4";
             this.tabPage4.Padding = new System.Windows.Forms.Padding(11, 9, 11, 9);
-            this.tabPage4.Size = new System.Drawing.Size(647, 261);
+            this.tabPage4.Size = new System.Drawing.Size(647, 255);
             this.tabPage4.TabIndex = 3;
             this.tabPage4.Text = "CRC Checksum";
             this.tabPage4.UseVisualStyleBackColor = true;
@@ -1306,10 +1309,10 @@
             this.tabPage5.Controls.Add(this.label23);
             this.tabPage5.Controls.Add(this.label15);
             this.tabPage5.Controls.Add(this.label11);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Location = new System.Drawing.Point(4, 28);
             this.tabPage5.Name = "tabPage5";
             this.tabPage5.Padding = new System.Windows.Forms.Padding(11, 9, 11, 9);
-            this.tabPage5.Size = new System.Drawing.Size(647, 261);
+            this.tabPage5.Size = new System.Drawing.Size(647, 255);
             this.tabPage5.TabIndex = 4;
             this.tabPage5.Text = "MessageBox";
             this.tabPage5.UseVisualStyleBackColor = true;
@@ -1318,7 +1321,7 @@
             // 
             this.rbMsgCsiSample6.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.rbMsgCsiSample6.AutoSize = true;
-            this.rbMsgCsiSample6.Location = new System.Drawing.Point(570, 140);
+            this.rbMsgCsiSample6.Location = new System.Drawing.Point(572, 151);
             this.rbMsgCsiSample6.Name = "rbMsgCsiSample6";
             this.rbMsgCsiSample6.Size = new System.Drawing.Size(66, 16);
             this.rbMsgCsiSample6.TabIndex = 9;
@@ -1330,7 +1333,7 @@
             // 
             this.rbMsgCsiSample5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.rbMsgCsiSample5.AutoSize = true;
-            this.rbMsgCsiSample5.Location = new System.Drawing.Point(572, 119);
+            this.rbMsgCsiSample5.Location = new System.Drawing.Point(572, 127);
             this.rbMsgCsiSample5.Name = "rbMsgCsiSample5";
             this.rbMsgCsiSample5.Size = new System.Drawing.Size(66, 16);
             this.rbMsgCsiSample5.TabIndex = 9;
@@ -1342,7 +1345,7 @@
             // 
             this.rbMsgCsiSample4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.rbMsgCsiSample4.AutoSize = true;
-            this.rbMsgCsiSample4.Location = new System.Drawing.Point(572, 96);
+            this.rbMsgCsiSample4.Location = new System.Drawing.Point(572, 103);
             this.rbMsgCsiSample4.Name = "rbMsgCsiSample4";
             this.rbMsgCsiSample4.Size = new System.Drawing.Size(66, 16);
             this.rbMsgCsiSample4.TabIndex = 9;
@@ -1354,7 +1357,7 @@
             // 
             this.rbMsgCsiSample3.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.rbMsgCsiSample3.AutoSize = true;
-            this.rbMsgCsiSample3.Location = new System.Drawing.Point(572, 73);
+            this.rbMsgCsiSample3.Location = new System.Drawing.Point(572, 79);
             this.rbMsgCsiSample3.Name = "rbMsgCsiSample3";
             this.rbMsgCsiSample3.Size = new System.Drawing.Size(66, 16);
             this.rbMsgCsiSample3.TabIndex = 9;
@@ -1366,7 +1369,7 @@
             // 
             this.rbMsgCsiSample2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.rbMsgCsiSample2.AutoSize = true;
-            this.rbMsgCsiSample2.Location = new System.Drawing.Point(572, 52);
+            this.rbMsgCsiSample2.Location = new System.Drawing.Point(572, 55);
             this.rbMsgCsiSample2.Name = "rbMsgCsiSample2";
             this.rbMsgCsiSample2.Size = new System.Drawing.Size(66, 16);
             this.rbMsgCsiSample2.TabIndex = 9;
@@ -1446,10 +1449,10 @@
             this.tabPage6.Controls.Add(this.label18);
             this.tabPage6.Controls.Add(this.lstAnsi);
             this.tabPage6.Controls.Add(this.button7);
-            this.tabPage6.Location = new System.Drawing.Point(4, 22);
+            this.tabPage6.Location = new System.Drawing.Point(4, 28);
             this.tabPage6.Name = "tabPage6";
             this.tabPage6.Padding = new System.Windows.Forms.Padding(11, 9, 11, 9);
-            this.tabPage6.Size = new System.Drawing.Size(647, 261);
+            this.tabPage6.Size = new System.Drawing.Size(647, 255);
             this.tabPage6.TabIndex = 5;
             this.tabPage6.Text = "ANSI Code";
             this.tabPage6.UseVisualStyleBackColor = true;
@@ -1484,6 +1487,7 @@
             this.txtCsi.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.txtCsi.Size = new System.Drawing.Size(429, 104);
             this.txtCsi.TabIndex = 18;
+            this.txtCsi.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MultiLineTextBox_KeyDown);
             // 
             // label20
             // 
@@ -1503,6 +1507,7 @@
             this.txtAnsiStr.Name = "txtAnsiStr";
             this.txtAnsiStr.Size = new System.Drawing.Size(429, 43);
             this.txtAnsiStr.TabIndex = 18;
+            this.txtAnsiStr.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MultiLineTextBox_KeyDown);
             // 
             // label19
             // 
@@ -1523,6 +1528,7 @@
             this.txtAnsiCode.Size = new System.Drawing.Size(429, 43);
             this.txtAnsiCode.TabIndex = 18;
             this.txtAnsiCode.Text = "123{red}456{green}789{reset}";
+            this.txtAnsiCode.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MultiLineTextBox_KeyDown);
             // 
             // label18
             // 
@@ -1551,10 +1557,10 @@
             this.tabPage7.Controls.Add(this.txtIV);
             this.tabPage7.Controls.Add(this.label4);
             this.tabPage7.Controls.Add(this.label5);
-            this.tabPage7.Location = new System.Drawing.Point(4, 22);
+            this.tabPage7.Location = new System.Drawing.Point(4, 28);
             this.tabPage7.Name = "tabPage7";
             this.tabPage7.Padding = new System.Windows.Forms.Padding(11, 9, 11, 9);
-            this.tabPage7.Size = new System.Drawing.Size(647, 261);
+            this.tabPage7.Size = new System.Drawing.Size(647, 255);
             this.tabPage7.TabIndex = 6;
             this.tabPage7.Text = "Security";
             this.tabPage7.UseVisualStyleBackColor = true;
@@ -1564,7 +1570,7 @@
             this.ansiLabel2.AutoSize = true;
             this.ansiLabel2.Location = new System.Drawing.Point(213, 111);
             this.ansiLabel2.Name = "ansiLabel2";
-            this.ansiLabel2.Size = new System.Drawing.Size(41, 13);
+            this.ansiLabel2.Size = new System.Drawing.Size(62, 19);
             this.ansiLabel2.TabIndex = 19;
             this.ansiLabel2.Text = "ansiLabel2";
             // 
@@ -1574,7 +1580,7 @@
             this.ansiLabel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.ansiLabel1.Location = new System.Drawing.Point(25, 140);
             this.ansiLabel1.Name = "ansiLabel1";
-            this.ansiLabel1.Size = new System.Drawing.Size(199, 13);
+            this.ansiLabel1.Size = new System.Drawing.Size(299, 19);
             this.ansiLabel1.TabIndex = 18;
             this.ansiLabel1.Text = "-----\\x1B[91m1234567890\\x1B[94mABCDEFGHIJKLMNOPQRSTUVWXYZ\\x1B[0m...";
             // 
@@ -1623,12 +1629,21 @@
             this.tabPage8.Controls.Add(this.ansiBox1);
             this.tabPage8.Controls.Add(this.button14);
             this.tabPage8.Controls.Add(this.txtAnsi);
-            this.tabPage8.Location = new System.Drawing.Point(4, 22);
+            this.tabPage8.Location = new System.Drawing.Point(4, 28);
             this.tabPage8.Name = "tabPage8";
-            this.tabPage8.Size = new System.Drawing.Size(647, 261);
+            this.tabPage8.Size = new System.Drawing.Size(647, 255);
             this.tabPage8.TabIndex = 8;
             this.tabPage8.Text = "AnsiViewer";
             this.tabPage8.UseVisualStyleBackColor = true;
+            // 
+            // ansiBox1
+            // 
+            this.ansiBox1.Font = new System.Drawing.Font("微軟正黑體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
+            this.ansiBox1.Location = new System.Drawing.Point(17, 15);
+            this.ansiBox1.Name = "ansiBox1";
+            this.ansiBox1.Size = new System.Drawing.Size(614, 204);
+            this.ansiBox1.TabIndex = 3;
+            this.ansiBox1.Text = resources.GetString("ansiBox1.Text");
             // 
             // button14
             // 
@@ -1651,34 +1666,25 @@
             // 
             this.tabPage9.Controls.Add(this.groupBox4);
             this.tabPage9.Controls.Add(this.button6);
-            this.tabPage9.Location = new System.Drawing.Point(4, 22);
+            this.tabPage9.Location = new System.Drawing.Point(4, 28);
             this.tabPage9.Name = "tabPage9";
             this.tabPage9.Padding = new System.Windows.Forms.Padding(11, 9, 11, 9);
-            this.tabPage9.Size = new System.Drawing.Size(647, 261);
+            this.tabPage9.Size = new System.Drawing.Size(647, 255);
             this.tabPage9.TabIndex = 7;
             this.tabPage9.Text = "Other";
             this.tabPage9.UseVisualStyleBackColor = true;
             // 
-            // ansiBox1
-            // 
-            this.ansiBox1.Font = new System.Drawing.Font("微軟正黑體", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(136)));
-            this.ansiBox1.Location = new System.Drawing.Point(17, 15);
-            this.ansiBox1.Name = "ansiBox1";
-            this.ansiBox1.Size = new System.Drawing.Size(614, 204);
-            this.ansiBox1.TabIndex = 3;
-            this.ansiBox1.Text = resources.GetString("ansiBox1.Text");
-            // 
             // MainEntry
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(665, 297);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "MainEntry";
-            this.Padding = new System.Windows.Forms.Padding(5, 5, 5, 5);
+            this.Padding = new System.Windows.Forms.Padding(5);
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Main Form";
             this.groupBox1.ResumeLayout(false);
