@@ -67,6 +67,8 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Http\HttpService.cs" />
+    <Compile Include="Routing.cs" />
     <Compile Include="Ssl\SslTcpServer.cs" />
     <Compile Include="Ssl\SslTcpClient.cs" />
     <Compile Include="Http\_init_.cs" />
@@ -77,9 +79,7 @@
     <Compile Include="Http\WebAPIBase.cs" />
     <Compile Include="AsyncUDP.cs" />
     <Compile Include="_init_.cs" />
-    <Compile Include="Http\ExtWebClient.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Http\ExtWebClient.cs" />
     <Compile Include="Http\HttpBase.cs" />
     <Compile Include="PingTester.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
