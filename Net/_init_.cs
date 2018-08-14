@@ -322,11 +322,11 @@ namespace CJF.Net
 		/// <param name="data">封包資料內容。</param>
 		public SslTcpEventArgs(EndPoint ep, byte[] data) : this(ep, data, null) { }
 	}
-	#endregion
+    #endregion
 
-	#region Public Class : AsyncServerPoolBeenEmptyException
-	/// <summary>自定錯誤類型，當預備接線池中的所有預備線使用完畢時叫用</summary>
-	[Serializable]
+    #region Public Class : AsyncServerPoolBeenEmptyException
+    /// <summary>自定錯誤類型，當預備接線池中的所有預備線使用完畢時叫用</summary>
+    [Serializable]
 	public class AsyncServerPoolBeenEmptyException : Exception
 	{
 		/// <summary>錯誤訊息</summary>

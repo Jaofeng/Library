@@ -616,8 +616,7 @@ namespace CJF.Net.Http
 			WebSocketClient ac = (WebSocketClient)sender;
 			if (ac != null)
 			{
-				AsyncClient acc = null;
-				m_Clients.TryRemove(ac.RemoteEndPoint.ToString(), out acc);
+				m_Clients.TryRemove(ac.RemoteEndPoint.ToString(), out AsyncClient acc);
 			}
 			base.OnClientClosing(ac, e.ExtraInfo);
 		}
@@ -630,8 +629,7 @@ namespace CJF.Net.Http
 
 			if (ac != null)
 			{
-				AsyncClient acc = null;
-				m_Clients.TryRemove(ac.RemoteEndPoint.ToString(), out acc);
+				m_Clients.TryRemove(ac.RemoteEndPoint.ToString(), out AsyncClient acc);
 			}
 			base.OnClientClosed(ac, e.ClosedByIdle, e.ExtraInfo);
 		}

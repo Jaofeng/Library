@@ -70,7 +70,7 @@ namespace CJF.Net.Http
         public static bool SendMailWhenException { get; set; } = false;
         #endregion
 
-        #region Construct Method : HttpService(HttpListenerContext context)
+        #region Construct Method : HttpBase(HttpListenerContext context)
         /// <summary></summary>
         protected HttpBase() { }
 		/// <summary></summary>
