@@ -81,6 +81,12 @@
     <Compile Include="FHttpService.Designer.cs">
       <DependentUpon>FHttpService.cs</DependentUpon>
     </Compile>
+    <Compile Include="FRoutingTable.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FRoutingTable.Designer.cs">
+      <DependentUpon>FRoutingTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="FTelnetServer.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -148,6 +154,7 @@
     <Compile Include="FSslTcpClient.Designer.cs">
       <DependentUpon>FSslTcpClient.cs</DependentUpon>
     </Compile>
+    <Compile Include="TelnetMenus.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="FActivePorts.resx">
@@ -161,6 +168,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FHttpService.resx">
       <DependentUpon>FHttpService.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FRoutingTable.resx">
+      <DependentUpon>FRoutingTable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FTelnetServer.resx">
       <DependentUpon>FTelnetServer.cs</DependentUpon>

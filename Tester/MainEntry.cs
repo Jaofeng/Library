@@ -421,48 +421,27 @@ namespace Tester
 			cbMsgBoxFont.Enabled = cbMsgBoxFontSize.Enabled = chkFont.Checked;
 		}
 
-		private void button7_Click(object sender, EventArgs e)
-		{
-			lstAnsi.Items.Clear();
-            #pragma warning disable 0618
-            foreach (string s in AnsiString.AllKeyWords)
-				lstAnsi.Items.Add(s);
-		}
-
 		private void button13_Click(object sender, EventArgs e)
 		{
-			string ansi = AnsiString.ToANSI(txtAnsiCode.Text);
-			txtAnsiStr.Tag = ansi;
-			txtAnsiStr.Text = ansi.Replace("\x1B", "\\x1B");
-			CsiBuilder cb1 = new CsiBuilder(ansi);
-			txtCsi.Text = string.Format("Pure Text : {0}{1}{2}{1}", cb1.ToPureText(), Environment.NewLine, "-".PadLeft(50, '-'));
-			txtCsi.Text += string.Format("Items Count:{0}, Length:{1}{2}", cb1.Count, cb1.Length, Environment.NewLine);
-			for (int i = 0; i < cb1.Count; i++)
-				txtCsi.Text += string.Format("[{0}] {1}{2}", i, cb1[i].Replace("\x1B", "\\x1B").Replace("\r", "\\r").Replace("\n", "\\n"), Environment.NewLine);
-			CsiBuilder cb2 = new CsiBuilder();
-			cb2.Append("\x1B[J");
-			cb2.Append("123");
-			cb2.Append(SgrColors.Red, "456");
-			cb2.AppendCommand(CsiCommands.Cls);
-			cb2.Append(SgrColors.Yellow, "789");
-			cb2.AppendCommand(CsiCommands.ResetSGR);
-			//var stdout = Console.OpenStandardOutput();
-			//var con = new StreamWriter(stdout, Encoding.ASCII);
-			//con.AutoFlush = true;
-			//Console.SetOut(con);
-			Console.WriteLine("\x1b[36mTEST\x1b[0m".Replace("\x1B", "\u001B"));
-			Console.WriteLine("ANSIString Class : ");
-			Console.WriteLine(ansi.Replace("\x1B", "\u001B"));
-			Console.WriteLine("CsiBuilder Class : ");
-			Console.WriteLine(cb2.ToString().Replace("\x1B", "\u001B"));
-		}
+            CsiBuilder cb1 = new CsiBuilder(txtAnsiStr.Text.Replace("\\x1B[", "\x1B["));
+            cb1.Insert(0, "ABCDE");
+            cb1.Insert(5, "FGHIJ");
+            cb1.Insert(3, "\x1B[91m12345\x1B[0m");
+            cb1.Insert(8, "VWXYZ");
+            cb1.InsertCommand(10, CsiCommands.ResetSGR);
+            int idx = cb1.IndexOf(CsiCommands.ResetSGR);
+            int[] arr = cb1.IndexesOf();
+            txtCsi.Text = $"Items Count:{cb1.Count}, Length:{cb1.CharLength}/{cb1.Length}, New Insert Reset @ {idx}{Environment.NewLine}";
+            idx = 0;
+            for (int i = 0; i < cb1.Count; i++)
+            {
+                txtCsi.Text += $"[{i:D2}] -[{idx:D3}] {(cb1[i].Replace("\x1B", "\\x1B").Replace("\r", "\\r").Replace("\n", "\\n"))}{Environment.NewLine}";
+                idx += cb1[i].StartsWith("\x1B[") ? 1 : cb1[i].Length;
+            }
+            txtCsi.Text += $"CSI Indexes:{Environment.NewLine}{string.Join<int>(", ", arr)}{Environment.NewLine}";
+        }
 
-		private void lstAnsi_DoubleClick(object sender, EventArgs e)
-		{
-			txtAnsiCode.Text += lstAnsi.SelectedItem.ToString();
-		}
-
-		private void rbMsgCsiSample_CheckedChanged(object sender, EventArgs e)
+        private void rbMsgCsiSample_CheckedChanged(object sender, EventArgs e)
 		{
 			RadioButton rb = (RadioButton)sender;
 			if (!rb.Checked)
@@ -479,7 +458,7 @@ Colors: \x1B[31m[CSI 31 m]Red\x1B[0m, \x1B[32m[CSI 32 m]Green\x1B[0m, \x1B[33m[C
 Colors \x1B[31m[CSI 31 m]Red\x1B[0m, \x1B[32m[CSI 32 m]Green\x1B[0m, \x1B[33m[CSI 33 m]Yellow\x1B[0m, \x1B[34m[CSI 34 m]Blue\x1B[0m
 超長文字：一二三四五六七八九十，一二三四五六七八九十。一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十一二三四五六七八九十
 超長文字：一二三四五六七八九\x1B[91m十一二三四五六七八九十\x1B[92m一二三四五六七八九十\x1B[93m一二三四五六七八九十\x1B[94m一二三四五六七八九十
-一二三四五六七八九十
+一二三四五六七八九十@@123
 
 \x1B[1;31m[CSI 1;31 m]Bright Red\x1B[0m, \x1B[1;32m[CSI 1;32 m]Bright Green\x1B[0m, \x1B[1;33m[CSI 1;33 m]Bright Yellow\x1B[0m, \x1B[1;34m[CSI 1;34 m]Bright Blue\x1B[0m
 \x1B[91m[CSI 91 m]亮紅\x1B[0m, \x1B[92m[CSI 92 m]亮綠\x1B[0m, \x1B[93m[CSI 93 m]亮黃\x1B[0m, \x1B[94m[CSI 94 m]亮藍\x1B[39;49m
@@ -496,18 +475,20 @@ D:\WorkSpace\Source\Common\Library\Tester\MainEntry.cs \x1B[94mLine:394, Colume:
 					"\x1B[91m[CSI 91 m]亮紅\x1B[0m, \x1B[92m[CSI 92 m]亮綠\x1B[0m, \x1B[93m[CSI 93 m]亮黃\x1B[0m, \x1B[94m[CSI 94 m]亮藍\x1B[39;49m\n";
 			else if (rb.Equals(rbMsgCsiSample5))
 			{
+                string tmp = string.Empty;
 				txtMsgBoxText.Text = "";
-				for (int i = 0; i < 16; i++)
-					txtMsgBoxText.Text += string.Format("\x1B[48;5;{0}m　", i);
-				txtMsgBoxText.Text += Environment.NewLine;
+                for (int i = 0; i < 16; i++)
+                    tmp += $"\x1B[48;5;{i}m　";
+				tmp += Environment.NewLine;
 				for (int i = 0; i < 6; i++)
 				{
-					for (int j = 0; j < 36; j++)
-						txtMsgBoxText.Text += string.Format("\x1B[48;5;{0}m　", 16 + i * 36 + j);
-					txtMsgBoxText.Text += Environment.NewLine;
+                    for (int j = 0; j < 36; j++)
+                        tmp += $"\x1B[48;5;{(16 + i * 36 + j)}m　";
+					tmp += Environment.NewLine;
 				}
-				for (int i = 0; i < 24; i++)
-					txtMsgBoxText.Text += string.Format("\x1B[48;5;{0}m　", i + 232);
+                for (int i = 0; i < 24; i++)
+                    tmp += $"\x1B[48;5;{(i + 232)}m　";
+                txtMsgBoxText.Text = tmp;
 			}
 			else if (rb.Equals(rbMsgCsiSample6))
 			{
@@ -518,32 +499,12 @@ D:\WorkSpace\Source\Common\Library\Tester\MainEntry.cs \x1B[94mLine:394, Colume:
 \x1B[48;5;12;38;5;15m[48;5;12;38;5;15m藍底白字\x1B[39;49m\x1B[48;5;11;38;5;0m[48;5;11;38;5;0m黃底黑字
 ";
 			}
+            txtAnsiStr.Text = txtMsgBoxText.Text;
 		}
 
 		private void btnOpenConsole_Click(object sender, EventArgs e)
 		{
-			AllocConsole();
-			Console.CancelKeyPress += new ConsoleCancelEventHandler(delegate(object snd, ConsoleCancelEventArgs ee)
-				{
-					ee.Cancel = true;
-				});
-
-			var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-			if (!GetConsoleMode(iStdOut, out uint outConsoleMode))
-			{
-				Console.WriteLine("failed to get output console mode");
-				Console.ReadKey();
-				return;
-			}
-
-			//outConsoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
-			if (!SetConsoleMode(iStdOut, outConsoleMode))
-			{
-				Console.WriteLine("failed to set output console mode, error code: {0}", GetLastError());
-				Console.ReadKey();
-				return;
-			}
-
+            OpenConsole();
 		}
 
 		private void button14_Click(object sender, EventArgs e)
@@ -606,5 +567,56 @@ D:\WorkSpace\Source\Common\Library\Tester\MainEntry.cs \x1B[94mLine:394, Colume:
 			FSslTcpClient fp = new FSslTcpClient();
 			fp.Show();
 		}
+
+        private void label10_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void MultiLineTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            TextBox txt = sender as TextBox;
+            if (e.Modifiers == Keys.Control && e.KeyCode == Keys.A)
+            {
+                txt?.SelectAll();
+                e.SuppressKeyPress = true;
+                e.Handled = false;
+            }
+        }
+
+        private void OpenConsole()
+        {
+            AllocConsole();
+            Console.CancelKeyPress += new ConsoleCancelEventHandler(delegate (object snd, ConsoleCancelEventArgs ee)
+            {
+                ee.Cancel = true;
+            });
+            var iStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+            if (!GetConsoleMode(iStdOut, out uint outConsoleMode))
+            {
+                Console.WriteLine("failed to get output console mode");
+                Console.ReadKey();
+                return;
+            }
+
+            outConsoleMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING | DISABLE_NEWLINE_AUTO_RETURN;
+            if (!SetConsoleMode(iStdOut, outConsoleMode))
+            {
+                Console.WriteLine("failed to set output console mode, error code: {0}", GetLastError());
+                Console.ReadKey();
+                return;
+            }
+        }
+
+        private void CloseConsole()
+        {
+            FreeConsole();
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            FRoutingTable f = new FRoutingTable();
+            f.Show();
+        }
     }
 }

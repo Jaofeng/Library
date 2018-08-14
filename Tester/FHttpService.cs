@@ -136,8 +136,8 @@ namespace Tester
                 ctx = _HttpListener.EndGetContext(ar);
                 _HttpListener.BeginGetContext(new AsyncCallback(WebRequestCallback), _HttpListener);
 
-                HttpService http = new HttpService(ctx, _SvcName);
-                http.OnPopupMessage += new HttpService.PopupMessageHandler(delegate (object sender, string msg)
+                CustHttpSvc http = new CustHttpSvc(ctx, _SvcName);
+                http.OnPopupMessage += new CustHttpSvc.PopupMessageHandler(delegate (object sender, string msg)
                     {
                         Task.Factory.StartNew(() => WriteLog(Color.Blue, msg));
                     });
@@ -308,7 +308,7 @@ namespace Tester
                         wc.Headers.Add(HttpRequestHeader.UserAgent, txtUserAgent.Text);
                     else
                         wc.Headers.Add(HttpRequestHeader.UserAgent, "WebClient");
-                    byte[] res = wc.DownloadData(txtUrl.Text + HttpService.ToQueryString(nvc));
+                    byte[] res = wc.DownloadData(txtUrl.Text + CustHttpSvc.ToQueryString(nvc));
                     WriteLog("# 資料已使用 GET 送出，伺服器回覆：{0}", Encoding.UTF8.GetString(res));
                 }
             }
@@ -480,7 +480,7 @@ namespace Tester
     #endregion
 
     [ServiceContract()]
-    public class HttpService : HttpBase
+    public class CustHttpSvc : HttpBase
     {
         #region event & delegate
         public delegate void APIHandler(object sender, IWebAPI webApi);
@@ -494,12 +494,12 @@ namespace Tester
         private readonly string[] _AllowSvcNames = null;
 
         #region Construct Method : HttpService(HttpListenerContext context, string allowSvc)
-        public HttpService(HttpListenerContext context, string allowSvc)
+        public CustHttpSvc(HttpListenerContext context, string allowSvc)
         {
             this.Context = context;
             _AllowSvcNames = allowSvc.Split(';');
         }
-        ~HttpService() { Dispose(false); }
+        ~CustHttpSvc() { Dispose(false); }
         #endregion
 
         #region Protected Override Method : void ReceivedAPI(string svc, NameValueCollection nvc)
