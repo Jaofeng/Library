@@ -32,10 +32,25 @@ namespace CJF.Utility
 			/// <summary>所有訊息</summary>
 			All = Debug | Info | Warn | Error | Fatal
 		}
-		#endregion
+        #endregion
 
-		#region LogManager Static Methods
-		private static ILog _GlobalLogger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        #region Public Static Properties
+        /// <summary>設定或取得內送郵件伺服器位址IP。</summary>
+        public static string MailServer { get; set; } = string.Empty;
+        /// <summary>設定或取得錯誤通知信件的主旨文字內容。</summary>
+        public static string DefSubject { get; set; } = string.Empty;
+        /// <summary>設定或取得收件者的郵件信箱。</summary>
+        public static string MailTo { get; set; } = string.Empty;
+        /// <summary>設定或取得寄件者的郵件信箱。</summary>
+        public static string MailFrom { get; set; } = string.Empty;
+        /// <summary>設定或取得顯示寄件者於內送伺服器的帳號。。</summary>
+        public static string FromUser { get; set; } = string.Empty;
+        /// <summary>設定或取得寄件者於內送伺服器的密碼。</summary>
+        public static string FromPWD { get; set; } = string.Empty;
+        #endregion
+
+        #region LogManager Static Methods
+        private static ILog _GlobalLogger = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		#region Public Static Methods : void WriteLog(...)
 		/// <summary>記錄事件，使用LogLevel.Info級別記錄訊息</summary>
@@ -337,18 +352,19 @@ namespace CJF.Utility
 		public static void SendMail(string subject, string content, Encoding enc, bool useHtml)
 		{
 			NameValueCollection nvc = ConfigurationManager.AppSettings;
-			string mailServer = nvc["MailServer"];
-			string SvrID = nvc["ServerID"];
-			string mailSubject = nvc["MailSubject"];
+			string mailServer = string.IsNullOrEmpty(MailServer) ? nvc["MailServer"] : MailServer;
+            string mailSubject = string.IsNullOrEmpty(DefSubject) ? nvc["MailSubject"] : DefSubject;
 			int mailPort = 25;
 			string[] mailTo = new string[] { };
-			if (!string.IsNullOrEmpty(nvc["MailTo"]))
-				mailTo = nvc["MailTo"].Split(';');
-			string mailFrom = nvc["MailFrom"];
+            if (!string.IsNullOrEmpty(MailTo))
+                mailTo = MailTo.Split(';');
+            else if (!string.IsNullOrEmpty(nvc["MailTo"]))
+                    mailTo = nvc["MailTo"].Split(';');
+            string mailFrom = string.IsNullOrEmpty(MailFrom) ? nvc["MailFrom"] : MailFrom;
 			if (string.IsNullOrEmpty(mailServer) || mailTo.Length == 0 || string.IsNullOrEmpty(mailFrom))
 				return;
-			string userName = nvc["FromUser"];
-			string pwd = nvc["FromPWD"];
+            string userName = string.IsNullOrEmpty(FromUser) ? nvc["FromUser"] : FromUser;
+			string pwd = string.IsNullOrEmpty(FromPWD) ? nvc["FromPWD"] : FromPWD;
 			if (enc == null) enc = Encoding.UTF8;
 			try
 			{
@@ -358,10 +374,7 @@ namespace CJF.Utility
 					mail.To.Add(s);
 				mail.IsBodyHtml = useHtml;
 				mail.BodyEncoding = enc;		// E-mail編碼
-				if (string.IsNullOrEmpty(mailSubject))
-					mail.Subject = (string.IsNullOrEmpty(SvrID) ? subject : subject + " - " + SvrID);			// E-mail主旨
-				else
-					mail.Subject = mailSubject;
+    			mail.Subject = string.IsNullOrEmpty(subject) ? mailSubject : subject;			// E-mail主旨
 				mail.Body = content;			// E-mail內容
 				if (mailServer.IndexOf(':') != -1)
 				{
