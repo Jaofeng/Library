@@ -36,7 +36,7 @@ namespace CJF.Utility.WinKits
         #endregion
 
         #region Consts
-        const float MAX_WIDTH_PERCENTAGE = 0.33F;
+        const float MAX_WIDTH_PERCENTAGE = 0.35F;
         static readonly SizeF DEF_DPI = new SizeF(96F, 96F);
         static readonly Size DEF_ICON_SIZE = new Size(32, 32);
         static readonly Size DEF_BUTTON_SIZE = new Size(90, 28);
@@ -74,21 +74,20 @@ namespace CJF.Utility.WinKits
         #endregion
 
         #region Private Variables
-        private readonly string _Message = string.Empty;
-        private readonly string _SgrText = string.Empty;
-        private readonly string _PureText = string.Empty;
-        private readonly bool _HasCsiSgr = false;
+        readonly string _Message = string.Empty;
+        readonly string _SgrText = string.Empty;
+        readonly string _PureText = string.Empty;
+        readonly bool _HasCsiSgr = false;
+        readonly int _MaxTextWidth = 0;
+        readonly MessageBoxButtons _Buttons = MessageBoxButtons.OK;
+        readonly MessageBoxDefaultButton _DefButton = MessageBoxDefaultButton.Button1;
+        readonly MessageBoxIcon _MsgIcon = MessageBoxIcon.None;
 
-        MessageBoxButtons _Buttons = MessageBoxButtons.OK;
-        MessageBoxDefaultButton _DefButton = MessageBoxDefaultButton.Button1;
-        MessageBoxIcon _MsgIcon = MessageBoxIcon.None;
+        int _CanvasMaxWidth = 0;
         Size _TextSize = Size.Empty;
         Icon _Icon = null;
-        Size _CanvasArea = Size.Empty;
         Size _ButtonArea = Size.Empty;
-        RectangleF _TextArea = RectangleF.Empty;
         StringFormat _DefFormat = new StringFormat(StringFormat.GenericTypographic);
-        int _MaxTextWidth = 0;
         Bitmap _Buffer = null;
         #endregion
 
@@ -117,15 +116,13 @@ namespace CJF.Utility.WinKits
             Rectangle sr = Screen.GetWorkingArea(this);
             _Message = text;
             _MsgIcon = icon;
-            _SgrText = Regex.Replace(_Message, "\x1B\\[(\\d+)*;?(\\d+)?([ABCDEFGHJKSTfsu])", "");           // 移除非 SGR 指令
+            _SgrText = CsiBuilder.GetOnlySGR(_Message);
             _PureText = CsiBuilder.GetPureText(_Message);
             _Icon = GetIcon(icon);
             if (DialogMaxSize.IsEmpty)
                 _MaxTextWidth = (int)(sr.Width * MAX_WIDTH_PERCENTAGE);
             else
                 _MaxTextWidth = DialogMaxSize.Width;
-            if (_MsgIcon != MessageBoxIcon.None)
-                _MaxTextWidth -= (IconSize.Width + btn1.Margin.Left);
             float lineHeight = 0;
             using (Graphics g = this.CreateGraphics())
             {
@@ -136,38 +133,18 @@ namespace CJF.Utility.WinKits
             _TextSize.Width += (int)(5 * DpiGain);
             _HasCsiSgr = !_PureText.Equals(_Message);
 
-            Point msgLoc = Canvas_Padding.LeftTop();
-            if (_Icon != null)
-            {
-                if (_TextSize.Height < IconSize.Height)
-                    msgLoc.Offset(IconSize.Width + btn1.Margin.Left, (int)((IconSize.Height - _TextSize.Height) / 2));
-                else
-                    msgLoc.Offset(IconSize.Width + btn1.Margin.Left, 0);
-                _CanvasArea.Width = _TextSize.Width + IconSize.Width + btn1.Margin.Left;
-                _CanvasArea.Height = ((_TextSize.Height > IconSize.Height) ? _TextSize.Height : IconSize.Height);
-            }
-            else
-            {
-                _CanvasArea.Width = _TextSize.Width;
-                _CanvasArea.Height = _TextSize.Height;
-            }
-            _TextArea = new RectangleF(msgLoc, _TextSize);
-
             #region Draw Text to Buffer
-            using (Bitmap bitmap = new Bitmap(_CanvasArea.Width + Canvas_Padding.Horizontal, _CanvasArea.Height + (int)(lineHeight * 5) ))
+            Size res = Size.Empty;
+            using (Bitmap bitmap = new Bitmap(_MaxTextWidth, _TextSize.Height + (int)(lineHeight * 5)))
             {
                 using (Graphics g = Graphics.FromImage(bitmap))
                 {
                     g.Clear(SystemColors.Window);
-                    g.DrawLine(new Pen(SystemBrushes.ControlDark, 1), new Point(0, flpButtons.Top - 2), new Point(flpButtons.Width, flpButtons.Top - 2));
-                    g.DrawLine(new Pen(SystemBrushes.Window, 1), new Point(0, flpButtons.Top - 1), new Point(flpButtons.Width, flpButtons.Top - 1));
-                    if (_HasCsiSgr)
-                        DrawAnsiCsiSgrText(g, _SgrText);
-                    else
-                        DrawNormalText(g, _Message);
+                    res = DrawAnsiCsiSgrText(g, _SgrText);
                 }
-                _Buffer = bitmap.Clone(new Rectangle(Point.Empty, bitmap.Size), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+                _Buffer = bitmap.Clone(new Rectangle(Point.Empty, res), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             }
+            _TextSize = res;
             #endregion
         }
         #endregion
@@ -177,16 +154,13 @@ namespace CJF.Utility.WinKits
         {
             Graphics g = e.Graphics;
             g.Clear(SystemColors.Window);
-            g.DrawImage(_Buffer, PointF.Empty);
+            g.DrawImage(_Buffer, Canvas_Padding.Left, Canvas_Padding.Top);
             g.DrawLine(new Pen(SystemBrushes.ControlDark, 1), new Point(0, flpButtons.Top - 2), new Point(flpButtons.Width, flpButtons.Top - 2));
             g.DrawLine(new Pen(SystemBrushes.Window, 1), new Point(0, flpButtons.Top - 1), new Point(flpButtons.Width, flpButtons.Top - 1));
 
             #region For Debug - Draw Message Area Border
 #if DEBUG
-            Point leftTop = Canvas_Padding.LeftTop();
-            g.DrawRectangle(new Pen(Color.Green), Rectangle.Round(_TextArea));
-            g.DrawRectangle(new Pen(Color.Red), new Rectangle(leftTop, _CanvasArea));
-            g.DrawRectangle(new Pen(Color.Blue, 3), _TextArea.Location.X, _TextArea.Location.Y, 3, 3);
+            g.DrawRectangle(new Pen(Color.Blue), new Rectangle(Canvas_Padding.LeftTop(), _Buffer.Size));
 #endif
             #endregion
         }
@@ -210,10 +184,13 @@ namespace CJF.Utility.WinKits
             _ButtonArea = ButtonPanelSize;
             _ButtonArea.Width = btn1.Width + (btn2.Visible ? btn2.Width + btn2.Margin.Horizontal : 0) + (btn3.Visible ? btn3.Width + btn3.Margin.Horizontal : 0);
             _ButtonArea.Width += ButtonPanelPadding.Horizontal;
+            Size sw = _TextSize;
+            sw.Width += Canvas_Padding.Horizontal;
+            sw.Height += Canvas_Padding.Vertical;
             this.ClientSize = new Size()
             {
-                Width = (_ButtonArea.Width > _CanvasArea.Width ? _ButtonArea.Width : _CanvasArea.Width) + SystemInformation.Border3DSize.Width * 2 + Canvas_Padding.Horizontal,
-                Height = flpButtons.Height + _CanvasArea.Height + SystemInformation.Border3DSize.Height + SystemInformation.CaptionHeight + Canvas_Padding.Vertical
+                Width = (_ButtonArea.Width > sw.Width ? _ButtonArea.Width : sw.Width) + SystemInformation.Border3DSize.Width * 2,
+                Height = flpButtons.Height + sw.Height + SystemInformation.Border3DSize.Height + SystemInformation.CaptionHeight
             };
             // 計算按鍵區寬度
             switch (_MsgIcon)
@@ -394,47 +371,57 @@ namespace CJF.Utility.WinKits
         }
         #endregion
 
-        #region Private Method : Size DrawNormalText(Graphics grp, string text)
-        private Size DrawNormalText(Graphics grp, string text)
-        {
-            Point leftTop = Canvas_Padding.LeftTop();
-            if (_Icon != null)
-                grp.DrawIcon(_Icon, new Rectangle(leftTop, IconSize));
-            // 純文字
-            grp.DrawString(_PureText, this.Font, SystemBrushes.WindowText, _TextArea, _DefFormat);
-
-            #region For Debug - Draw Message Area Border
-#if DEBUG
-            grp.DrawRectangle(new Pen(Color.Green), Rectangle.Round(_TextArea));
-            grp.DrawRectangle(new Pen(Color.Red), new Rectangle(leftTop, _CanvasArea));
-#endif
-            #endregion
-
-            return _CanvasArea;
-        }
+        #region Private Method : Size DrawNormalText(Graphics grp, string text) - Remarked
+        //private Size DrawNormalText(Graphics grp, string text)
+        //{
+        //    // 純文字
+        //    Point leftTop = Point.Empty;
+        //    Size s = Size.Empty;
+        //    int lineHeight = grp.MeasureString("@", this.Font, Point.Empty, _DefFormat).ToSize().Height;
+        //    if (_MsgIcon != MessageBoxIcon.None)
+        //    {
+        //        leftTop.X = IconSize.Width + btn1.Margin.Left;
+        //        s = grp.MeasureString(text, this.Font, (_MaxTextWidth - leftTop.X), _DefFormat).ToSize();
+        //        grp.DrawIcon(_Icon, new Rectangle(Point.Empty, IconSize));
+        //        if (s.Height < IconSize.Height)
+        //            leftTop.Y = (IconSize.Height - s.Height) / 2;
+        //    }
+        //    else
+        //    {
+        //        s = grp.MeasureString(text, this.Font, _MaxTextWidth, _DefFormat).ToSize();
+        //    }
+        //    s.Height += lineHeight;
+        //    grp.DrawString(text, this.Font, SystemBrushes.WindowText, new Rectangle(leftTop, s), _DefFormat);
+        //    s = s.Addition(new Size(leftTop));
+        //    s.Height -= lineHeight;
+        //    return s;
+        //}
         #endregion
 
         #region Private Method : Size DrawAnsiCsiSgrText(Graphics grp, string sgrText)
         private Size DrawAnsiCsiSgrText(Graphics grp, string sgrText)
         {
-            Point leftTop = Canvas_Padding.LeftTop();
+            _CanvasMaxWidth = 0;
 
-            // 繪製圖示
-            if (_Icon != null)
-                grp.DrawImage(_Icon.ToBitmap(), new Rectangle(leftTop, IconSize));
-
+            PointF loc = PointF.Empty;
             Brush bFore = SystemBrushes.ControlText;
             Brush bBack = SystemBrushes.Window;
             Font fText = this.Font;
-
-            MatchCollection mc = Regex.Matches(sgrText, "\x1B\\[(\\d+)*;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?m", RegexOptions.Multiline);
-            PointF loc = _TextArea.Location;
             int idx = 0;
             SizeF f1 = SizeF.Empty, f2 = SizeF.Empty, f3 = SizeF.Empty;
             string txt = string.Empty, tmp = string.Empty, st = string.Empty;
             SizeF lastSize = SizeF.Empty;
             List<string> line = new List<string>();
-            float lineHeight = grp.MeasureString("@", fText, loc, _DefFormat).Height;
+            // 繪製圖示
+            if (_MsgIcon != MessageBoxIcon.None)
+            {
+                grp.DrawImage(_Icon.ToBitmap(), new Rectangle(Point.Empty, IconSize));
+                _CanvasMaxWidth = IconSize.Width + btn1.Margin.Left;
+                loc.X += IconSize.Width + btn1.Margin.Left;
+            }
+
+            MatchCollection mc = Regex.Matches(sgrText, "\x1B\\[(\\d+)*;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?m", RegexOptions.Multiline);
+            float lineHeight = grp.MeasureString("@", fText, Point.Empty, _DefFormat).Height;
             bool colorReverse = false;
             foreach (Match m in mc)
             {
@@ -443,6 +430,7 @@ namespace CJF.Utility.WinKits
                 {
                     txt = sgrText.Substring(idx, m.Index - idx);
                     loc = DrawWrapCsiSgrText(grp, txt, fText, bFore, bBack, loc);
+                    _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X), _CanvasMaxWidth);
                 }
 
                 #region 設定顏色與字型
@@ -575,23 +563,16 @@ namespace CJF.Utility.WinKits
             {
                 txt = sgrText.Substring(idx, sgrText.Length - idx);
                 loc = DrawWrapCsiSgrText(grp, txt, fText, bFore, bBack, loc);
+                _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X), _CanvasMaxWidth);
             }
 
-            if (loc.Y + lineHeight > _TextArea.Bottom)
-            {
-                _CanvasArea.Height += (int)(loc.Y + lineHeight - _TextArea.Bottom);
-                //int h = flpButtons.Height + _CanvasArea.Height + SystemInformation.Border3DSize.Height + SystemInformation.CaptionHeight + Canvas_Padding.Vertical;
-                //if (h > this.Height)
-                //    this.Height = h;
-            }
             if (!bFore.Equals(SystemBrushes.ControlText))
                 bFore?.Dispose();
             if (!bBack.Equals(SystemBrushes.Window))
                 bBack?.Dispose();
             if (!fText.Equals(this.Font))
                 fText?.Dispose();
-
-            return _CanvasArea;
+            return new Size(_CanvasMaxWidth, (int)Math.Ceiling(loc.Y + lineHeight));
         }
         #endregion
 
@@ -599,19 +580,22 @@ namespace CJF.Utility.WinKits
         private PointF DrawWrapCsiSgrText(Graphics g, string txt, Font font, Brush bFore, Brush bBack, PointF loc)
         {
             int idx = 0;
-            SizeF lastSize, f1, f2;
+            SizeF f1 = Size.Empty, f2 = Size.Empty;
             string tmp, st = string.Empty;
             MatchCollection mc;
             RectangleF tRect;
             PointF backOffset = new PointF(0, 0);
             string[] lines = null;
-            float lineHeight = g.MeasureString("@", font, loc, _DefFormat).Height;
-            txt = txt.Replace("\r\n", "\n");
+            float lineHeight = g.MeasureString("@", font, Point.Empty, _DefFormat).Height;
+            txt = txt.Replace("\r\n", "\n").Replace("\r", "\n");
+            float left = 0;
+            if (_MsgIcon != MessageBoxIcon.None)
+                left = IconSize.Width + btn1.Margin.Left;
 
             #region 處理行首的換行符號
             while (txt.StartsWith("\n"))
             {
-                loc.X = _TextArea.Left;
+                loc.X = left;
                 loc.Y += lineHeight;
                 txt = txt.Substring(1);
             }
@@ -625,15 +609,16 @@ namespace CJF.Utility.WinKits
                 {
                     if (string.IsNullOrEmpty(lines[i]))
                     {
-                        loc.X = _TextArea.Left;
+                        loc.X = left;
                         loc.Y += lineHeight;
                     }
                     else
                     {
                         loc = DrawWrapCsiSgrText(g, lines[i], font, bFore, bBack, loc);
-                        if (i < lines.Length - 1)
+                        _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X), _CanvasMaxWidth);
+                        if (i < lines.Length - 1 && !string.IsNullOrEmpty(lines[i + 1]))
                         {
-                            loc.X = _TextArea.Left;
+                            loc.X = left;
                             loc.Y += lineHeight;
                         }
                     }
@@ -643,9 +628,9 @@ namespace CJF.Utility.WinKits
             else
             {
                 #region 處理單行文字
-                lastSize = new SizeF(_TextArea.Width + _TextArea.Left - loc.X, 0);  // 右邊剩下的空間
+                // 右邊剩下的空間 : _MaxTextWidth - loc.X
                 f1 = g.MeasureString(txt, font, loc, _DefFormat);
-                if (lastSize.Width >= f1.Width)
+                if (_MaxTextWidth - loc.X > f1.Width)
                 {
                     #region 文字需要的大小，小於等於剩餘空間
                     tRect = new RectangleF(loc, f1);
@@ -653,6 +638,7 @@ namespace CJF.Utility.WinKits
                     g.FillRectangle(bBack, tRect);
                     g.DrawString(txt, font, bFore, loc, _DefFormat);
                     loc.X += f1.Width;
+                    _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X), _CanvasMaxWidth);
                     #endregion
                 }
                 else
@@ -671,7 +657,7 @@ namespace CJF.Utility.WinKits
                             {
                                 st = txt.Substring(idx, mm.Index - idx);
                                 f2 = g.MeasureString(tmp + st, font, PointF.Empty, _DefFormat);
-                                if (f2.Width + loc.X > _TextArea.Right)
+                                if (f2.Width + loc.X > _MaxTextWidth)
                                 {
                                     // 加上字串會超過右限，先繪製之前的字串
                                     f2 = g.MeasureString(tmp, font, PointF.Empty, _DefFormat);
@@ -679,7 +665,8 @@ namespace CJF.Utility.WinKits
                                     tRect.Offset(backOffset);
                                     g.FillRectangle(bBack, tRect);
                                     g.DrawString(tmp, font, bFore, loc, _DefFormat);
-                                    loc.X = _TextArea.Left;
+                                    _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X + f2.Width), _CanvasMaxWidth);
+                                    loc.X = left;
                                     loc.Y += lineHeight;
                                     tmp = st;
                                 }
@@ -691,7 +678,7 @@ namespace CJF.Utility.WinKits
 
                             #region 檢查加上符號時，是否會超過範圍
                             f2 = g.MeasureString(tmp + mm.Value, font, PointF.Empty, _DefFormat);
-                            if (f2.Width + loc.X > _TextArea.Right)
+                            if (f2.Width + loc.X > _MaxTextWidth)
                             {
                                 // 加上字串會超過右限，先繪製之前的字串
                                 f2 = g.MeasureString(tmp, font, PointF.Empty, _DefFormat);
@@ -699,7 +686,8 @@ namespace CJF.Utility.WinKits
                                 tRect.Offset(backOffset);
                                 g.FillRectangle(bBack, tRect);
                                 g.DrawString(tmp, font, bFore, loc, _DefFormat);
-                                loc.X = _TextArea.Left;
+                                _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X + f2.Width), _CanvasMaxWidth);
+                                loc.X = left;
                                 loc.Y += lineHeight;
                                 if (!mm.Value.Equals(" "))
                                     tmp = mm.Value;
@@ -712,44 +700,64 @@ namespace CJF.Utility.WinKits
                             #endregion
                         }
                         if (!string.IsNullOrEmpty(tmp))
+                        {
                             loc = DrawWrapCsiSgrText(g, tmp, font, bFore, bBack, loc);
-
+                            _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X), _CanvasMaxWidth);
+                        }
                         #region 剩下的字串
                         if (idx < txt.Length)
                         {
                             st = txt.Substring(idx, txt.Length - idx);
                             loc = DrawWrapCsiSgrText(g, st, font, bFore, bBack, loc);
+                            _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X), _CanvasMaxWidth);
                         }
                         #endregion
                         #endregion
                     }
                     else
                     {
-                        #region 處理不含符號的字串
-                        for (int i = 0; i < txt.Length; i++)
+                        #region 處理不含符號的字串，即單純的文字
+                        f1 = g.MeasureString(txt, font, loc, _DefFormat);
+                        if ((Regex.IsMatch(txt, "^[A-Za-z]+$") || Regex.IsMatch(txt, "^[0-9]+$")) && (f1.Width + loc.X < _MaxTextWidth))
                         {
-                            f1 = g.MeasureString(txt.Substring(idx, i + 1 - idx), font, loc, _DefFormat);
-                            if (f1.Width + loc.X > _TextArea.Right)
-                            {
-                                f1 = g.MeasureString(txt.Substring(idx, i - idx), font, loc, _DefFormat);
-                                tRect = new RectangleF(loc, f1);
-                                tRect.Offset(backOffset);
-                                g.FillRectangle(bBack, tRect);
-                                g.DrawString(txt.Substring(idx, i - idx), font, bFore, loc, _DefFormat);
-                                loc.X = _TextArea.Left;
-                                loc.Y += lineHeight;
-                                idx = i;
-                            }
-                        }
-                        if (idx != txt.Length - 1)
-                        {
-                            f1 = g.MeasureString(txt.Substring(idx), font, loc, _DefFormat);
+                            // 純英文字串或純數字字串且長度小於剩餘空間
+                            f1 = g.MeasureString(txt, font, loc, _DefFormat);
                             tRect = new RectangleF(loc, f1);
                             tRect.Offset(backOffset);
                             g.FillRectangle(bBack, tRect);
-                            g.DrawString(txt.Substring(idx), font, bFore, loc, _DefFormat);
-                            //loc.X += g.MeasureString(txt.Substring(idx), font, loc, _DefFormat).Width;
+                            g.DrawString(txt, font, bFore, loc, _DefFormat);
+                            _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X + f1.Width), _CanvasMaxWidth);
                             loc.X += f1.Width;
+                        }
+                        else
+                        {
+                            // 非純英數字或超長純英數字
+                            for (int i = 0; i < txt.Length; i++)
+                            {
+                                f1 = g.MeasureString(txt.Substring(idx, i + 1 - idx), font, loc, _DefFormat);
+                                if (f1.Width + loc.X > _MaxTextWidth)
+                                {
+                                    f1 = g.MeasureString(txt.Substring(idx, i - idx), font, loc, _DefFormat);
+                                    tRect = new RectangleF(loc, f1);
+                                    tRect.Offset(backOffset);
+                                    g.FillRectangle(bBack, tRect);
+                                    g.DrawString(txt.Substring(idx, i - idx), font, bFore, loc, _DefFormat);
+                                    _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X + f1.Width), _CanvasMaxWidth);
+                                    loc.X = left;
+                                    loc.Y += lineHeight;
+                                    idx = i;
+                                }
+                            }
+                            if (idx <= txt.Length - 1)
+                            {
+                                f1 = g.MeasureString(txt.Substring(idx), font, loc, _DefFormat);
+                                tRect = new RectangleF(loc, f1);
+                                tRect.Offset(backOffset);
+                                g.FillRectangle(bBack, tRect);
+                                g.DrawString(txt.Substring(idx), font, bFore, loc, _DefFormat);
+                                loc.X += f1.Width;
+                                _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X), _CanvasMaxWidth);
+                            }
                         }
                         #endregion
                     }
@@ -843,11 +851,11 @@ namespace CJF.Utility.WinKits
                 _Buffer?.Dispose();
                 _Icon?.Dispose();
                 _DefFormat?.Dispose();
-                components.Dispose();
                 btn1?.Dispose();
                 btn2?.Dispose();
                 btn3?.Dispose();
                 flpButtons?.Dispose();
+                components.Dispose();
             }
             base.Dispose(disposing);
         }
