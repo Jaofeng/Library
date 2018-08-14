@@ -6,7 +6,7 @@ using System.Text.RegularExpressions;
 namespace CJF.Utility.Ansi
 {
 	/// <summary>提供協助 TelnetServer 輸出 ANSI 相關控制碼</summary>
-	[Obsolete("請改用 CJF.Utility.Ansi.CsiBuilder", false)]
+	[Obsolete("請改用 CJF.Utility.Ansi.CsiBuilder", true)]
 	public static class AnsiString
 	{
 		#region Private Varaibles
