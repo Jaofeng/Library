@@ -47,6 +47,10 @@ namespace CJF.Utility
         public static string FromUser { get; set; } = string.Empty;
         /// <summary>設定或取得寄件者於內送伺服器的密碼。</summary>
         public static string FromPWD { get; set; } = string.Empty;
+        /// <summary>設定或取得信件內容編碼格式。。</summary>
+        public static Encoding MailEncoding { get; set; } = Encoding.UTF8;
+        /// <summary>設定或取得信件內容是否使用 HTML 格式。。</summary>
+        public static bool UseHTML { get; set; } = false;
         #endregion
 
         #region LogManager Static Methods
@@ -247,7 +251,7 @@ namespace CJF.Utility
 				if (sendMail)
 				{
 					string content = GetExceptionLogString(sessionKey, ex);
-					System.Threading.Tasks.Task.Factory.StartNew(o => SendMail("Exception Notice", o.ToString(), null, false), content);
+					System.Threading.Tasks.Task.Factory.StartNew(() => SendMail("Exception Notice", content, false));
 				}
 			}
 			catch (Exception nex)
@@ -344,12 +348,12 @@ namespace CJF.Utility
 		#endregion
 
 		#region Public Static Method : void SendMail(string subject, string content, Encoding enc, bool useHtml)
-		/// <summary>寄發郵件，發送者、對象與伺服器設定直接來自App.Config</summary>
+		/// <summary>寄發郵件，發送者、對象與伺服器設定直接來自 App.Config 或 LogManager 的靜態屬性(Static Properties)。</summary>
 		/// <param name="subject">信件主旨</param>
 		/// <param name="content">信件內容</param>
-		/// <param name="enc">編碼</param>
-		/// <param name="useHtml">是否使用HTML格式</param>
-		public static void SendMail(string subject, string content, Encoding enc, bool useHtml)
+        /// <param name="throwError">錯誤時，是否直接往外丟出錯誤。</param>
+        /// <param name="attachments">附件檔案。</param>
+		public static void SendMail(string subject, string content, bool throwError, params string[] attachments)
 		{
 			NameValueCollection nvc = ConfigurationManager.AppSettings;
 			string mailServer = string.IsNullOrEmpty(MailServer) ? nvc["MailServer"] : MailServer;
@@ -365,17 +369,19 @@ namespace CJF.Utility
 				return;
             string userName = string.IsNullOrEmpty(FromUser) ? nvc["FromUser"] : FromUser;
 			string pwd = string.IsNullOrEmpty(FromPWD) ? nvc["FromPWD"] : FromPWD;
-			if (enc == null) enc = Encoding.UTF8;
+			if (MailEncoding == null) MailEncoding = Encoding.UTF8;
 			try
 			{
 				MailMessage mail = new MailMessage();	// MailMessage(寄信者, 收信者)
 				mail.From = new MailAddress(mailFrom);
 				foreach (string s in mailTo)
 					mail.To.Add(s);
-				mail.IsBodyHtml = useHtml;
-				mail.BodyEncoding = enc;		// E-mail編碼
+				mail.IsBodyHtml = UseHTML;
+			    mail.BodyEncoding = MailEncoding;		// E-mail編碼
     			mail.Subject = string.IsNullOrEmpty(subject) ? mailSubject : subject;			// E-mail主旨
 				mail.Body = content;			// E-mail內容
+                foreach (string f in attachments)
+                    mail.Attachments.Add(new Attachment(f));
 				if (mailServer.IndexOf(':') != -1)
 				{
 					mailPort = Convert.ToInt32(mailServer.Split(':')[1]);
@@ -388,6 +394,8 @@ namespace CJF.Utility
 			}
 			catch (Exception ex)
 			{
+                if (throwError)
+                    throw;
 				LogException("Mail", ex, false);
 			}
 		}
