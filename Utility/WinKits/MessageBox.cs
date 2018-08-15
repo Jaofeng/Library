@@ -144,6 +144,10 @@ namespace CJF.Utility.WinKits
                 }
                 _Buffer = bitmap.Clone(new Rectangle(Point.Empty, res), System.Drawing.Imaging.PixelFormat.Format24bppRgb);
             }
+            if (_MsgIcon != MessageBoxIcon.None)
+            {
+                res.Height = Math.Max(res.Height, _Icon.Height);
+            }
             _TextSize = res;
             #endregion
         }
@@ -418,6 +422,12 @@ namespace CJF.Utility.WinKits
                 grp.DrawImage(_Icon.ToBitmap(), new Rectangle(Point.Empty, IconSize));
                 _CanvasMaxWidth = IconSize.Width + btn1.Margin.Left;
                 loc.X += IconSize.Width + btn1.Margin.Left;
+                txt = CsiBuilder.GetPureText(sgrText);
+                int h = grp.MeasureString(txt, fText, _MaxTextWidth, _DefFormat).ToSize().Height;
+                if (IconSize.Height > h)
+                {
+                    loc.Y = (IconSize.Height - h) / 2;
+                }
             }
 
             MatchCollection mc = Regex.Matches(sgrText, "\x1B\\[(\\d+)*;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?;?(\\d+)?m", RegexOptions.Multiline);
@@ -572,7 +582,12 @@ namespace CJF.Utility.WinKits
                 bBack?.Dispose();
             if (!fText.Equals(this.Font))
                 fText?.Dispose();
-            return new Size(_CanvasMaxWidth, (int)Math.Ceiling(loc.Y + lineHeight));
+            int lastHeight = (int)Math.Ceiling(loc.Y + lineHeight);
+            if (_MsgIcon != MessageBoxIcon.None)
+            {
+                lastHeight = Math.Max(lastHeight, IconSize.Height);
+            }
+            return new Size(_CanvasMaxWidth, lastHeight);
         }
         #endregion
 
