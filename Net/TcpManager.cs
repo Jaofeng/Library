@@ -500,5 +500,221 @@ namespace CJF.Net
 		}
 		#endregion
 	}
-	#endregion
+    #endregion
+
+
+    /*
+     * 封包解析程式碼來源取自: Raison D'etre Blog(https://dotblogs.com.tw/ireullin/1) 的文章：
+     * * 攔截網路卡封包並且對封包內容進行分析 Part 1(https://dotblogs.com.tw/ireullin/2010/07/08/16464) 與
+     * * 攔截網路卡封包並且對封包內容進行分析 Part 2(https://dotblogs.com.tw/ireullin/2010/07/08/16487)
+     * TCP/IP 與 Internet 網路說明:
+     * http://www.tsnien.idv.tw/Network_WebBook/chap13/13-3%20IP%20%E9%80%9A%E8%A8%8A%E5%8D%94%E5%AE%9A.html
+     */
+    /// <summary>封包解析類別。
+    /// </summary>
+    public class SocketMonitor
+    {
+        private const int IOC_VENDOR = 0x18000000;
+        private const int IOC_IN = -2147483648;
+        private const int SIO_RCVALL = IOC_IN | IOC_VENDOR | 1;
+
+        private readonly IPAddress _IP;
+
+        private Queue<AnalyzePackage> _qPackage;
+        private Socket _mSocket;
+        private AnalyzePackage _mPackage;
+        private AnalyzePackage _mGetPackage;
+        private byte[] _byBuff;
+
+        #region Public Construct Methods
+        /// <summary>建立新的 CJF.Net.SocketMonitor 執行個體。</summary>
+        /// <param name="ip">欲監視的網路位址。</param>
+        public SocketMonitor(string ip) : this(IPAddress.Parse(ip)) { }
+        /// <summary>建立新的 CJF.Net.SocketMonitor 執行個體。</summary>
+        /// <param name="ip">欲監視的網路位址。</param>
+        public SocketMonitor(IPAddress ip)
+        {
+            _IP = ip;
+            _qPackage = new Queue<AnalyzePackage>(500);
+            _byBuff = new byte[1024];
+            _mSocket = new Socket(AddressFamily.InterNetwork, SocketType.Raw, ProtocolType.IP);
+            _mSocket.Bind(new IPEndPoint(_IP, 0)); // 0 will be listening all of ports.
+            _mSocket.IOControl(SIO_RCVALL, BitConverter.GetBytes((int)1), null);
+            this.BeginReceive();
+        }
+        #endregion
+
+        #region Private Method : void BeginReceive()
+        /// <summary>開始傾聽通訊埠。</summary>
+        private void BeginReceive()
+        {
+            _mSocket.BeginReceive(_byBuff, 0, _byBuff.Length, SocketFlags.None, new AsyncCallback(OnReceive), null);
+        }
+        #endregion
+
+        #region Private Method : void OnReceive(IAsyncResult SyncData)
+        /// <summary>接收到封包資料。</summary>
+        /// <param name="SyncData">非同步接收的資料。</param>
+        private void OnReceive(IAsyncResult SyncData)
+        {
+            // get data length
+            int iRecvLen_ = _mSocket.EndReceive(SyncData);
+            _mPackage = new AnalyzePackage(_byBuff, iRecvLen_);
+            lock (_qPackage)
+            {
+                _qPackage.Enqueue(_mPackage);
+            }
+            this.BeginReceive();
+        }
+        #endregion
+
+        #region Public Method : AnalyzePackage GetPackage()
+        /// <summary>自緩緩衝暫存區中取得已拆解完畢的封包資料。</summary>
+        /// <returns>已拆解完畢的封包資料。</returns>
+        public AnalyzePackage GetPackage()
+        {
+            _mGetPackage = null;
+            lock (_qPackage)
+            {
+                if (_qPackage.Count != 0)
+                    _mGetPackage = _qPackage.Dequeue();
+            }
+            return _mGetPackage;
+        }
+        #endregion
+
+        #region Public Property : int PackageCount(R)
+        /// <summary>取得緩衝暫存區中的封包數量。</summary>
+        public int PackageCount { get => _qPackage.Count; }
+        #endregion
+    }
+
+    #region Public Class : AnalyzePackage
+    /// <summary>CJF.Net.AnalyzePackage 類別，用以解析封包檔頭內容。</summary>
+    public class AnalyzePackage
+    {
+        private readonly int _HeaderLength;
+        private readonly int _Version;
+
+        /// <summary>取得通訊協定類型。</summary>
+        public ProtocolTypes Protocol { get; private set; }
+        /// <summary>取得目的通訊埠號。</summary>
+        public int DesPort { get; private set; }
+        /// <summary>取得來源通訊埠號。</summary>
+        public int SrcPort { get; private set; }
+        /// <summary>取得目的網路位址。</summary>
+        public IPAddress DesIP { get; private set; }
+        /// <summary>取得來源網路位址。</summary>
+        public IPAddress SrcIP { get; private set; }
+        /// <summary>取得封包內容。</summary>
+        public TcpPackage Package { get; private set; }
+
+        /// <summary>建立新的 CJF.Net.AnalyzePackage 類別執行個體，用以解析封包檔頭內容。</summary>
+        /// <param name="byData">欲解析的封包內容。</param>
+        /// <param name="iLength">封包長度。</param>
+        public AnalyzePackage(byte[] byData, int iLength)
+        {
+            byte[] byData_ = new byte[iLength];
+            Array.Copy(byData, 0, byData_, 0, iLength);
+            //  get Header length
+            _Version = (byData_[0] & 0xF0) >> 4;
+            _HeaderLength = (byData_[0] & 0x0F) * 4 /* sizeof(int) */;
+            // get protocol
+            if (Enum.IsDefined(typeof(ProtocolTypes), (int)byData_[9]))
+                Protocol = (ProtocolTypes)byData_[9];
+            else
+                Protocol = ProtocolTypes.Other;
+            // get ip
+            byte[] byIP_ = new byte[4];
+            Array.Copy(byData_, 12, byIP_, 0, 4);
+            SrcIP = new IPAddress(byIP_);
+            Array.Copy(byData_, 16, byIP_, 0, 4);
+            DesIP = new IPAddress(byIP_);
+            // get port
+            SrcPort = byData_[_HeaderLength] * 256 + byData_[_HeaderLength + 1];
+            DesPort = byData_[_HeaderLength + 2] * 256 + byData_[_HeaderLength + 3];
+            if (Protocol == ProtocolTypes.Tcp)
+            {
+                byte[] byTcp_ = new byte[byData_.Length - _HeaderLength];
+                Array.Copy(byData_, _HeaderLength, byTcp_, 0, byTcp_.Length);
+                Package = new TcpPackage(byTcp_);
+            }
+            else
+            {
+                Package = null;
+            }
+        }
+    }
+    #endregion
+
+    #region Public Enum : ProtocolTypes
+    /*
+     * From : https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xml
+     */
+    /// <summary>通訊格式列舉。</summary>
+    public enum ProtocolTypes
+    {
+        /// <summary>ICMP，Internet Control Message Protocol</summary>
+        Icmp = 1,
+        /// <summary>IGMP，Internet Group Management Protocol</summary>
+        Igmp = 2,
+        /// <summary>GGP，Gateway to Gateway Protocol</summary>
+        Ggp = 3,
+        /// <summary>IP，IP in IP encapsulation</summary>
+        IP = 4,
+        /// <summary>TCP，Transmission Control Protocol</summary>
+        Tcp = 6,
+        /// <summary>EGP，Transmission Control Protocol</summary>
+        Egp = 8,
+        /// <summary>IGP，Interior Gateway Protocol</summary>
+        Igp = 9,
+        /// <summary>UDP，User Datagram Protocol</summary>
+        Udp = 17,
+        /// <summary>其他未定義的協定。</summary>
+        Other = -1
+    }
+    #endregion
+
+    #region Public Class : TcpPackage
+    /// <summary>TCP/IP 封包內容類別。</summary>
+    public class TcpPackage
+    {
+        /// <summary>取得發送此 IP 封包的來源位址。</summary>
+        public ushort SourcePort { get; private set; }
+        /// <summary>取得目的主機之位址。</summary>
+        public ushort DestPort { get; private set; }
+        /// <summary></summary>
+        public uint SeqNum { get; private set; }
+        /// <summary></summary>
+        public uint AckNum { get; private set; }
+        /// <summary></summary>
+        public ushort Windows { get; private set; }
+        /// <summary></summary>
+        public ushort Shecksum { get; private set; }
+        /// <summary></summary>
+        public ushort UrgentPoint { get; private set; }
+        /// <summary></summary>
+        public byte[] ApplicationData { get; private set; }
+
+        /// <summary>建立新的 CJF.Net.TcpPackage 類別執行個體，用以存放 TCP/IP 封包內容。</summary>
+        /// <param name="byData">去掉檔頭的封包內容。</param>
+        public TcpPackage(byte[] byData)
+        {
+            byte[] byPort_ = new byte[4];
+            Array.Copy(byData, 0, byPort_, 0, 4);
+            Array.Reverse(byPort_);
+
+            SourcePort = BitConverter.ToUInt16(byPort_, 2);
+            DestPort = BitConverter.ToUInt16(byPort_, 0);
+            SeqNum = BitConverter.ToUInt32(byData, 12);
+            AckNum = BitConverter.ToUInt32(byData, 8);
+            Windows = BitConverter.ToUInt16(byData, 4);
+            Shecksum = BitConverter.ToUInt16(byData, 2);
+            UrgentPoint = BitConverter.ToUInt16(byData, 0);
+
+            ApplicationData = new byte[byData.Length - 20];
+            Array.Copy(byData, 20, ApplicationData, 0, byData.Length - 20);
+        }
+    }
+    #endregion
 }
