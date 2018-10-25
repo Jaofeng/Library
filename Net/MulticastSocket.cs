@@ -13,20 +13,14 @@ namespace CJF.Net.Multicast
     [Serializable]
     public class CastReceiver : IDisposable
     {
+
         #region Variables
-        LogManager _log = new LogManager(typeof(CastReceiver));
-        Socket m_Socket;                            // 伺服器 Socket 物件
         SocketAsyncEventArgs m_ReadEventArgs;
         byte[] m_ReceiveBuffer;
         int m_BufferSize = 1024;                        // 緩衝暫存區大小
-        int m_ListenPort = 0;
         long m_ReceiveByteCount = 0;
-        bool m_ServerStarted = false;
         bool m_IsExit = false;
-        bool m_IsDisposed = false;
-        IntPtr m_Handle = IntPtr.Zero;
         IPEndPoint m_LocalEndPoint = null;
-        SocketDebugType m_Debug = SocketDebugType.None;
         Timer _SecondCounter = null;
         /// <summary>效能監視器集合</summary>
         Dictionary<ServerCounterType, PerformanceCounter> m_Counters = null;
@@ -49,30 +43,41 @@ namespace CJF.Net.Multicast
         #region Construct Method : CastReceiver(int listenPort)
         /// <summary>建立新的 CastReceiver 類別，並初始化相關屬性值</summary>
         /// <param name="listenPort">傾聽的通訊埠號</param>
-        public CastReceiver(int listenPort) : this(new IPEndPoint(IPAddress.Any, listenPort)) { }
+        public CastReceiver(int listenPort) : this(new IPEndPoint(IPAddress.Any, listenPort), false) { }
         #endregion
 
         #region Construct Method : CastReceiver(IPEndPoint localPort)
         /// <summary>建立新的 CastReceiver 類別，並初始化相關屬性值</summary>
         /// <param name="localPort">傾聽的通訊埠</param>
-        public CastReceiver(IPEndPoint localPort)
+        public CastReceiver(IPEndPoint localPort) : this(localPort, false) { }
+        #endregion
+
+        #region Construct Method : CastReceiver(IPEndPoint localPort, bool reuse)
+        /// <summary>建立新的 CastReceiver 類別，並初始化相關屬性值</summary>
+        /// <param name="localPort">傾聽的通訊埠</param>
+        /// <param name="reuse">是否可重複繫結。</param>
+        public CastReceiver(IPEndPoint localPort, bool reuse)
         {
             m_IsExit = false;
             m_Counters = new Dictionary<ServerCounterType, PerformanceCounter>();
-            m_ServerStarted = false;
+            IsStarted = false;
             CommonSettings();
             SetCounterDictionary();
-            m_ListenPort = localPort.Port;
+            ListenPort = localPort.Port;
             m_JoinedGroups = new List<MulticastOption>();
-            m_Socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-            m_Handle = m_Socket.Handle;
-            m_Socket.ReceiveBufferSize = m_BufferSize;
-            m_Socket.SendBufferSize = m_BufferSize;
+            Socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+            if (reuse)
+                Socket.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
+            Handle = Socket.Handle;
+            Socket.ReceiveBufferSize = m_BufferSize;
+            Socket.SendBufferSize = m_BufferSize;
             m_LocalEndPoint = localPort;
             m_ReceiveBuffer = new byte[m_BufferSize];
-            m_ReadEventArgs = new SocketAsyncEventArgs();
-            m_ReadEventArgs.UserToken = new AsyncUserToken(m_Socket, m_BufferSize);
-            m_ReadEventArgs.RemoteEndPoint = m_LocalEndPoint;
+            m_ReadEventArgs = new SocketAsyncEventArgs()
+            {
+                UserToken = new AsyncUserToken(Socket, m_BufferSize),
+                RemoteEndPoint = m_LocalEndPoint
+            };
             m_ReadEventArgs.Completed += new EventHandler<SocketAsyncEventArgs>(IO_Completed);
             m_ReadEventArgs.SetBuffer(m_ReceiveBuffer, 0, m_ReceiveBuffer.Length);
         }
@@ -149,19 +154,19 @@ namespace CJF.Net.Multicast
         public void Start()
         {
             // 設定 Multicast 相關參數
-            m_Socket.Bind(m_LocalEndPoint);
+            Socket.Bind(m_LocalEndPoint);
             if (m_JoinedGroups.Count == 0)
                 throw new ArgumentOutOfRangeException("JoinedGroup", "請先設定欲加入的群組");
             foreach (MulticastOption mo in m_JoinedGroups)
-                m_Socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, mo);
+                Socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.AddMembership, mo);
             m_IsExit = false;
-            m_ServerStarted = true;
+            IsStarted = true;
 
             #region 產生事件 - Started
-            OnStarted(m_Handle, m_LocalEndPoint);
+            OnStarted(Handle, m_LocalEndPoint);
             #endregion
 
-            if (!m_Socket.ReceiveFromAsync(m_ReadEventArgs))
+            if (!Socket.ReceiveFromAsync(m_ReadEventArgs))
                 this.ProcessReceive(m_ReadEventArgs);
         }
         #endregion
@@ -170,61 +175,35 @@ namespace CJF.Net.Multicast
         /// <summary>關閉伺服器</summary>
         public void Shutdown()
         {
-            if (m_IsDisposed || m_IsExit) return;
+            if (IsDisposed || m_IsExit) return;
             m_IsExit = true;
 
-            if (m_Socket != null)
+            if (Socket != null)
             {
                 try
                 {
                     foreach (MulticastOption mo in m_JoinedGroups)
-                        m_Socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.DropMembership, mo);
+                        Socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.DropMembership, mo);
                 }
                 catch { }
-                try
-                {
-                    if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                    {
-                        Console.WriteLine("[{0}]Socket : Before Shutdown In CastReceiver.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
-                        _log.Write(LogManager.LogLevel.Debug, "Before Shutdown In CastReceiver.Shutdown");
-                    }
-                    m_Socket.Shutdown(SocketShutdown.Both);
-                    if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                    {
-                        Console.WriteLine("[{0}]Socket : After Shutdown In CastReceiver.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
-                        _log.Write(LogManager.LogLevel.Debug, "After Shutdown In CastReceiver.Shutdown");
-                    }
-                }
+                try { Socket.Shutdown(SocketShutdown.Both); }
                 catch { }
-                finally
-                {
-                    if (m_Debug.HasFlag(SocketDebugType.Close))
-                    {
-                        Console.WriteLine("[{0}]Socket : Before Close In CastReceiver.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
-                        _log.Write(LogManager.LogLevel.Debug, "Before Close In CastReceiver.Shutdown");
-                    }
-                    m_Socket.Close();
-                    if (m_Debug.HasFlag(SocketDebugType.Close))
-                    {
-                        Console.WriteLine("[{0}]Socket : After Close In CastReceiver.Shutdown", DateTime.Now.ToString("HH:mm:ss.fff"));
-                        _log.Write(LogManager.LogLevel.Debug, "After Close In CastReceiver.Shutdown");
-                    }
-                }
+                finally { Socket.Close(); }
             }
-            m_Socket = null;
-            m_ServerStarted = false;
+            Socket = null;
+            IsStarted = false;
 
             #region 產生事件 - Shutdown
-            OnShutdowned(m_Handle, this.LocalEndPort);
+            OnShutdowned(Handle, this.LocalEndPort);
             #endregion
         }
         #endregion
 
         #region Properties
         /// <summary>取得伺服器連線物件</summary>
-        public Socket Socket { get { return m_Socket; } }
+        public Socket Socket { get; private set; }
         /// <summary>取得傾聽的通訊埠號</summary>
-        public int ListenPort { get { return m_ListenPort; } }
+        public int ListenPort { get; } = 0;
         /// <summary>取得已加入的群組</summary>
         public MulticastOption[] JoinedGroups { get { return m_JoinedGroups.ToArray(); } }
         /// <summary>取得緩衝區最大值</summary>
@@ -234,33 +213,23 @@ namespace CJF.Net.Multicast
             set
             {
                 m_BufferSize = value;
-                if (m_Socket != null)
+                if (Socket != null)
                 {
-                    m_Socket.ReceiveBufferSize = m_BufferSize;
-                    m_Socket.SendBufferSize = m_BufferSize;
+                    Socket.ReceiveBufferSize = m_BufferSize;
+                    Socket.SendBufferSize = m_BufferSize;
                 }
             }
         }
         /// <summary>取得 Socket 的控制代碼</summary>
-        public IntPtr Handle { get { return m_Handle; } }
+        public IntPtr Handle { get; } = IntPtr.Zero;
         /// <summary>取得本地端通訊埠</summary>
         public EndPoint LocalEndPort { get { return m_LocalEndPoint; } }
         /// <summary>取得值，目前伺服器否啟動中</summary>
-        public bool IsStarted { get { return m_ServerStarted; } }
-        /// <summary>取得或設定是否為除錯模式</summary>
-        public SocketDebugType Debug
-        {
-            get { return m_Debug; }
-            set
-            {
-                if (m_Debug == value) return;
-                m_Debug = value;
-            }
-        }
+        public bool IsStarted { get; private set; } = false;
         /// <summary>取得每一秒的接收量，單位:位元組</summary>
         public long ReceiveSpeed { get { return Interlocked.Read(ref m_ReceiveByteCount); } }
         /// <summary>取得值，是否已Disposed</summary>
-        public bool IsDisposed { get { return m_IsDisposed; } }
+        public bool IsDisposed { get; private set; } = false;
         /// <summary>取得與設定，是否使用非同步方式產生回呼事件</summary>
         public EventCallbackMode UseAsyncCallback { get; set; }
         #endregion
@@ -281,7 +250,7 @@ namespace CJF.Net.Multicast
         #region Private Method : void SecondCounterCallback(object o)
         private void SecondCounterCallback(object o)
         {
-            if (m_IsDisposed) return;
+            if (IsDisposed) return;
             long rBytes = Interlocked.Read(ref m_ReceiveByteCount);
             Interlocked.Exchange(ref m_ReceiveByteCount, 0);
 
@@ -319,11 +288,6 @@ namespace CJF.Net.Multicast
         {
             if (e.BytesTransferred > 0)
             {
-                if (m_Debug.HasFlag(SocketDebugType.Receive))
-                {
-                    Console.WriteLine("[{0}]Socket : Exec ReceiveAsync In CastReceiver.ProcessReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
-                    _log.Write(LogManager.LogLevel.Debug, "Exec ReceiveAsync In CastReceiver.ProcessReceive");
-                }
                 if (e.SocketError == SocketError.Success)
                 {
                     if (e.UserToken == null) return;
@@ -350,32 +314,17 @@ namespace CJF.Net.Multicast
                     #region 產生事件 - DataReceived
                     if (rec.Count != 0)
                     {
-                        AsyncUdpEventArgs auea = new AsyncUdpEventArgs(s.Handle, s.LocalEndPoint, e.RemoteEndPoint, rec.ToArray());
-                        OnDataReceived(auea);
+                        OnDataReceived(new AsyncUdpEventArgs(s.Handle, s.LocalEndPoint, e.RemoteEndPoint, rec.ToArray()));
                     }
                     #endregion
 
-                    if (m_Debug.HasFlag(SocketDebugType.Receive))
-                    {
-                        Console.WriteLine("[{0}]Socket : Before ReceiveAsync In CastReceiver.ProcessReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
-                        _log.Write(LogManager.LogLevel.Debug, "Before ReceiveAsync In CastReceiver.ProcessReceive");
-                    }
                     try
                     {
                         if (!s.ReceiveFromAsync(e)) // 讀取下一個由客戶端傳送的封包
                             this.ProcessReceive(e);
                     }
                     catch (ObjectDisposedException) { }
-                    catch (Exception ex)
-                    {
-                        _log.Write(LogManager.LogLevel.Debug, "From:CastReceiver.ProcessReceive");
-                        _log.WriteException(ex);
-                    }
-                    if (m_Debug.HasFlag(SocketDebugType.Receive))
-                    {
-                        Console.WriteLine("[{0}]Socket : After ReceiveAsync In CastReceiver.ProcessReceive", DateTime.Now.ToString("HH:mm:ss.fff"));
-                        _log.Write(LogManager.LogLevel.Debug, "After ReceiveAsync In CastReceiver.ProcessReceive");
-                    }
+                    catch (Exception ex) { Debug.Print(ex.Message); }
                 }
                 else
                     this.ProcessError(e);
@@ -400,26 +349,16 @@ namespace CJF.Net.Multicast
                     localEp = s.LocalEndPoint;
                     remoteEp = s.RemoteEndPoint;
                     handle = s.Handle;
-                    if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                    {
-                        Console.WriteLine("[{0}]Socket : Before Shutdown In CastReceiver.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
-                        _log.Write(LogManager.LogLevel.Debug, "Before Shutdown In CastReceiver.ProcessError");
-                    }
                     s.Shutdown(SocketShutdown.Both);
-                    if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                    {
-                        Console.WriteLine("[{0}]Socket : After Shutdown In CastReceiver.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
-                        _log.Write(LogManager.LogLevel.Debug, "After Shutdown In CastReceiver.ProcessError");
-                    }
                 }
                 catch (Exception) { }   // 如果客戶端已關閉則不處理
                 finally { }
             }
             else
             {
-                localEp = m_Socket.LocalEndPoint;
-                remoteEp = m_Socket.RemoteEndPoint;
-                handle = m_Socket.Handle;
+                localEp = Socket.LocalEndPoint;
+                remoteEp = Socket.RemoteEndPoint;
+                handle = Socket.Handle;
             }
 
             #region 產生事件 - OnException
@@ -439,7 +378,7 @@ namespace CJF.Net.Multicast
                 EventThreadVariables etv = (EventThreadVariables)o;
                 etv.InvokeMethod.DynamicInvoke(etv.Args);
             }
-            catch (Exception ex) { _log.WriteException(ex); }
+            catch (Exception ex) { Debug.Print(ex.Message); }
         }
         #endregion
 
@@ -452,58 +391,27 @@ namespace CJF.Net.Multicast
         }
         private void Dispose(bool disposing)
         {
-            if (m_IsDisposed) return;
+            if (IsDisposed) return;
             if (disposing)
             {
                 try
                 {
                     m_Counters.Clear();
                     m_Counters = null;
-                    if (m_Socket == null)
+                    if (Socket != null)
                     {
-                        if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                        {
-                            Console.WriteLine("[{0}]Socket Is Null In CastReceiver.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
-                            _log.Write(LogManager.LogLevel.Debug, "Socket Is Null In CastReceiver.Dispose");
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                            {
-                                Console.WriteLine("[{0}]Socket : Before Shutdown In CastReceiver.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
-                                _log.Write(LogManager.LogLevel.Debug, "Before Shutdown In CastReceiver.Dispose");
-                            }
-                            m_Socket.Shutdown(SocketShutdown.Both);
-                            if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                            {
-                                Console.WriteLine("[{0}]Socket : After Shutdown In CastReceiver.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
-                                _log.Write(LogManager.LogLevel.Debug, "After Shutdown In CastReceiver.Dispose");
-                            }
-                        }
+                        try { Socket.Shutdown(SocketShutdown.Both); }
                         catch { }
                         finally
                         {
-                            if (m_Debug.HasFlag(SocketDebugType.Close))
-                            {
-                                Console.WriteLine("[{0}]Socket : Before Close In CastReceiver.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
-                                _log.Write(LogManager.LogLevel.Debug, "Before Close In CastReceiver.Dispose");
-                            }
-                            m_Socket.Close();
-                            if (m_Debug.HasFlag(SocketDebugType.Close))
-                            {
-                                Console.WriteLine("[{0}]Socket : After Close In CastReceiver.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
-                                _log.Write(LogManager.LogLevel.Debug, "After Close In CastReceiver.Dispose");
-                            }
-                            m_Socket = null;
+                            Socket.Close();
+                            Socket = null;
                         }
                     }
                 }
                 catch { }
             }
-            m_IsDisposed = true;
+            IsDisposed = true;
         }
         #endregion
 
@@ -542,22 +450,22 @@ namespace CJF.Net.Multicast
                             foreach (EventHandler<AsyncUdpEventArgs> del in this.Started.GetInvocationList())
                             {
                                 try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
-                        #endregion
+                    #endregion
                     case EventCallbackMode.Invoke:
                         #region 同步作法 - DynamicInvoke
                         {
                             foreach (Delegate del in this.Started.GetInvocationList())
                             {
                                 try { del.DynamicInvoke(this, auea); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
-                        #endregion
+                    #endregion
                     case EventCallbackMode.Thread:
                         #region 建立執行緒 - Thread
                         {
@@ -568,7 +476,7 @@ namespace CJF.Net.Multicast
                                     EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
                                     ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
                                 }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -595,22 +503,22 @@ namespace CJF.Net.Multicast
                             foreach (EventHandler<AsyncUdpEventArgs> del in this.Shutdowned.GetInvocationList())
                             {
                                 try { del.BeginInvoke(this, auea, new AsyncCallback(AsyncUdpEventCallback), del); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
-                        #endregion
+                    #endregion
                     case EventCallbackMode.Invoke:
                         #region 同步作法 - DynamicInvoke
                         {
                             foreach (Delegate del in this.Shutdowned.GetInvocationList())
                             {
                                 try { del.DynamicInvoke(this, auea); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
-                        #endregion
+                    #endregion
                     case EventCallbackMode.Thread:
                         #region 建立執行緒 - Thread
                         {
@@ -621,7 +529,7 @@ namespace CJF.Net.Multicast
                                     EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, auea } };
                                     ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
                                 }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -646,7 +554,7 @@ namespace CJF.Net.Multicast
                             foreach (EventHandler<AsyncUdpEventArgs> del in this.DataReceived.GetInvocationList())
                             {
                                 try { del.BeginInvoke(this, e, new AsyncCallback(AsyncUdpEventCallback), del); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -657,7 +565,7 @@ namespace CJF.Net.Multicast
                             foreach (Delegate del in this.DataReceived.GetInvocationList())
                             {
                                 try { del.DynamicInvoke(this, e); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -672,7 +580,7 @@ namespace CJF.Net.Multicast
                                     EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, e } };
                                     ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
                                 }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -698,7 +606,7 @@ namespace CJF.Net.Multicast
                             foreach (EventHandler<AsyncUdpEventArgs> del in this.Exception.GetInvocationList())
                             {
                                 try { del.BeginInvoke(this, e, new AsyncCallback(AsyncUdpEventCallback), del); }
-                                catch (Exception exx) { _log.WriteException(exx); }
+                                catch (Exception exx) { Debug.Print(exx.Message); }
                             }
                             break;
                         }
@@ -709,7 +617,7 @@ namespace CJF.Net.Multicast
                             foreach (Delegate del in this.Exception.GetInvocationList())
                             {
                                 try { del.DynamicInvoke(this, e); }
-                                catch (Exception exx) { _log.WriteException(exx); }
+                                catch (Exception exx) { Debug.Print(exx.Message); }
                             }
                             break;
                         }
@@ -724,7 +632,7 @@ namespace CJF.Net.Multicast
                                     EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, e } };
                                     ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
                                 }
-                                catch (Exception exx) { _log.WriteException(exx); }
+                                catch (Exception exx) { Debug.Print(exx.Message); }
                             }
                             break;
                         }
@@ -752,7 +660,7 @@ namespace CJF.Net.Multicast
                             foreach (EventHandler<DataTransEventArgs> del in this.CounterChanged.GetInvocationList())
                             {
                                 try { del.BeginInvoke(this, dtea, new AsyncCallback(TransferCounterCallback), del); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -763,7 +671,7 @@ namespace CJF.Net.Multicast
                             foreach (Delegate del in this.CounterChanged.GetInvocationList())
                             {
                                 try { del.DynamicInvoke(this, dtea); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -778,7 +686,7 @@ namespace CJF.Net.Multicast
                                     EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, dtea } };
                                     ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
                                 }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -796,7 +704,6 @@ namespace CJF.Net.Multicast
     public class CastSender : IDisposable
     {
         #region Variables
-        LogManager _log = new LogManager(typeof(CastSender));
         Socket m_Socket;                            // 伺服器 Socket 物件
         int m_BufferSize = 1024;                        // 緩衝暫存區大小
         long m_SendByteCount = 0;
@@ -805,7 +712,6 @@ namespace CJF.Net.Multicast
         IntPtr m_Handle = IntPtr.Zero;
         EndPoint m_LocalEndPoint = null;
         EndPoint m_RemoteEndPoint = null;
-        SocketDebugType m_Debug = SocketDebugType.None;
         Timer _SecondCounter = null;
         /// <summary>效能監視器集合</summary>
         Dictionary<ServerCounterType, PerformanceCounter> m_Counters = null;
@@ -914,11 +820,6 @@ namespace CJF.Net.Multicast
             m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(data.Length);
             arg.SetBuffer(data, 0, data.Length);
             arg.UserToken = extraInfo;
-            if (m_Debug.HasFlag(SocketDebugType.Send))
-            {
-                Console.WriteLine("[{0}]Socket : Before SendAsync In CastSender.SendData", DateTime.Now.ToString("HH:mm:ss.fff"));
-                _log.Write(LogManager.LogLevel.Debug, "Before SendAsync In CastSender.SendData");
-            }
             try
             {
                 if (!m_Socket.SendToAsync(arg))
@@ -933,11 +834,24 @@ namespace CJF.Net.Multicast
                 this.ProcessError(arg);
             }
             catch (Exception) { }
-            if (m_Debug.HasFlag(SocketDebugType.Send))
+        }
+        #endregion
+
+        #region Public Static Method : void SendData(IPEndPoint ep, byte[] data)
+        /// <summary>傳送資料到遠端</summary>
+        /// <param name="ep">接收端的群組端點資訊</param>
+        /// <param name="data">欲發送的資料</param>
+        public static void SendData(IPEndPoint ep, byte[] data)
+        {
+            bool sended = false;
+            CastSender sender = new CastSender(ep, 128);
+            sender.DataSended += (s, se) =>
             {
-                Console.WriteLine("[{0}]Socket : After SendAsync In CastSender.SendData", DateTime.Now.ToString("HH:mm:ss.fff"));
-                _log.Write(LogManager.LogLevel.Debug, "After SendAsync In CastSender.SendData");
-            }
+                CastSender cs = s as CastSender;
+                sended = true;
+            };
+            sender.SendData(data);
+            SpinWait.SpinUntil(() => sended, 1000);
         }
         #endregion
 
@@ -964,16 +878,6 @@ namespace CJF.Net.Multicast
         public EndPoint LocalEndPort { get { return m_LocalEndPoint; } }
         /// <summary>取得本地端通訊埠</summary>
         public EndPoint RemoteEndPoint { get { return m_RemoteEndPoint; } }
-        /// <summary>取得或設定是否為除錯模式</summary>
-        public SocketDebugType Debug
-        {
-            get { return m_Debug; }
-            set
-            {
-                if (m_Debug == value) return;
-                m_Debug = value;
-            }
-        }
         /// <summary>取得每一秒發送量，單位:位元組</summary>
         public long SendSpeed { get { return m_SendByteCount; } }
         /// <summary>取得現在等待發送的資料量，單位:位元組</summary>
@@ -1040,26 +944,29 @@ namespace CJF.Net.Multicast
         {
             if (e.BytesTransferred > 0)
             {
-                if (m_Debug.HasFlag(SocketDebugType.Send))
-                {
-                    Console.WriteLine("[{0}]Socket : Exec SendAsync In CastSender.ProcessSend", DateTime.Now.ToString("HH:mm:ss.fff"));
-                    _log.Write(LogManager.LogLevel.Debug, "Exec SendAsync In CastSender.ProcessSend");
-                }
                 if (e.SocketError == SocketError.Success)
                 {
                     int count = e.BytesTransferred;
                     Interlocked.Add(ref m_SendByteCount, count);
                     Interlocked.Add(ref m_WaittingSend, -count);
-                    m_Counters[ServerCounterType.TotalSendedBytes]?.IncrementBy(count);
-                    m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(-count);
+                    if (m_Counters != null)
+                    {
+                        m_Counters[ServerCounterType.TotalSendedBytes]?.IncrementBy(count);
+                        m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(-count);
+                    }
                     byte[] buffer = new byte[count];
                     Array.Copy(e.Buffer, buffer, count);
                     object extraInfo = e.UserToken;
 
                     #region 產生事件 - DataSended
-                    AsyncUdpEventArgs auea = new AsyncUdpEventArgs(m_Socket.Handle, m_Socket.LocalEndPoint, e.RemoteEndPoint, buffer);
-                    auea.SetExtraInfo(extraInfo);
-                    OnDataSended(auea);
+                    try
+                    {
+                        AsyncUdpEventArgs auea = new AsyncUdpEventArgs(m_Socket.Handle, m_Socket.LocalEndPoint, e.RemoteEndPoint, buffer);
+                        auea.SetExtraInfo(extraInfo);
+                        OnDataSended(auea);
+                    }
+                    catch (ObjectDisposedException) { }
+                    catch (NullReferenceException) { }
                     #endregion
 
                     e.Dispose();
@@ -1088,17 +995,7 @@ namespace CJF.Net.Multicast
                     localEp = s.LocalEndPoint;
                     remoteEp = s.RemoteEndPoint;
                     handle = s.Handle;
-                    if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                    {
-                        Console.WriteLine("[{0}]Socket : Before Shutdown In CastSender.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
-                        _log.Write(LogManager.LogLevel.Debug, "Before Shutdown In CastSender.ProcessError");
-                    }
                     s.Shutdown(SocketShutdown.Both);
-                    if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                    {
-                        Console.WriteLine("[{0}]Socket : After Shutdown In CastSender.ProcessError", DateTime.Now.ToString("HH:mm:ss.fff"));
-                        _log.Write(LogManager.LogLevel.Debug, "After Shutdown In CastSender.ProcessError");
-                    }
                 }
                 catch (Exception) { }   // 如果客戶端已關閉則不處理
                 finally { }
@@ -1127,7 +1024,7 @@ namespace CJF.Net.Multicast
                 EventThreadVariables etv = (EventThreadVariables)o;
                 etv.InvokeMethod.DynamicInvoke(etv.Args);
             }
-            catch (Exception ex) { _log.WriteException(ex); }
+            catch (Exception ex) { Debug.Print(ex.Message); }
         }
         #endregion
 
@@ -1147,44 +1044,13 @@ namespace CJF.Net.Multicast
                 {
                     m_Counters.Clear();
                     m_Counters = null;
-                    if (m_Socket == null)
+                    if (m_Socket != null)
                     {
-                        if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                        {
-                            Console.WriteLine("[{0}]Socket Is Null In CastSender.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
-                            _log.Write(LogManager.LogLevel.Debug, "Socket Is Null In CastSender.Dispose");
-                        }
-                    }
-                    else
-                    {
-                        try
-                        {
-                            if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                            {
-                                Console.WriteLine("[{0}]Socket : Before Shutdown In CastSender.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
-                                _log.Write(LogManager.LogLevel.Debug, "Before Shutdown In CastSender.Dispose");
-                            }
-                            m_Socket.Shutdown(SocketShutdown.Both);
-                            if (m_Debug.HasFlag(SocketDebugType.Shutdown))
-                            {
-                                Console.WriteLine("[{0}]Socket : After Shutdown In CastSender.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
-                                _log.Write(LogManager.LogLevel.Debug, "After Shutdown In CastSender.Dispose");
-                            }
-                        }
+                        try { m_Socket.Shutdown(SocketShutdown.Both); }
                         catch { }
                         finally
                         {
-                            if (m_Debug.HasFlag(SocketDebugType.Close))
-                            {
-                                Console.WriteLine("[{0}]Socket : Before Close In CastSender.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
-                                _log.Write(LogManager.LogLevel.Debug, "Before Close In CastSender.Dispose");
-                            }
                             m_Socket.Close();
-                            if (m_Debug.HasFlag(SocketDebugType.Close))
-                            {
-                                Console.WriteLine("[{0}]Socket : After Close In CastSender.Dispose", DateTime.Now.ToString("HH:mm:ss.fff"));
-                                _log.Write(LogManager.LogLevel.Debug, "After Close In CastSender.Dispose");
-                            }
                             m_Socket = null;
                         }
                     }
@@ -1210,7 +1076,7 @@ namespace CJF.Net.Multicast
                             foreach (EventHandler<AsyncUdpEventArgs> del in this.DataSended.GetInvocationList())
                             {
                                 try { del.BeginInvoke(this, e, new AsyncCallback(AsyncUdpEventCallback), del); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -1221,7 +1087,7 @@ namespace CJF.Net.Multicast
                             foreach (Delegate del in this.DataSended.GetInvocationList())
                             {
                                 try { del.DynamicInvoke(this, e); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -1236,7 +1102,7 @@ namespace CJF.Net.Multicast
                                     EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, e } };
                                     ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
                                 }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -1261,7 +1127,7 @@ namespace CJF.Net.Multicast
                             foreach (EventHandler<AsyncUdpEventArgs> del in this.Exception.GetInvocationList())
                             {
                                 try { del.BeginInvoke(this, e, new AsyncCallback(AsyncUdpEventCallback), del); }
-                                catch (Exception exx) { _log.WriteException(exx); }
+                                catch (Exception exx) { Debug.Print(exx.Message); }
                             }
                             break;
                         }
@@ -1272,7 +1138,7 @@ namespace CJF.Net.Multicast
                             foreach (Delegate del in this.Exception.GetInvocationList())
                             {
                                 try { del.DynamicInvoke(this, e); }
-                                catch (Exception exx) { _log.WriteException(exx); }
+                                catch (Exception exx) { Debug.Print(exx.Message); }
                             }
                             break;
                         }
@@ -1287,7 +1153,7 @@ namespace CJF.Net.Multicast
                                     EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, e } };
                                     ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
                                 }
-                                catch (Exception exx) { _log.WriteException(exx); }
+                                catch (Exception exx) { Debug.Print(exx.Message); }
                             }
                             break;
                         }
@@ -1315,7 +1181,7 @@ namespace CJF.Net.Multicast
                             foreach (EventHandler<DataTransEventArgs> del in this.CounterChanged.GetInvocationList())
                             {
                                 try { del.BeginInvoke(this, dtea, new AsyncCallback(TransferCounterCallback), del); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -1326,7 +1192,7 @@ namespace CJF.Net.Multicast
                             foreach (Delegate del in this.CounterChanged.GetInvocationList())
                             {
                                 try { del.DynamicInvoke(this, dtea); }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }
@@ -1341,7 +1207,7 @@ namespace CJF.Net.Multicast
                                     EventThreadVariables etv = new EventThreadVariables() { InvokeMethod = del, Args = new object[] { this, dtea } };
                                     ThreadPool.QueueUserWorkItem(new WaitCallback(EventThreadWorker), etv);
                                 }
-                                catch (Exception ex) { _log.WriteException(ex); }
+                                catch (Exception ex) { Debug.Print(ex.Message); }
                             }
                             break;
                         }

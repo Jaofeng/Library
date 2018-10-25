@@ -54,6 +54,9 @@ namespace Tester
                     case "-routing":
                         f = new FRoutingTable();
                         break;
+                    case "-skt":
+                        f = new FSocketMonitor();
+                        break;
                     default:
                         break;
                 }

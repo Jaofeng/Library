@@ -631,7 +631,7 @@ namespace CJF.Utility.WinKits
                     {
                         loc = DrawWrapCsiSgrText(g, lines[i], font, bFore, bBack, loc);
                         _CanvasMaxWidth = Math.Max((int)Math.Ceiling(loc.X), _CanvasMaxWidth);
-                        if (i < lines.Length - 1 && !string.IsNullOrEmpty(lines[i + 1]))
+                        if (i < lines.Length - 1)
                         {
                             loc.X = left;
                             loc.Y += lineHeight;

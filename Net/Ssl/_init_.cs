@@ -13,30 +13,30 @@ namespace CJF.Net.Ssl
     /// <summary>SSL 憑證相關工具。</summary>
     public static class SslTcpUtils
     {
-        #region Public Static Method : (bool exists, bool valid) CertificateExistsInStore(string subName, StoreLocation location, StoreName storeName)
+        #region Public Static Method : bool[] CertificateExistsInStore(string subName, StoreLocation location, StoreName storeName)
         /// <summary>於本機憑證存放區中尋找指定的憑證是否存在。</summary>
         /// <param name="subName">憑證的主旨辨別名稱。</param>
         /// <param name="location">指定 X.509 憑證存放區的位置。</param>
         /// <param name="storeName">指定要開啟之 X.509 憑證存放區的名稱。</param>
-        /// <returns>Tuple 型別，(bool exists, bool valid)。</returns>
-        public static (bool exists, bool valid) CertificateExistsInStore(string subName, StoreLocation location, StoreName storeName)
+        /// <returns>bool[] 型別，0:exists, 1:valid。</returns>
+        public static bool[] CertificateExistsInStore(string subName, StoreLocation location, StoreName storeName)
         {
             X509Store store = new X509Store(storeName, location);
             store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
             X509Certificate2Collection x2c = store.Certificates.Find(X509FindType.FindBySubjectName, subName, false);
             store.Close();
             if (x2c.Count != 0)
-                return (true, x2c[0].Verify());
+                return new bool[] { true, x2c[0].Verify() };
             else
-                return (false, false);
+                return new bool[] { false, false };
         }
         #endregion
 
-        #region Public Static Method : (bool exists, bool valid) CertificateExistsInStore(string subName)
+        #region Public Static Method : bool[] CertificateExistsInStore(string subName)
         /// <summary>於本機憑證存放區中尋找指定的憑證是否存在。</summary>
         /// <param name="subName">憑證的主旨辨別名稱。</param>
-        /// <returns>Tuple 型別，(bool exists, bool valid)。</returns>
-        public static (bool exists, bool valid) CertificateExistsInStore(string subName)
+        /// <returns>bool[] 型別，0:exists, 1:valid。</returns>
+        public static bool[] CertificateExistsInStore(string subName)
         {
             X509Store store = null;
             X509Certificate2Collection x2c = null;
@@ -50,37 +50,43 @@ namespace CJF.Net.Ssl
                     store.Close();
                     if (x2c.Count != 0)
                     {
-                        return (true, x2c[0].Verify());
+                        return new bool[] { true, x2c[0].Verify() };
                     }
                 }
             }
-            return (false, false);
+            return new bool[] { false, false };
         }
         #endregion
 
-        #region Public Static Method : (bool valid, StoreLocation location, StoreName StoreName)? SearchCertificateInStore(string subName)
+        #region Public Static Method : bool SearchCertificateInStore(string subName, out StoreLocation location, out StoreName storeName)
         /// <summary>於本機憑證存放區中尋找指定的憑證，並回傳該憑證是否有效與存放位置。</summary>
         /// <param name="subName">憑證的主旨辨別名稱。</param>
-        /// <returns>憑證存在時，則回傳 Tuple 型別；否則傳回 null。</returns>
-        public static (bool valid, StoreLocation location, StoreName StoreName)? SearchCertificateInStore(string subName)
+        /// <param name="location"></param>
+        /// <param name="storeName"></param>
+        /// <returns>憑證存在時，則回傳 true；否則傳回 false。</returns>
+        public static bool SearchCertificateInStore(string subName, out StoreLocation location, out StoreName storeName)
         {
             X509Store store = null;
             X509Certificate2Collection x2c = null;
-            foreach (StoreName storeName in (StoreName[])Enum.GetValues(typeof(StoreName)))
+            foreach (StoreName sn in (StoreName[])Enum.GetValues(typeof(StoreName)))
             {
-                foreach (StoreLocation location in (StoreLocation[])Enum.GetValues(typeof(StoreLocation)))
+                foreach (StoreLocation loc in (StoreLocation[])Enum.GetValues(typeof(StoreLocation)))
                 {
-                    store = new X509Store(storeName, location);
+                    store = new X509Store(sn, loc);
                     store.Open(OpenFlags.ReadOnly | OpenFlags.OpenExistingOnly);
                     x2c = store.Certificates.Find(X509FindType.FindBySubjectName, subName, false);
                     store.Close();
                     if (x2c.Count != 0)
                     {
-                        return (x2c[0].Verify(), location, storeName);
+                        location = loc;
+                        storeName = sn;
+                        return x2c[0].Verify();
                     }
                 }
             }
-            return null;
+            location = StoreLocation.CurrentUser;
+            storeName = StoreName.CertificateAuthority;
+            return false;
         }
         #endregion
     }

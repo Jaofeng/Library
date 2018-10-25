@@ -1,6 +1,7 @@
 ﻿using CJF.Utility;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
 using System.Net.Security;
@@ -38,7 +39,6 @@ namespace CJF.Net.Ssl
         #endregion
 
         #region Private Variables
-        LogManager _log = new LogManager(typeof(SslTcpServer));
         bool _IsDisposed = false;
         bool _IsExit = false;
         TcpListener _Server = null;
@@ -217,7 +217,7 @@ namespace CJF.Net.Ssl
                 foreach (EventHandler del in this.Started.GetInvocationList())
                 {
                     try { del.BeginInvoke(this, e, null, null); }
-                    catch (Exception ex) { _log.WriteException(ex); }
+                    catch (Exception ex) { Debug.Print(ex.Message); }
                 }
             }
         }
@@ -233,7 +233,7 @@ namespace CJF.Net.Ssl
                 foreach (EventHandler del in this.Shutdowned.GetInvocationList())
                 {
                     try { del.BeginInvoke(this, e, null, null); }
-                    catch (Exception ex) { _log.WriteException(ex); }
+                    catch (Exception ex) { Debug.Print(ex.Message); }
                 }
             }
         }
@@ -250,7 +250,7 @@ namespace CJF.Net.Ssl
                 foreach (EventHandler<SslTcpEventArgs> del in this.ClientConnected.GetInvocationList())
                 {
                     try { del.BeginInvoke(this, ea, null, null); }
-                    catch (Exception ex) { _log.WriteException(ex); }
+                    catch (Exception ex) { Debug.Print(ex.Message); }
                 }
             }
         }
@@ -267,7 +267,7 @@ namespace CJF.Net.Ssl
                 foreach (EventHandler<SslTcpEventArgs> del in this.ClientClosed.GetInvocationList())
                 {
                     try { del.BeginInvoke(this, ea, null, null); }
-                    catch (Exception ex) { _log.WriteException(ex); }
+                    catch (Exception ex) { Debug.Print(ex.Message); }
                 }
             }
         }
@@ -285,7 +285,7 @@ namespace CJF.Net.Ssl
                 foreach (EventHandler<SslTcpEventArgs> del in this.DataReceived.GetInvocationList())
                 {
                     try { del.BeginInvoke(this, ea, null, null); }
-                    catch (Exception ex) { _log.WriteException(ex); }
+                    catch (Exception ex) { Debug.Print(ex.Message); }
                 }
             }
         }
@@ -303,7 +303,7 @@ namespace CJF.Net.Ssl
                 foreach (EventHandler<SslTcpEventArgs> del in this.DataSended.GetInvocationList())
                 {
                     try { del.BeginInvoke(this, ea, null, null); }
-                    catch (Exception ex) { _log.WriteException(ex); }
+                    catch (Exception ex) { Debug.Print(ex.Message); }
                 }
             }
         }
@@ -321,7 +321,7 @@ namespace CJF.Net.Ssl
                 foreach (EventHandler<SslTcpEventArgs> del in this.DataSendFail.GetInvocationList())
                 {
                     try { del.BeginInvoke(this, ea, null, null); }
-                    catch (Exception ex) { _log.WriteException(ex); }
+                    catch (Exception ex) { Debug.Print(ex.Message); }
                 }
             }
         }
@@ -338,7 +338,7 @@ namespace CJF.Net.Ssl
                 foreach (EventHandler<SslTcpEventArgs> del in this.AuthenticateFail.GetInvocationList())
                 {
                     try { del.BeginInvoke(this, ea, null, null); }
-                    catch (Exception ex) { _log.WriteException(ex); }
+                    catch (Exception ex) { Debug.Print(ex.Message); }
                 }
             }
         }
@@ -383,7 +383,7 @@ namespace CJF.Net.Ssl
             }
             catch (AuthenticationException e)
             {
-                _log.WriteException(e);
+                Debug.Print(e.Message);
                 OnAuthenticateFail(remote);
                 if (sslStream != null)
                     sslStream.Close();
@@ -394,7 +394,7 @@ namespace CJF.Net.Ssl
             catch (IOException) { }
             catch (Exception ex)
             {
-                _log.WriteException(ex);
+                Debug.Print(ex.Message);
                 Console.WriteLine($"{this.GetType()} - {ex.GetType()}\n{ex.Message}");
             }
             finally

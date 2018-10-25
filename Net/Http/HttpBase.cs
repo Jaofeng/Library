@@ -33,6 +33,7 @@ using CJF.Utility.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -41,6 +42,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 
+#pragma warning disable IDE0019
 namespace CJF.Net.Http
 {
     /// <summary>HTTP 連線服務類別</summary>
@@ -50,7 +52,6 @@ namespace CJF.Net.Http
 		/// <summary>網頁預設根目錄</summary>
 		const string ROOT_PATH = "Web";
 
-		LogManager _log = new LogManager(typeof(HttpBase));
 		bool isDisposed = false;
 
         #region Public Properties
@@ -95,7 +96,7 @@ namespace CJF.Net.Http
 			string pageUrl = rawUrl.Split('?')[0].TrimStart('/');
 			// [Remote IP] - [Method] [RawUrl] [HTTP/Ver] - [User Agent]
 			string format = "{0} - {1} {2} HTTP/{3}.{4} - {5}";
-			_log.Write(LogManager.LogLevel.Debug, format, request.RemoteEndPoint, request.HttpMethod, rawUrl, request.ProtocolVersion.Major, request.ProtocolVersion.Minor, request.UserAgent);
+			Debug.Print(format, request.RemoteEndPoint, request.HttpMethod, rawUrl, request.ProtocolVersion.Major, request.ProtocolVersion.Minor, request.UserAgent);
 			NameValueCollection queryString = request.QueryString;
 			switch (request.HttpMethod.ToUpper())
 			{
@@ -159,53 +160,49 @@ namespace CJF.Net.Http
 		/// <param name="queryString">要求中所包含的查詢字串。</param>
 		protected virtual void HttpPostMethod(string path, NameValueCollection queryString)
 		{
-			try
-			{
-				//string svc = path.Replace("/", "\\").ToLower().TrimEnd('\\').Split('\\')[0];
-				HttpListenerRequest request = this.Context.Request;
-				NameValueCollection nvc = null;
-				this.ReceivedFiles = null;
-				if (request.ContentType == "application/x-www-form-urlencoded")
-				{
-					StreamReader reader = new StreamReader(request.InputStream);
-					string data = reader.ReadToEnd();
-					//_log.Write(LogManager.LogLevel.Debug, "Service:{0}:{1}", svc, data);
-					nvc = System.Web.HttpUtility.ParseQueryString(data);
-					if (queryString != null && queryString.Count != 0)
-					{
-						foreach (KeyValuePair<string, string> kv in queryString)
-						{
-							if (nvc.AllKeys.Contains<string>(kv.Key))
-								nvc[kv.Key] += ";" + kv.Value;
-							else
-								nvc.Add(kv.Key, kv.Value);
-						}
-					}
-					ReceivedAPI(path, nvc);
-				}
-				else if (request.ContentType.StartsWith("multipart/form-data"))
-				{
-					PopulatePostMultiPart(request, out nvc);
-					if (queryString != null && queryString.Count != 0)
-					{
-						foreach (KeyValuePair<string, string> kv in queryString)
-						{
-							if (nvc.AllKeys.Contains<string>(kv.Key))
-								nvc[kv.Key] += ";" + kv.Value;
-							else
-								nvc.Add(kv.Key, kv.Value);
-						}
-					}
-					List<string> arr = this.ReceivedFiles.ConvertAll<string>(rfi => rfi.FileName);
-					//_log.Write(LogManager.LogLevel.Debug, "Service:{0},Files:{1}", svc, string.Join(",", arr.ToArray()));
-					ReceivedAPI(path, nvc);
-				}
-			}
-			catch (Exception ex)
-			{
-				_log.Write(LogManager.LogLevel.Debug, "From:HttpPostMethod:{0}", path);
-				_log.WriteException(ex, SendMailWhenException);
-			}
+            try
+            {
+                //string svc = path.Replace("/", "\\").ToLower().TrimEnd('\\').Split('\\')[0];
+                HttpListenerRequest request = this.Context.Request;
+                NameValueCollection nvc = null;
+                this.ReceivedFiles = null;
+                if (request.ContentType == "application/x-www-form-urlencoded")
+                {
+                    StreamReader reader = new StreamReader(request.InputStream);
+                    string data = reader.ReadToEnd();
+                    //Debug.Print("Service:{0}:{1}", svc, data);
+                    nvc = System.Web.HttpUtility.ParseQueryString(data);
+                    if (queryString != null && queryString.Count != 0)
+                    {
+                        foreach (KeyValuePair<string, string> kv in queryString)
+                        {
+                            if (nvc.AllKeys.Contains<string>(kv.Key))
+                                nvc[kv.Key] += ";" + kv.Value;
+                            else
+                                nvc.Add(kv.Key, kv.Value);
+                        }
+                    }
+                    ReceivedAPI(path, nvc);
+                }
+                else if (request.ContentType.StartsWith("multipart/form-data"))
+                {
+                    PopulatePostMultiPart(request, out nvc);
+                    if (queryString != null && queryString.Count != 0)
+                    {
+                        foreach (KeyValuePair<string, string> kv in queryString)
+                        {
+                            if (nvc.AllKeys.Contains<string>(kv.Key))
+                                nvc[kv.Key] += ";" + kv.Value;
+                            else
+                                nvc.Add(kv.Key, kv.Value);
+                        }
+                    }
+                    List<string> arr = this.ReceivedFiles.ConvertAll<string>(rfi => rfi.FileName);
+                    //Debug.Print("Service:{0},Files:{1}", svc, string.Join(",", arr.ToArray()));
+                    ReceivedAPI(path, nvc);
+                }
+            }
+            catch (Exception ex) { Debug.Print(ex.Message); }
 		}
 		#endregion
 
@@ -215,7 +212,7 @@ namespace CJF.Net.Http
 		/// <param name="queryString">要求中所包含的查詢字串。</param>
 		protected virtual void HttpPutMethod(string path, NameValueCollection queryString)
 		{
-			_log.Write(LogManager.LogLevel.Debug, "PUT {0}", path);
+            Debug.Print($"PUT {path}");
 			string msg = "No Support PUT method!!";
 			byte[] buffer = this.Context.Request.ContentEncoding.GetBytes(msg);
 			ResponseBinary(buffer, (int)System.Net.HttpStatusCode.Forbidden, msg);
@@ -228,7 +225,7 @@ namespace CJF.Net.Http
 		/// <param name="queryString">要求中所包含的查詢字串。</param>
 		protected virtual void HttpDeleteMethod(string path, NameValueCollection queryString)
 		{
-			_log.Write(LogManager.LogLevel.Debug, "DELETE {0}", path);
+            Debug.Print($"DELETE {path}");
 			string msg = "No Support DELETE method!!";
 			byte[] buffer = this.Context.Request.ContentEncoding.GetBytes(msg);
 			ResponseBinary(buffer, (int)System.Net.HttpStatusCode.Forbidden, msg);
@@ -241,7 +238,7 @@ namespace CJF.Net.Http
 		/// <param name="queryString">要求中所包含的查詢字串。</param>
 		protected virtual void HttpPatchMethod(string path, NameValueCollection queryString)
 		{
-			_log.Write(LogManager.LogLevel.Debug, "PATCH {0}", path);
+            Debug.Print($"PATCH {path}");
 			string msg = "No Support PATCH method!!";
 			byte[] buffer = this.Context.Request.ContentEncoding.GetBytes(msg);
 			ResponseBinary(buffer, (int)System.Net.HttpStatusCode.Forbidden, msg);
@@ -281,17 +278,17 @@ namespace CJF.Net.Http
 				catch (HttpListenerException ex)
 				{
 					if (ex.ErrorCode == 64)
-						_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+						Debug.Print("Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
 					else
 					{
-						_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-						_log.WriteException(ex, SendMailWhenException);
+						Debug.Print("From:ResponseFile");
+						Debug.Print(ex.Message);
 					}
 				}
 				catch (Exception ex)
 				{
-					_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-					_log.WriteException(ex, SendMailWhenException);
+					Debug.Print("From:ResponseFile");
+					Debug.Print(ex.Message);
 				}
 				finally
 				{
@@ -368,17 +365,17 @@ namespace CJF.Net.Http
 				catch (HttpListenerException ex)
 				{
 					if (ex.ErrorCode == 64)
-						_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+						Debug.Print("Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
 					else
 					{
-						_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-						_log.WriteException(ex, SendMailWhenException);
+						Debug.Print("From:ResponseFile");
+						Debug.Print(ex.Message);
 					}
 				}
 				catch (Exception ex)
 				{
-					_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-					_log.WriteException(ex, SendMailWhenException);
+					Debug.Print("From:ResponseFile");
+					Debug.Print(ex.Message);
 				}
 				finally
 				{
@@ -454,17 +451,17 @@ namespace CJF.Net.Http
 				catch (HttpListenerException ex)
 				{
 					if (ex.ErrorCode == 64)
-						_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+						Debug.Print("Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
 					else
 					{
-						_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-						_log.WriteException(ex, SendMailWhenException);
+						Debug.Print("From:ResponseFile");
+						Debug.Print(ex.Message);
 					}
 				}
 				catch (Exception ex)
 				{
-					_log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-					_log.WriteException(ex, SendMailWhenException);
+					Debug.Print("From:ResponseFile");
+					Debug.Print(ex.Message);
 				}
 				finally
 				{
@@ -559,19 +556,19 @@ namespace CJF.Net.Http
 			{
 				if (ex.ErrorCode == 64)
 				{
-					_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+					Debug.Print("Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
 					result = false;
 				}
 				else
 				{
-					_log.Write(LogManager.LogLevel.Debug, "From:ResponseBitmap");
-					_log.WriteException(ex, SendMailWhenException);
+					Debug.Print("From:ResponseBitmap");
+					Debug.Print(ex.Message);
 				}
 			}
 			catch (Exception ex)
 			{
-				_log.Write(LogManager.LogLevel.Debug, "From:ResponseBitmap");
-				_log.WriteException(ex, SendMailWhenException);
+				Debug.Print("From:ResponseBitmap");
+				Debug.Print(ex.Message);
 			}
 			finally
 			{
@@ -634,19 +631,19 @@ namespace CJF.Net.Http
 			{
 				if (ex.ErrorCode == 64)
 				{
-					_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+					Debug.Print("Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
 					result = false;
 				}
 				else
 				{
-					_log.Write(LogManager.LogLevel.Debug, "From:ResponseBinary");
-					_log.WriteException(ex, SendMailWhenException);
+					Debug.Print("From:ResponseBinary");
+					Debug.Print(ex.Message);
 				}
 			}
 			catch (Exception ex)
 			{
-				_log.Write(LogManager.LogLevel.Debug, "From:ResponseBinary");
-				_log.WriteException(ex, SendMailWhenException);
+				Debug.Print("From:ResponseBinary");
+				Debug.Print(ex.Message);
 			}
 			finally
 			{
@@ -708,8 +705,8 @@ namespace CJF.Net.Http
 			}
 			catch (Exception ex)
 			{
-				_log.Write(LogManager.LogLevel.Debug, "From:ResponseXML");
-				_log.WriteException(ex, SendMailWhenException);
+				Debug.Print("From:ResponseXML");
+				Debug.Print(ex.Message);
 				return false;
 			}
 		}
@@ -943,18 +940,18 @@ namespace CJF.Net.Http
 			{
 				if (ex.ErrorCode == 64)
 				{
-					_log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
+					Debug.Print("Remote Disconnected:{0}", this.Context.Request.RemoteEndPoint);
 				}
 				else
 				{
-					_log.Write(LogManager.LogLevel.Debug, "From:RedirectURL");
-					_log.WriteException(ex, SendMailWhenException);
+					Debug.Print("From:RedirectURL");
+					Debug.Print(ex.Message);
 				}
 			}
 			catch (Exception ex)
 			{
-				_log.Write(LogManager.LogLevel.Debug, "From:RedirectURL");
-				_log.WriteException(ex, SendMailWhenException);
+				Debug.Print("From:RedirectURL");
+				Debug.Print(ex.Message);
 			}
 			finally
 			{

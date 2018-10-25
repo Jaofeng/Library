@@ -12,6 +12,10 @@ using System.Threading;
 using CJF.Utility;
 using CJF.Utility.Extensions;
 
+#pragma warning disable IDE0019
+#pragma warning disable IDE0017
+#pragma warning disable IDE0044
+#pragma warning disable IDE1006
 namespace CJF.Net.Http
 {
 	#region Public Class : WebSocketClient
@@ -20,8 +24,6 @@ namespace CJF.Net.Http
 	/// </summary>
 	public class WebSocketClient : AsyncClient, IDisposable
 	{
-		LogManager _log = new LogManager(typeof(WebSocketClient));
-
 		internal WebSocketClient(Socket sck) : this(sck, null, null) { }
 		internal WebSocketClient(Socket sck, string acceptKey, string url)
 			: base(sck)
@@ -87,7 +89,7 @@ namespace CJF.Net.Http
 			}
 			catch (Exception ex)
 			{
-				_log.WriteException(ex);
+				Debug.Print(ex.Message);
 				this.Close();
 			}
 		}
@@ -125,8 +127,6 @@ namespace CJF.Net.Http
 		/// <summary>WebSocket 專用 GUID</summary>
 		const string GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
-		LogManager _log = new LogManager(typeof(WebSocketServer));
-
 		/// <summary>SHA1 加密類別</summary>
 		SHA1 m_sha = null;
 
@@ -152,7 +152,6 @@ namespace CJF.Net.Http
 		/// <param name="maxClients">同時可連接的最大連線數</param>
 		public WebSocketServer(int maxClients)
 		{
-			base.DebugMode = SocketDebugType.None;
 			this.UseAsyncCallback = EventCallbackMode.BeginInvoke;
 			m_Mutex = new Mutex();
 			m_Services = new List<string>();
@@ -276,16 +275,13 @@ namespace CJF.Net.Http
 					}
 					else
 					{
-						_log.Write(LogManager.LogLevel.Warn, "連線數不足，請擴充連線數!");
 						throw new SocketException(10024);
 					}
 				}
 				catch (SocketException ex)
 				{
 					AsyncUserToken token = (AsyncUserToken)e.UserToken;
-					if (s != null && token != null && token.Client != null)
-						_log.Write(LogManager.LogLevel.Debug, "無法與 {0} 建立連線", token.Client.RemoteEndPoint);
-					_log.WriteException(ex);
+					Debug.Print(ex.Message);
 
 					WebSocketClient ac = new WebSocketClient(s);
 					base.OnException(ac, ex);
@@ -310,7 +306,7 @@ namespace CJF.Net.Http
 				}
 				catch (Exception ex)
 				{
-					_log.WriteException(ex);
+					Debug.Print(ex.Message);
 				}
 				finally
 				{
@@ -374,8 +370,6 @@ namespace CJF.Net.Http
 						if (ac == null)
 						{
 							Debug.Print("Unknow Socket Connect!!");
-							_log.Write(LogManager.LogLevel.Debug, "Unknow Socket:{0}", rep);
-							_log.Write(LogManager.LogLevel.Debug, "Data:{0}", rec.ToArray().ToHexString());
 							this.CloseClientSocket(e);
 							return;
 						}
@@ -392,13 +386,13 @@ namespace CJF.Net.Http
                         byte[] data = rec.ToArray();
 						if (!((data[0] & 0x80) == 0x80))
 						{
-							_log.Write("Exceed 1 Frame. Not Handle");
+							Debug.Print("Exceed 1 Frame. Not Handle");
 							return;
 						}
 						// 是否包含Mask(第一個bit為1代表有Mask)，沒有Mask則不處理
 						if (!((data[1] & 0x80) == 0x80))
 						{
-							_log.Write("Exception: No Mask");
+							Debug.Print("Exception: No Mask");
 							this.CloseClientSocket(e);
 							return;
 						}
@@ -450,7 +444,7 @@ namespace CJF.Net.Http
 							payloadData[i] = (Byte)(payloadData[i] ^ masks[i % 4]);
 
 						// 解析出的資料
-						_log.Write("Data:{0}", payloadData.ToHexString());
+						Debug.Print("Data:{0}", payloadData.ToHexString());
 						#endregion
 
 						base.OnDataReceived(ac, payloadData);
@@ -470,8 +464,7 @@ namespace CJF.Net.Http
 						{
 							if (!m_IsShutdown && !m_IsDisposed)
 							{
-								_log.Write(LogManager.LogLevel.Debug, "AsyncServer.ProcessReceive:{0}", rep);
-								_log.WriteException(ex);
+								Debug.Print(ex.Message);
 							}
 						}
 					}
@@ -485,14 +478,12 @@ namespace CJF.Net.Http
 			}
 			catch (KeyNotFoundException)
 			{
-				_log.Write(LogManager.LogLevel.Debug, "RemoteEndPoint Not Found:{0}", rep);
 				this.CloseClientSocket(e);
 			}
-			catch (ObjectDisposedException ex) { _log.Write(LogManager.LogLevel.Debug, "Object({0}) Disposed", ex.ObjectName); }
+			catch (ObjectDisposedException) { }
 			catch (Exception ex)
 			{
-				_log.Write(LogManager.LogLevel.Debug, "ProcessReceive Error!");
-				_log.WriteException(ex);
+				Debug.Print(ex.Message);
 				this.CloseClientSocket(e);
 			}
 		}
@@ -523,8 +514,6 @@ namespace CJF.Net.Http
 					if (ac == null)
 					{
 						Debug.Print("Unknow Socket Connect!!");
-						if (e.RemoteEndPoint != null)
-							_log.Write(LogManager.LogLevel.Debug, "Unknow Socket:{0}", e.RemoteEndPoint);
 						this.CloseClientSocket(e);
 						return;
 					}
@@ -555,7 +544,6 @@ namespace CJF.Net.Http
 			}
 			else
 			{
-				_log.Write(LogManager.LogLevel.Debug, "Send Zero Byte Data To Remote");
 				base.CloseClientSocket(e);
 			}
 		}
@@ -570,7 +558,7 @@ namespace CJF.Net.Http
 				if (!m_IsShutdown && !m_IsDisposed)
 					m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(e.Data.Length);
 			}
-			catch (Exception ex) { _log.WriteException(ex); }
+			catch (Exception ex) { Debug.Print(ex.Message); }
 		}
 		#endregion
 
@@ -587,7 +575,7 @@ namespace CJF.Net.Http
                     m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(-count);
                 }
             }
-			catch (Exception ex) { _log.WriteException(ex); }
+			catch (Exception ex) { Debug.Print(ex.Message); }
 
 			base.OnDataSended((WebSocketClient)sender, e.Data, e.ExtraInfo);
 		}
@@ -605,7 +593,7 @@ namespace CJF.Net.Http
                     m_Counters[ServerCounterType.BytesOfSendQueue]?.IncrementBy(-e.Data.Length);
                 }
             }
-			catch (Exception ex) { _log.WriteException(ex); }
+			catch (Exception ex) { Debug.Print(ex.Message); }
             base.OnSendedFail((WebSocketClient)sender, e.Data, e.ExtraInfo);
 		}
 		#endregion

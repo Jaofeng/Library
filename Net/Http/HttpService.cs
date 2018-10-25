@@ -33,6 +33,7 @@ using CJF.Utility.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
@@ -122,7 +123,6 @@ namespace CJF.Net.Http
         /// <summary>網頁預設根目錄</summary>
         const string ROOT_PATH = "Web";
 
-        LogManager _log = new LogManager(typeof(HttpService));
         bool isDisposed = false;
         HttpListener _HttpListener = null;
 
@@ -204,10 +204,7 @@ namespace CJF.Net.Http
                 _HttpListener.BeginGetContext(new AsyncCallback(WebRequestCallback), _HttpListener);
                 ProcessRequest(ctx);
             }
-            catch (Exception ex)
-            {
-                _log.WriteException(ex, SendMailWhenException);
-            }
+            catch (Exception ex) { Debug.Print(ex.Message); }
         }
         #endregion
 
@@ -219,7 +216,7 @@ namespace CJF.Net.Http
             string rawUrl = request.RawUrl;
             string pageUrl = rawUrl.Split('?')[0].TrimStart('/');
             // [Remote IP] - [Method] [RawUrl] [HTTP/Ver] - [User Agent]
-            _log.Write(LogManager.LogLevel.Debug, $"{request.RemoteEndPoint} - {request.HttpMethod} {rawUrl} HTTP/{request.ProtocolVersion.Major}.{request.ProtocolVersion.Minor} - {request.UserAgent}");
+            Debug.Print($"{request.RemoteEndPoint} - {request.HttpMethod} {rawUrl} HTTP/{request.ProtocolVersion.Major}.{request.ProtocolVersion.Minor} - {request.UserAgent}");
             NameValueCollection queryString = request.QueryString;
             switch (request.HttpMethod.ToUpper())
             {
@@ -303,7 +300,7 @@ namespace CJF.Net.Http
             {
                 ResponseFile(context, Path.Combine(RootPath, args.PageUrl.Replace("/", "\\").ToLower()));
             }
-            else 
+            else
             {
                 ResponseCallbackResult(context, args.Result);
             }
@@ -526,17 +523,17 @@ namespace CJF.Net.Http
                 catch (HttpListenerException ex)
                 {
                     if (ex.ErrorCode == 64)
-                        _log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", context.Request.RemoteEndPoint);
+                        Debug.Print("Remote Disconnected:{0}", context.Request.RemoteEndPoint);
                     else
                     {
-                        _log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-                        _log.WriteException(ex, SendMailWhenException);
+                        Debug.Print("From:ResponseFile");
+                        Debug.Print(ex.Message);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-                    _log.WriteException(ex, SendMailWhenException);
+                    Debug.Print("From:ResponseFile");
+                    Debug.Print(ex.Message);
                 }
                 finally
                 {
@@ -616,17 +613,17 @@ namespace CJF.Net.Http
                 catch (HttpListenerException ex)
                 {
                     if (ex.ErrorCode == 64)
-                        _log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", context.Request.RemoteEndPoint);
+                        Debug.Print("Remote Disconnected:{0}", context.Request.RemoteEndPoint);
                     else
                     {
-                        _log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-                        _log.WriteException(ex, SendMailWhenException);
+                        Debug.Print("From:ResponseFile");
+                        Debug.Print(ex.Message);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-                    _log.WriteException(ex, SendMailWhenException);
+                    Debug.Print("From:ResponseFile");
+                    Debug.Print(ex.Message);
                 }
                 finally
                 {
@@ -705,17 +702,17 @@ namespace CJF.Net.Http
                 catch (HttpListenerException ex)
                 {
                     if (ex.ErrorCode == 64)
-                        _log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", context.Request.RemoteEndPoint);
+                        Debug.Print("Remote Disconnected:{0}", context.Request.RemoteEndPoint);
                     else
                     {
-                        _log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-                        _log.WriteException(ex, SendMailWhenException);
+                        Debug.Print("From:ResponseFile");
+                        Debug.Print(ex.Message);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _log.Write(LogManager.LogLevel.Debug, "From:ResponseFile");
-                    _log.WriteException(ex, SendMailWhenException);
+                    Debug.Print("From:ResponseFile");
+                    Debug.Print(ex.Message);
                 }
                 finally
                 {
@@ -815,19 +812,19 @@ namespace CJF.Net.Http
             {
                 if (ex.ErrorCode == 64)
                 {
-                    _log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", context.Request.RemoteEndPoint);
+                    Debug.Print("Remote Disconnected:{0}", context.Request.RemoteEndPoint);
                     result = false;
                 }
                 else
                 {
-                    _log.Write(LogManager.LogLevel.Debug, "From:ResponseBitmap");
-                    _log.WriteException(ex, SendMailWhenException);
+                    Debug.Print("From:ResponseBitmap");
+                    Debug.Print(ex.Message);
                 }
             }
             catch (Exception ex)
             {
-                _log.Write(LogManager.LogLevel.Debug, "From:ResponseBitmap");
-                _log.WriteException(ex, SendMailWhenException);
+                Debug.Print("From:ResponseBitmap");
+                Debug.Print(ex.Message);
             }
             finally
             {
@@ -893,19 +890,19 @@ namespace CJF.Net.Http
             {
                 if (ex.ErrorCode == 64)
                 {
-                    _log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", context.Request.RemoteEndPoint);
+                    Debug.Print("Remote Disconnected:{0}", context.Request.RemoteEndPoint);
                     result = false;
                 }
                 else
                 {
-                    _log.Write(LogManager.LogLevel.Debug, "From:ResponseBinary");
-                    _log.WriteException(ex, SendMailWhenException);
+                    Debug.Print("From:ResponseBinary");
+                    Debug.Print(ex.Message);
                 }
             }
             catch (Exception ex)
             {
-                _log.Write(LogManager.LogLevel.Debug, "From:ResponseBinary");
-                _log.WriteException(ex, SendMailWhenException);
+                Debug.Print("From:ResponseBinary");
+                Debug.Print(ex.Message);
             }
             finally
             {
@@ -969,8 +966,8 @@ namespace CJF.Net.Http
             }
             catch (Exception ex)
             {
-                _log.Write(LogManager.LogLevel.Debug, "From:ResponseXML");
-                _log.WriteException(ex, SendMailWhenException);
+                Debug.Print("From:ResponseXML");
+                Debug.Print(ex.Message);
                 return false;
             }
         }
@@ -1086,18 +1083,18 @@ namespace CJF.Net.Http
             {
                 if (ex.ErrorCode == 64)
                 {
-                    _log.Write(LogManager.LogLevel.Debug, "Remote Disconnected:{0}", context.Request.RemoteEndPoint);
+                    Debug.Print("Remote Disconnected:{0}", context.Request.RemoteEndPoint);
                 }
                 else
                 {
-                    _log.Write(LogManager.LogLevel.Debug, "From:RedirectURL");
-                    _log.WriteException(ex, SendMailWhenException);
+                    Debug.Print("From:RedirectURL");
+                    Debug.Print(ex.Message);
                 }
             }
             catch (Exception ex)
             {
-                _log.Write(LogManager.LogLevel.Debug, "From:RedirectURL");
-                _log.WriteException(ex, SendMailWhenException);
+                Debug.Print("From:RedirectURL");
+                Debug.Print(ex.Message);
             }
             finally
             {
@@ -1185,11 +1182,12 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Private Method : (NameValueCollection, ReceivedFileInfo[]) PopulatePostMultiPart(HttpListenerRequest request)
+        #region Private Method : NameValueCollection PopulatePostMultiPart(HttpListenerRequest request, out ReceivedFileInfo[] files)
         /// <summary>拆解 Request 內容。</summary>
         /// <param name="request">欲拆解的 HttpListenerRequest 類別。</param>
-        /// <returns>Tuple(NameValueCollection, ReceivedFileInfo[])</returns>
-        private (NameValueCollection, ReceivedFileInfo[]) PopulatePostMultiPart(HttpListenerRequest request)
+        /// <param name="files">接收的檔案。</param>
+        /// <returns>QueryString NameValueCollection</returns>
+        private NameValueCollection PopulatePostMultiPart(HttpListenerRequest request, out ReceivedFileInfo[] files)
         {
             List<ReceivedFileInfo> receivedFiles = new List<ReceivedFileInfo>();
             NameValueCollection nvc = new NameValueCollection();
@@ -1298,7 +1296,8 @@ namespace CJF.Net.Http
                 buff = null;
             }
             GC.Collect();
-            return (nvc, receivedFiles.ToArray());
+            files = receivedFiles.ToArray();
+            return nvc;
         }
         #endregion
 
@@ -1317,7 +1316,7 @@ namespace CJF.Net.Http
                     case string s when s.StartsWith("multipart/form-data"):
                         #region multipart/form-data
                         {
-                            var (nvc, rfs) = PopulatePostMultiPart(request);
+                            var nvc = PopulatePostMultiPart(request, out ReceivedFileInfo[] rfs);
                             if (queryString != null && queryString.Count != 0)
                             {
                                 foreach (KeyValuePair<string, string> kv in queryString)
@@ -1392,8 +1391,8 @@ namespace CJF.Net.Http
             }
             catch (Exception ex)
             {
-                _log.Write(LogManager.LogLevel.Debug, "From:HttpPostMethod:{0}", page);
-                _log.WriteException(ex, SendMailWhenException);
+                Debug.Print("From:HttpPostMethod:{0}", page);
+                Debug.Print(ex.Message);
                 ResponseException(context, ex);
             }
         }

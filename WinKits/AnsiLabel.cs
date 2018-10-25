@@ -643,7 +643,7 @@ namespace CJF.Utility.WinKits
                     else
                     {
                         loc = DrawWrapCsiSgrText(g, lines[i], font, bFore, bBack, loc);
-                        if (i < lines.Length - 1)   //  && !string.IsNullOrEmpty(lines[i + 1])
+                        if (i < lines.Length - 1)
                         {
                             loc.X = leftTop.X;
                             loc.Y += lineHeight;

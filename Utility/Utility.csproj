@@ -56,37 +56,22 @@
     <DocumentationFile>..\bin\Release\CJF.Utility.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="log4net">
-      <HintPath>..\..\3Party\log4net\log4net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Ansi\CsiBuilder.cs" />
     <Compile Include="Ansi\AnsiString.cs" />
     <Compile Include="ConfigBase.cs" />
     <Compile Include="CRCCheck.cs" />
-    <Compile Include="WinKits\MessageBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Extensions.cs" />
-    <Compile Include="LogManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security.cs" />
     <Compile Include="SysPerformance.cs" />
     <Compile Include="ThreadSafeCollection.cs" />
     <Compile Include="Utils.cs" />
-    <Compile Include="WinKits\AnsiBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WinKits\AnsiLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="WinKits\_init_.cs" />
     <Compile Include="_init_.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -105,12 +90,6 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="log4net.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="log4net.db3" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

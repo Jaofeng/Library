@@ -12,12 +12,12 @@ namespace CJF.Net
 	/// <summary>SocketServerEventArgs 類別，供 AsyncServer/TelnetServer 產生事件用</summary>
 	public class SocketServerEventArgs : EventArgs
 	{
-		private AsyncClient _Client = null;
-		private byte[] _Data = null;
-		private Exception _Exception = null;
-		private EndPoint _RemoteEndPoint = null;
-		private IntPtr _Handle = IntPtr.Zero;
-		private object _ExtraInfo = null;
+		private readonly AsyncClient _Client = null;
+        private readonly byte[] _Data = null;
+        private readonly Exception _Exception = null;
+        private readonly EndPoint _RemoteEndPoint = null;
+        private readonly IntPtr _Handle = IntPtr.Zero;
+        private object _ExtraInfo = null;
 
 		/// <summary>取得值，對應至遠端的連線物件</summary>
 		public AsyncClient Client { get { return _Client; } }
@@ -87,13 +87,13 @@ namespace CJF.Net
 	/// <summary>DataTransEventArgs 類別，供 AsyncClient/AsyncUDP 產生事件用</summary>
 	public class DataTransEventArgs : EventArgs
 	{
-		private long _SendedBytes = 0;
+        private readonly long _SendedBytes = 0;
 		/// <summary>取得值，每秒發送的位元組數量，單位：位元組</summary>
 		public long SendedBytes { get { return _SendedBytes; } }
-		private long _ReceivedBytes = 0;
+        private readonly long _ReceivedBytes = 0;
 		/// <summary>取得值，每秒接收的位元組數量，單位：位元組</summary>
 		public long ReceivedBytes { get { return _ReceivedBytes; } }
-		private long _WaittingBytes = 0;
+        private readonly long _WaittingBytes = 0;
 		/// <summary>取得值，等待發送的位元組數量，單位：位元組</summary>
 		public long WaittingBytes { get { return _WaittingBytes; } }
 		/// <summary>建立新的 AsyncClientEventArgs 類別</summary>
@@ -113,11 +113,11 @@ namespace CJF.Net
 	/// <summary>AsyncClientEventArgs 類別，供 AsyncClient 產生事件用</summary>
 	public class AsyncClientEventArgs : EventArgs
 	{
-		private byte[] _Data = null;
-		private Exception _Exception = null;
-		private EndPoint _RemoteEndPoint = null;
-		private EndPoint _LocalEndPoint = null;
-		private IntPtr _Handle = IntPtr.Zero;
+        private readonly byte[] _Data = null;
+        private readonly Exception _Exception = null;
+        private readonly EndPoint _RemoteEndPoint = null;
+        private readonly EndPoint _LocalEndPoint = null;
+        private readonly IntPtr _Handle = IntPtr.Zero;
 		private object _ExtraInfo = null;
 
 		/// <summary>取得值，接收或傳送的位元組陣列資料</summary>
@@ -180,11 +180,11 @@ namespace CJF.Net
 	/// <summary>AsyncUdpEventArgs 類別，供 AsyncUdp 產生事件用</summary>
 	public class AsyncUdpEventArgs : EventArgs
 	{
-		private byte[] _Data = null;
-		private Exception _Exception = null;
-		private EndPoint _RemoteEndPoint = null;
-		private EndPoint _LocalEndPoint = null;
-		private IntPtr _Handle = IntPtr.Zero;
+        private readonly byte[] _Data = null;
+        private readonly Exception _Exception = null;
+        private readonly EndPoint _RemoteEndPoint = null;
+        private readonly EndPoint _LocalEndPoint = null;
+        private readonly IntPtr _Handle = IntPtr.Zero;
 		private object _ExtraInfo = null;
 
 		/// <summary>取得值，接收或傳送的位元組陣列資料</summary>
@@ -285,9 +285,9 @@ namespace CJF.Net
 	/// <summary>SslTcpEventArgs 類別，供 SslTcpServer 產生事件用</summary>
 	public class SslTcpEventArgs : EventArgs
 	{
-		private byte[] _Data = null;
-		private Exception _Exception = null;
-		private EndPoint _RemoteEndPoint = null;
+        private readonly byte[] _Data = null;
+        private readonly Exception _Exception = null;
+        private readonly EndPoint _RemoteEndPoint = null;
 
 		/// <summary>取得值，接收或傳送的位元組陣列資料</summary>
 		public byte[] Data { get { return _Data; } }
@@ -362,8 +362,7 @@ namespace CJF.Net
 		{
 			try
 			{
-				SocketAsyncEventArgs arg = null;
-				if (m_pool.TryPop(out arg))
+				if (m_pool.TryPop(out SocketAsyncEventArgs arg))
 					return arg;
 				else
 					return null;
@@ -477,36 +476,6 @@ namespace CJF.Net
 			this.IsDisposed = true;
 		}
 		#endregion
-	}
-	#endregion
-
-	#region Public Enum : SocketDebugType
-	/// <summary>連線偵錯用列舉</summary>
-	[Flags]
-	public enum SocketDebugType : ushort
-	{
-		/// <summary>不顯示除錯訊息</summary>
-		None = 0x00,
-		/// <summary>顯示連線除錯訊息</summary>
-		Connect = 0x01,
-		/// <summary>顯示暫停收送作業除錯訊息</summary>
-		Shutdown = 0x02,
-		/// <summary>顯示關閉連線除錯訊息</summary>
-		Close = 0x04,
-		/// <summary>顯示發送資料除錯訊息</summary>
-		Send = 0x08,
-		/// <summary>顯示接收資料除錯訊息</summary>
-		Receive = 0x10,
-		/// <summary>顯示取出Socket堆疊訊息</summary>
-		PopSocketArg = 0x20,
-		/// <summary>顯示放入Socket堆疊訊息</summary>
-		PushSocketArg = 0x40,
-		/// <summary>顯示放入SocketAsyncEventArgs.Completed事件訊息</summary>
-		IO_Completed = 0x80,
-		/// <summary>顯示連線相關除錯訊息</summary>
-		ConnectStatus = Connect | Shutdown | Close | IO_Completed,
-		/// <summary>顯示所有除錯訊息</summary>
-		All = 0xFF
 	}
 	#endregion
 

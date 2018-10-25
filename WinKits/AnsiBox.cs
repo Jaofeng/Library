@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
+#pragma warning disable IDE1006
 namespace CJF.Utility.WinKits
 {
-    #pragma warning disable IDE1006
     /// <summary>表示可支援顯示 ANSI CSI Color Code 的可捲式控制項。</summary>
     [DefaultEvent("Click"), DefaultProperty("Text")]
 	[Description("可支援顯示 ANSI CSI Color Code 的可捲式控制項。")]
@@ -747,7 +747,7 @@ namespace CJF.Utility.WinKits
 					else
 					{
 						loc = DrawWrapCsiSgrText(g, lines[i], font, bFore, bBack, loc);
-						if (i < lines.Length - 1)	//  && !string.IsNullOrEmpty(lines[i + 1])
+						if (i < lines.Length - 1)
 						{
 							loc.X = leftTop.X;
 							loc.Y += lineHeight;

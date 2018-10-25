@@ -27,6 +27,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>bin\Release\</OutputPath>
@@ -86,6 +87,12 @@
     </Compile>
     <Compile Include="FRoutingTable.Designer.cs">
       <DependentUpon>FRoutingTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FSocketMonitor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FSocketMonitor.Designer.cs">
+      <DependentUpon>FSocketMonitor.cs</DependentUpon>
     </Compile>
     <Compile Include="FTelnetServer.cs">
       <SubType>Form</SubType>
@@ -172,6 +179,9 @@
     <EmbeddedResource Include="FRoutingTable.resx">
       <DependentUpon>FRoutingTable.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="FSocketMonitor.resx">
+      <DependentUpon>FSocketMonitor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FTelnetServer.resx">
       <DependentUpon>FTelnetServer.cs</DependentUpon>
     </EmbeddedResource>
@@ -218,6 +228,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Logger\Logger.csproj">
+      <Project>{b314a72d-1a1c-4ef0-bf82-c25b9488b277}</Project>
+      <Name>Logger</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Modbus\Modbus.csproj">
       <Project>{2311285D-3524-4899-A366-69E8BC7E4769}</Project>
       <Name>Modbus</Name>
@@ -229,6 +243,10 @@
     <ProjectReference Include="..\Utility\Utility.csproj">
       <Project>{C57DD321-BD35-4BE4-B038-2B0672B6A32C}</Project>
       <Name>Utility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WinKits\WinKits.csproj">
+      <Project>{b82a2ffa-90b9-4687-ae00-b868085a3e07}</Project>
+      <Name>WinKits</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

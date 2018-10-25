@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net;
 using System.Text;
 using System.Threading;
@@ -20,7 +21,6 @@ namespace CJF.Modbus
 
 		#region Private Variables
 		/// <summary>記錄器</summary>
-		LogManager _log = new LogManager(typeof(TcpManager));
 		/// <summary>AsyncClient 連線類別</summary>
 		AsyncClient _Client = null;
 		/// <summary>MBAP 用的發送序號，Byte 0~1</summary>
@@ -122,8 +122,8 @@ namespace CJF.Modbus
 			if (_OnDisposing) return;
 			byte[] tmp = new byte[e.Data.Length];
 			Array.Copy(e.Data, tmp, tmp.Length);
-			_log.Write(LogManager.LogLevel.Debug, "Received {0} bytes.", tmp.Length);
-			_log.Write(LogManager.LogLevel.Debug, "Data:{0}", tmp.ToHexString());
+            Debug.Print($"Received {tmp.Length} bytes.");
+            Debug.Print($"Data:{tmp.ToHexString()}");
 		}
 
 		#region Private Method : void Remote_OnDataSended(object sender, AsyncClientEventArgs e)
@@ -132,8 +132,8 @@ namespace CJF.Modbus
 			if (_OnDisposing) return;
 			byte[] tmp = new byte[e.Data.Length];
 			Array.Copy(e.Data, tmp, tmp.Length);
-			_log.Write(LogManager.LogLevel.Debug, "Sended {0} bytes.", tmp.Length);
-			_log.Write(LogManager.LogLevel.Debug, "Data:{0}", tmp.ToHexString());
+            Debug.Print($"Sended {tmp.Length} bytes.");
+            Debug.Print($"Data:{tmp.ToHexString()}");
 		}
 		#endregion
 
@@ -143,16 +143,16 @@ namespace CJF.Modbus
 			if (_OnDisposing) return;
 			byte[] tmp = new byte[e.Data.Length];
 			Array.Copy(e.Data, tmp, tmp.Length);
-			_log.Write(LogManager.LogLevel.Debug, "Send fail, {0} bytes.", tmp.Length);
-			_log.Write(LogManager.LogLevel.Debug, "Data:{0}", tmp.ToHexString());
-		}
-		#endregion
+            Debug.Print($"Send fail {tmp.Length} bytes.");
+            Debug.Print($"Data:{tmp.ToHexString()}");
+        }
+        #endregion
 
-		#region Private Method : void Remote_OnClosed(object sender, AsyncClientEventArgs e)
-		private void Remote_OnClosed(object sender, AsyncClientEventArgs e)
+        #region Private Method : void Remote_OnClosed(object sender, AsyncClientEventArgs e)
+        private void Remote_OnClosed(object sender, AsyncClientEventArgs e)
 		{
 			if (_OnDisposing) return;
-			_log.Write(LogManager.LogLevel.Debug, "Remote disconnected");
+			Debug.Print("Remote disconnected");
 
 			#region 產生事件
 			if (!_OnDisposing && this.OnDisconnect != null)
@@ -161,7 +161,7 @@ namespace CJF.Modbus
 				{
 					if (_OnDisposing) return;
 					try { del.BeginInvoke(this, e, new AsyncCallback(EventCallback), del); }
-					catch (Exception ex) { _log.WriteException(ex); }
+					catch (Exception ex) { Debug.Print(ex.Message); }
 				}
 			}
 			#endregion
@@ -172,7 +172,7 @@ namespace CJF.Modbus
 		private void Remote_OnConnected(object sender, AsyncClientEventArgs e)
 		{
 			if (_OnDisposing) return;
-			_log.Write(LogManager.LogLevel.Debug, "Remote connected");
+			Debug.Print("Remote connected");
 
 			_Client.Socket.SendTimeout = _WriteTimeout;
 			_Client.Socket.ReceiveTimeout = _ReadTimeout;
@@ -184,7 +184,7 @@ namespace CJF.Modbus
 				{
 					if (_OnDisposing) return;
 					try { del.BeginInvoke(this, e, new AsyncCallback(EventCallback), del); }
-					catch (Exception ex) { _log.WriteException(ex); }
+					catch (Exception ex) { Debug.Print(ex.Message); }
 				}
 			}
 			#endregion
@@ -201,7 +201,7 @@ namespace CJF.Modbus
 				del.EndInvoke(result);
 			}
 			catch (ObjectDisposedException) { }
-			catch (Exception ex) { _log.WriteException(ex); }
+			catch (Exception ex) { Debug.Print(ex.Message); }
 		}
 		#endregion
 

@@ -41,12 +41,14 @@
             this.txtGetBytesResult = new System.Windows.Forms.TextBox();
             this.btnGetBytes = new System.Windows.Forms.Button();
             this.chkBigEndian = new System.Windows.Forms.CheckBox();
-            this.cbDateType = new System.Windows.Forms.ComboBox();
+            this.cbDataType = new System.Windows.Forms.ComboBox();
             this.button8 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.labConvResult = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.label33 = new System.Windows.Forms.Label();
+            this.txtBitConv = new System.Windows.Forms.TextBox();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.lab32B = new System.Windows.Forms.Label();
             this.lab32M = new System.Windows.Forms.Label();
@@ -121,6 +123,8 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.button17 = new System.Windows.Forms.Button();
             this.button18 = new System.Windows.Forms.Button();
+            this.button7 = new System.Windows.Forms.Button();
+            this.button19 = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.tabPage4 = new System.Windows.Forms.TabPage();
@@ -157,7 +161,28 @@
             this.button14 = new System.Windows.Forms.Button();
             this.txtAnsi = new System.Windows.Forms.TextBox();
             this.tabPage9 = new System.Windows.Forms.TabPage();
-            this.button7 = new System.Windows.Forms.Button();
+            this.tabPage10 = new System.Windows.Forms.TabPage();
+            this.btnAttach = new System.Windows.Forms.Button();
+            this.cbEncoding = new System.Windows.Forms.ComboBox();
+            this.chkUseHtml = new System.Windows.Forms.CheckBox();
+            this.btnSendMail = new System.Windows.Forms.Button();
+            this.txtContext = new System.Windows.Forms.TextBox();
+            this.label31 = new System.Windows.Forms.Label();
+            this.label30 = new System.Windows.Forms.Label();
+            this.txtAttachments = new System.Windows.Forms.TextBox();
+            this.label32 = new System.Windows.Forms.Label();
+            this.txtSubject = new System.Windows.Forms.TextBox();
+            this.label29 = new System.Windows.Forms.Label();
+            this.txtMailTo = new System.Windows.Forms.TextBox();
+            this.label28 = new System.Windows.Forms.Label();
+            this.txtMailFrom = new System.Windows.Forms.TextBox();
+            this.label27 = new System.Windows.Forms.Label();
+            this.txtPWD = new System.Windows.Forms.TextBox();
+            this.label25 = new System.Windows.Forms.Label();
+            this.txtUserID = new System.Windows.Forms.TextBox();
+            this.label24 = new System.Windows.Forms.Label();
+            this.txtSMTP = new System.Windows.Forms.TextBox();
+            this.label18 = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -174,6 +199,7 @@
             this.tabPage7.SuspendLayout();
             this.tabPage8.SuspendLayout();
             this.tabPage9.SuspendLayout();
+            this.tabPage10.SuspendLayout();
             this.SuspendLayout();
             // 
             // button1
@@ -266,15 +292,15 @@
             // 
             this.txtGetBytesResult.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtGetBytesResult.Location = new System.Drawing.Point(9, 49);
+            this.txtGetBytesResult.Location = new System.Drawing.Point(283, 21);
             this.txtGetBytesResult.Name = "txtGetBytesResult";
-            this.txtGetBytesResult.Size = new System.Drawing.Size(521, 22);
+            this.txtGetBytesResult.Size = new System.Drawing.Size(246, 22);
             this.txtGetBytesResult.TabIndex = 14;
             // 
             // btnGetBytes
             // 
             this.btnGetBytes.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnGetBytes.Location = new System.Drawing.Point(538, 49);
+            this.btnGetBytes.Location = new System.Drawing.Point(537, 21);
             this.btnGetBytes.Name = "btnGetBytes";
             this.btnGetBytes.Size = new System.Drawing.Size(80, 23);
             this.btnGetBytes.TabIndex = 11;
@@ -287,28 +313,28 @@
             this.chkBigEndian.AutoSize = true;
             this.chkBigEndian.Checked = true;
             this.chkBigEndian.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkBigEndian.Location = new System.Drawing.Point(200, 21);
+            this.chkBigEndian.Location = new System.Drawing.Point(200, 24);
             this.chkBigEndian.Name = "chkBigEndian";
             this.chkBigEndian.Size = new System.Drawing.Size(77, 16);
             this.chkBigEndian.TabIndex = 13;
             this.chkBigEndian.Text = "Big Endian";
             this.chkBigEndian.UseVisualStyleBackColor = true;
             // 
-            // cbDateType
+            // cbDataType
             // 
-            this.cbDateType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cbDateType.FormattingEnabled = true;
-            this.cbDateType.Items.AddRange(new object[] {
+            this.cbDataType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbDataType.FormattingEnabled = true;
+            this.cbDataType.Items.AddRange(new object[] {
             "Int",
             "UInt",
             "Short",
             "UShort",
             "Long",
             "ULong"});
-            this.cbDateType.Location = new System.Drawing.Point(113, 21);
-            this.cbDateType.Name = "cbDateType";
-            this.cbDateType.Size = new System.Drawing.Size(80, 20);
-            this.cbDateType.TabIndex = 12;
+            this.cbDataType.Location = new System.Drawing.Point(113, 22);
+            this.cbDataType.Name = "cbDataType";
+            this.cbDataType.Size = new System.Drawing.Size(80, 20);
+            this.cbDataType.TabIndex = 12;
             // 
             // button8
             // 
@@ -360,9 +386,11 @@
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.label33);
+            this.groupBox2.Controls.Add(this.txtBitConv);
             this.groupBox2.Controls.Add(this.txtGetBytes);
             this.groupBox2.Controls.Add(this.btnGetBytes);
-            this.groupBox2.Controls.Add(this.cbDateType);
+            this.groupBox2.Controls.Add(this.cbDataType);
             this.groupBox2.Controls.Add(this.chkBigEndian);
             this.groupBox2.Controls.Add(this.txtGetBytesResult);
             this.groupBox2.Location = new System.Drawing.Point(15, 13);
@@ -371,6 +399,24 @@
             this.groupBox2.TabIndex = 18;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Number GetByte Array";
+            // 
+            // label33
+            // 
+            this.label33.AutoSize = true;
+            this.label33.Location = new System.Drawing.Point(7, 52);
+            this.label33.Name = "label33";
+            this.label33.Size = new System.Drawing.Size(127, 12);
+            this.label33.TabIndex = 20;
+            this.label33.Text = "BitConverter to Numberic";
+            // 
+            // txtBitConv
+            // 
+            this.txtBitConv.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtBitConv.Location = new System.Drawing.Point(140, 48);
+            this.txtBitConv.Name = "txtBitConv";
+            this.txtBitConv.Size = new System.Drawing.Size(137, 22);
+            this.txtBitConv.TabIndex = 19;
             // 
             // groupBox7
             // 
@@ -1121,6 +1167,7 @@
             this.tabControl1.Controls.Add(this.tabPage7);
             this.tabControl1.Controls.Add(this.tabPage8);
             this.tabControl1.Controls.Add(this.tabPage9);
+            this.tabControl1.Controls.Add(this.tabPage10);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.ItemSize = new System.Drawing.Size(74, 24);
             this.tabControl1.Location = new System.Drawing.Point(5, 5);
@@ -1156,6 +1203,7 @@
             this.flowLayoutPanel1.Controls.Add(this.button17);
             this.flowLayoutPanel1.Controls.Add(this.button18);
             this.flowLayoutPanel1.Controls.Add(this.button7);
+            this.flowLayoutPanel1.Controls.Add(this.button19);
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(11, 9);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
@@ -1181,6 +1229,26 @@
             this.button18.Text = "SSL TCP Client";
             this.button18.UseVisualStyleBackColor = true;
             this.button18.Click += new System.EventHandler(this.button18_Click);
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(255, 105);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(120, 45);
+            this.button7.TabIndex = 25;
+            this.button7.Text = "Routing Table";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
+            // 
+            // button19
+            // 
+            this.button19.Location = new System.Drawing.Point(381, 105);
+            this.button19.Name = "button19";
+            this.button19.Size = new System.Drawing.Size(120, 45);
+            this.button19.TabIndex = 26;
+            this.button19.Text = "Socket Monitor";
+            this.button19.UseVisualStyleBackColor = true;
+            this.button19.Click += new System.EventHandler(this.button19_Click);
             // 
             // tabPage2
             // 
@@ -1625,15 +1693,220 @@
             this.tabPage9.Text = "Other";
             this.tabPage9.UseVisualStyleBackColor = true;
             // 
-            // button7
+            // tabPage10
             // 
-            this.button7.Location = new System.Drawing.Point(255, 105);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(120, 45);
-            this.button7.TabIndex = 25;
-            this.button7.Text = "Routing Table";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
+            this.tabPage10.Controls.Add(this.btnAttach);
+            this.tabPage10.Controls.Add(this.cbEncoding);
+            this.tabPage10.Controls.Add(this.chkUseHtml);
+            this.tabPage10.Controls.Add(this.btnSendMail);
+            this.tabPage10.Controls.Add(this.txtContext);
+            this.tabPage10.Controls.Add(this.label31);
+            this.tabPage10.Controls.Add(this.label30);
+            this.tabPage10.Controls.Add(this.txtAttachments);
+            this.tabPage10.Controls.Add(this.label32);
+            this.tabPage10.Controls.Add(this.txtSubject);
+            this.tabPage10.Controls.Add(this.label29);
+            this.tabPage10.Controls.Add(this.txtMailTo);
+            this.tabPage10.Controls.Add(this.label28);
+            this.tabPage10.Controls.Add(this.txtMailFrom);
+            this.tabPage10.Controls.Add(this.label27);
+            this.tabPage10.Controls.Add(this.txtPWD);
+            this.tabPage10.Controls.Add(this.label25);
+            this.tabPage10.Controls.Add(this.txtUserID);
+            this.tabPage10.Controls.Add(this.label24);
+            this.tabPage10.Controls.Add(this.txtSMTP);
+            this.tabPage10.Controls.Add(this.label18);
+            this.tabPage10.Location = new System.Drawing.Point(4, 28);
+            this.tabPage10.Name = "tabPage10";
+            this.tabPage10.Padding = new System.Windows.Forms.Padding(11, 9, 11, 9);
+            this.tabPage10.Size = new System.Drawing.Size(653, 255);
+            this.tabPage10.TabIndex = 9;
+            this.tabPage10.Text = "Send Mail";
+            this.tabPage10.UseVisualStyleBackColor = true;
+            // 
+            // btnAttach
+            // 
+            this.btnAttach.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnAttach.Location = new System.Drawing.Point(609, 124);
+            this.btnAttach.Name = "btnAttach";
+            this.btnAttach.Size = new System.Drawing.Size(27, 23);
+            this.btnAttach.TabIndex = 14;
+            this.btnAttach.Tag = "txtFile";
+            this.btnAttach.Text = "...";
+            this.btnAttach.UseVisualStyleBackColor = true;
+            this.btnAttach.Click += new System.EventHandler(this.btnAttach_Click);
+            // 
+            // cbEncoding
+            // 
+            this.cbEncoding.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbEncoding.FormattingEnabled = true;
+            this.cbEncoding.Items.AddRange(new object[] {
+            "Big5",
+            "UTF-8",
+            "UTF-7",
+            "Unicode"});
+            this.cbEncoding.Location = new System.Drawing.Point(87, 220);
+            this.cbEncoding.Name = "cbEncoding";
+            this.cbEncoding.Size = new System.Drawing.Size(121, 20);
+            this.cbEncoding.TabIndex = 18;
+            // 
+            // chkUseHtml
+            // 
+            this.chkUseHtml.AutoSize = true;
+            this.chkUseHtml.Location = new System.Drawing.Point(214, 222);
+            this.chkUseHtml.Name = "chkUseHtml";
+            this.chkUseHtml.Size = new System.Drawing.Size(107, 16);
+            this.chkUseHtml.TabIndex = 19;
+            this.chkUseHtml.Text = "Is HTML Context";
+            this.chkUseHtml.UseVisualStyleBackColor = true;
+            // 
+            // btnSendMail
+            // 
+            this.btnSendMail.Location = new System.Drawing.Point(561, 219);
+            this.btnSendMail.Name = "btnSendMail";
+            this.btnSendMail.Size = new System.Drawing.Size(75, 23);
+            this.btnSendMail.TabIndex = 20;
+            this.btnSendMail.Text = "Send";
+            this.btnSendMail.UseVisualStyleBackColor = true;
+            this.btnSendMail.Click += new System.EventHandler(this.btnSendMail_Click);
+            // 
+            // txtContext
+            // 
+            this.txtContext.Location = new System.Drawing.Point(87, 152);
+            this.txtContext.Multiline = true;
+            this.txtContext.Name = "txtContext";
+            this.txtContext.Size = new System.Drawing.Size(549, 62);
+            this.txtContext.TabIndex = 16;
+            // 
+            // label31
+            // 
+            this.label31.AutoSize = true;
+            this.label31.Location = new System.Drawing.Point(31, 224);
+            this.label31.Name = "label31";
+            this.label31.Size = new System.Drawing.Size(50, 12);
+            this.label31.TabIndex = 17;
+            this.label31.Text = "Encoding";
+            // 
+            // label30
+            // 
+            this.label30.AutoSize = true;
+            this.label30.Location = new System.Drawing.Point(39, 151);
+            this.label30.Name = "label30";
+            this.label30.Size = new System.Drawing.Size(42, 12);
+            this.label30.TabIndex = 15;
+            this.label30.Text = "Context";
+            // 
+            // txtAttachments
+            // 
+            this.txtAttachments.Location = new System.Drawing.Point(87, 124);
+            this.txtAttachments.Name = "txtAttachments";
+            this.txtAttachments.Size = new System.Drawing.Size(516, 22);
+            this.txtAttachments.TabIndex = 13;
+            // 
+            // label32
+            // 
+            this.label32.AutoSize = true;
+            this.label32.Location = new System.Drawing.Point(23, 129);
+            this.label32.Name = "label32";
+            this.label32.Size = new System.Drawing.Size(58, 12);
+            this.label32.TabIndex = 12;
+            this.label32.Text = "Attachment";
+            // 
+            // txtSubject
+            // 
+            this.txtSubject.Location = new System.Drawing.Point(87, 96);
+            this.txtSubject.Name = "txtSubject";
+            this.txtSubject.Size = new System.Drawing.Size(549, 22);
+            this.txtSubject.TabIndex = 11;
+            // 
+            // label29
+            // 
+            this.label29.AutoSize = true;
+            this.label29.Location = new System.Drawing.Point(42, 99);
+            this.label29.Name = "label29";
+            this.label29.Size = new System.Drawing.Size(39, 12);
+            this.label29.TabIndex = 10;
+            this.label29.Text = "Subject";
+            // 
+            // txtMailTo
+            // 
+            this.txtMailTo.Location = new System.Drawing.Point(87, 68);
+            this.txtMailTo.Name = "txtMailTo";
+            this.txtMailTo.Size = new System.Drawing.Size(549, 22);
+            this.txtMailTo.TabIndex = 9;
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(63, 71);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(18, 12);
+            this.label28.TabIndex = 8;
+            this.label28.Text = "To";
+            // 
+            // txtMailFrom
+            // 
+            this.txtMailFrom.Location = new System.Drawing.Point(87, 40);
+            this.txtMailFrom.Name = "txtMailFrom";
+            this.txtMailFrom.Size = new System.Drawing.Size(549, 22);
+            this.txtMailFrom.TabIndex = 7;
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(51, 43);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(30, 12);
+            this.label27.TabIndex = 6;
+            this.label27.Text = "From";
+            // 
+            // txtPWD
+            // 
+            this.txtPWD.Location = new System.Drawing.Point(495, 12);
+            this.txtPWD.Name = "txtPWD";
+            this.txtPWD.Size = new System.Drawing.Size(141, 22);
+            this.txtPWD.TabIndex = 5;
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(441, 17);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(48, 12);
+            this.label25.TabIndex = 4;
+            this.label25.Text = "Password";
+            // 
+            // txtUserID
+            // 
+            this.txtUserID.Location = new System.Drawing.Point(290, 12);
+            this.txtUserID.Name = "txtUserID";
+            this.txtUserID.Size = new System.Drawing.Size(141, 22);
+            this.txtUserID.TabIndex = 3;
+            // 
+            // label24
+            // 
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(240, 17);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(44, 12);
+            this.label24.TabIndex = 2;
+            this.label24.Text = "Account";
+            // 
+            // txtSMTP
+            // 
+            this.txtSMTP.Location = new System.Drawing.Point(87, 12);
+            this.txtSMTP.Name = "txtSMTP";
+            this.txtSMTP.Size = new System.Drawing.Size(141, 22);
+            this.txtSMTP.TabIndex = 1;
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(14, 17);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(67, 12);
+            this.label18.TabIndex = 0;
+            this.label18.Text = "SMTP Server";
             // 
             // MainEntry
             // 
@@ -1674,6 +1947,8 @@
             this.tabPage8.ResumeLayout(false);
             this.tabPage8.PerformLayout();
             this.tabPage9.ResumeLayout(false);
+            this.tabPage10.ResumeLayout(false);
+            this.tabPage10.PerformLayout();
             this.ResumeLayout(false);
 
 		}
@@ -1692,7 +1967,7 @@
 		private System.Windows.Forms.TextBox txtGetBytesResult;
 		private System.Windows.Forms.Button btnGetBytes;
 		private System.Windows.Forms.CheckBox chkBigEndian;
-		private System.Windows.Forms.ComboBox cbDateType;
+		private System.Windows.Forms.ComboBox cbDataType;
 		private System.Windows.Forms.Button button8;
 		private System.Windows.Forms.Button button9;
 		private System.Windows.Forms.GroupBox groupBox1;
@@ -1809,5 +2084,30 @@
         private CJF.Utility.WinKits.AnsiLabel ansiLabel2;
         private CJF.Utility.WinKits.AnsiBox ansiBox1;
         private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.TabPage tabPage10;
+        private System.Windows.Forms.TextBox txtSMTP;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.TextBox txtUserID;
+        private System.Windows.Forms.Label label24;
+        private System.Windows.Forms.TextBox txtPWD;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.TextBox txtMailFrom;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.TextBox txtSubject;
+        private System.Windows.Forms.Label label29;
+        private System.Windows.Forms.TextBox txtMailTo;
+        private System.Windows.Forms.Label label28;
+        private System.Windows.Forms.Button btnSendMail;
+        private System.Windows.Forms.TextBox txtContext;
+        private System.Windows.Forms.Label label30;
+        private System.Windows.Forms.CheckBox chkUseHtml;
+        private System.Windows.Forms.ComboBox cbEncoding;
+        private System.Windows.Forms.Label label31;
+        private System.Windows.Forms.Button btnAttach;
+        private System.Windows.Forms.TextBox txtAttachments;
+        private System.Windows.Forms.Label label32;
+        private System.Windows.Forms.Label label33;
+        private System.Windows.Forms.TextBox txtBitConv;
+        private System.Windows.Forms.Button button19;
     }
 }

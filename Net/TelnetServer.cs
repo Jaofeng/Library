@@ -45,7 +45,6 @@ namespace CJF.Net.Telnet
         #endregion
 
         #region Variables
-        LogManager _log = new LogManager(typeof(TelnetServer));
         AsyncServer m_Server;                       // 伺服器 Socket 物件
         IPEndPoint m_LocalEndPort;                  // 本地端通訊埠
         bool m_IsShutdown = false;
@@ -206,8 +205,6 @@ namespace CJF.Net.Telnet
         public CommandEndCharType DefaultEndChar { get; set; } = CommandEndCharType.None;
         /// <summary>設定或取得新行結束字元，預設 CrLf。</summary>
         public string NewLineChars { get; set; } = Environment.NewLine;
-        /// <summary>取得或設定是否為除錯模式</summary>
-        public SocketDebugType DebugMode { get; set; } = SocketDebugType.None;
         /// <summary>設定或取得長時間未操作自動將用戶端斷線的設定時間，單位秒，0表不作動，預設值為0</summary>
         public uint AutoCloseTime
         {
@@ -278,11 +275,6 @@ namespace CJF.Net.Telnet
                     }
                     m_ReceivedBuffer?.Clear();
                     m_ReceivedBuffer = null;
-                    //if (m_WaitForSend != null)
-                    //{
-                    //    m_WaitForSend.Clear();
-                    //    m_WaitForSend = null;
-                    //}
                     m_CommandEndChar?.Clear();
                     m_CommandEndChar = null;
                     m_ClientSettings?.Clear();
@@ -304,7 +296,7 @@ namespace CJF.Net.Telnet
             foreach (EventHandler del in Started.GetInvocationList())
             {
                 try { del.BeginInvoke(this, arg, null, del); }
-                catch (Exception ex) { _log.WriteException(ex); }
+                catch (Exception ex) { Debug.Print(ex.Message); }
             }
         }
         #endregion
@@ -319,7 +311,7 @@ namespace CJF.Net.Telnet
             foreach (EventHandler del in Shutdowned.GetInvocationList())
             {
                 try { del.BeginInvoke(this, arg, null, del); }
-                catch (Exception ex) { _log.WriteException(ex); }
+                catch (Exception ex) { Debug.Print(ex.Message); }
             }
         }
         #endregion
@@ -329,14 +321,12 @@ namespace CJF.Net.Telnet
         /// <param name="e">要傳遞的內容。</param>
         protected virtual void OnClientConnected(SocketServerEventArgs e)
         {
-            if (DebugMode.HasFlag(SocketDebugType.Connect))
-                Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {e.RemoteEndPoint} - Connected");
             if (ClientConnected == null)
                 return;
             foreach (EventHandler<SocketServerEventArgs> del in ClientConnected.GetInvocationList())
             {
                 try { del.BeginInvoke(this, e, null, del); }
-                catch (Exception ex) { _log.WriteException(ex); }
+                catch (Exception ex) { Debug.Print(ex.Message); }
             }
         }
         #endregion
@@ -346,14 +336,12 @@ namespace CJF.Net.Telnet
         /// <param name="e">要傳遞的內容。</param>
         protected virtual void OnClientClosing(SocketServerEventArgs e)
         {
-            if (DebugMode.HasFlag(SocketDebugType.Connect))
-                Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {e.RemoteEndPoint} - Closing");
             if (ClientClosing != null)
             {
                 foreach (EventHandler<SocketServerEventArgs> del in ClientClosing.GetInvocationList())
                 {
                     try { del.BeginInvoke(this, e, null, del); }
-                    catch (Exception ex) { _log.WriteException(ex); }
+                    catch (Exception ex) { Debug.Print(ex.Message); }
                 }
             }
             if (e.RemoteEndPoint != null)
@@ -370,14 +358,12 @@ namespace CJF.Net.Telnet
         /// <param name="e">要傳遞的內容。</param>
         protected virtual void OnClientClosed(SocketServerEventArgs e)
         {
-            if (DebugMode.HasFlag(SocketDebugType.Connect))
-                Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {e.RemoteEndPoint} - Disconnect");
             if (ClientClosed != null)
             {
                 foreach (EventHandler<SocketServerEventArgs> del in ClientClosed.GetInvocationList())
                 {
                     try { del.BeginInvoke(this, e, null, del); }
-                    catch (Exception ex) { _log.WriteException(ex); }
+                    catch (Exception ex) { Debug.Print(ex.Message); }
                 }
             }
             if (e.RemoteEndPoint != null)
@@ -394,8 +380,6 @@ namespace CJF.Net.Telnet
         /// <param name="e">要傳遞的內容。</param>
         protected virtual void OnDataSended(SocketServerEventArgs e)
         {
-            if (DebugMode.HasFlag(SocketDebugType.Send))
-                Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {e.RemoteEndPoint} - Send:{e.Data.ToHexString()}");
             if (DataSended == null)
                 return;
             SocketServerEventArgs ssea = e;
@@ -409,7 +393,7 @@ namespace CJF.Net.Telnet
             foreach (EventHandler<SocketServerEventArgs> del in DataSended.GetInvocationList())
             {
                 try { del.BeginInvoke(this, ssea, null, del); }
-                catch (Exception ex) { _log.WriteException(ex); }
+                catch (Exception ex) { Debug.Print(ex.Message); }
             }
         }
         #endregion
@@ -424,7 +408,7 @@ namespace CJF.Net.Telnet
             foreach (EventHandler<SocketServerEventArgs> del in DataReceived.GetInvocationList())
             {
                 try { del.BeginInvoke(this, e, null, del); }
-                catch (Exception ex) { _log.WriteException(ex); }
+                catch (Exception ex) { Debug.Print(ex.Message); }
             }
         }
         #endregion
@@ -439,7 +423,7 @@ namespace CJF.Net.Telnet
             foreach (EventHandler<SocketServerEventArgs> del in Exception.GetInvocationList())
             {
                 try { del.BeginInvoke(this, e, null, del); }
-                catch (Exception ex) { _log.WriteException(ex); }
+                catch (Exception ex) { Debug.Print(ex.Message); }
             }
         }
         #endregion
@@ -449,14 +433,12 @@ namespace CJF.Net.Telnet
         /// <param name="e">要傳遞的內容。</param>
         protected virtual void OnSendedFail(SocketServerEventArgs e)
         {
-            if (DebugMode.HasFlag(SocketDebugType.Send))
-                Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {e.RemoteEndPoint} - Send Fail:{e.Data.ToHexString()}");
             if (SendedFail == null)
                 return;
             foreach (EventHandler<SocketServerEventArgs> del in SendedFail.GetInvocationList())
             {
                 try { del.BeginInvoke(this, e, null, del); }
-                catch (Exception ex) { _log.WriteException(ex); }
+                catch (Exception ex) { Debug.Print(ex.Message); }
             }
         }
         #endregion
@@ -474,7 +456,7 @@ namespace CJF.Net.Telnet
             foreach (EventHandler<TelnetSettingChangedEventArgs> del in SettingsChanged.GetInvocationList())
             {
                 try { del.BeginInvoke(this, arg, null, del); }
-                catch (Exception ex) { _log.WriteException(ex); }
+                catch (Exception ex) { Debug.Print(ex.Message); }
             }
         }
         #endregion
@@ -514,8 +496,6 @@ namespace CJF.Net.Telnet
         private void Server_OnDataReceived(object sender, SocketServerEventArgs e)
         {
             string data = string.Empty;
-            if (DebugMode.HasFlag(SocketDebugType.Receive))
-                Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {e.RemoteEndPoint} - Rece:{e.Data.ToHexString()}");
             if (!m_CommandEndChar.TryGetValue(e.RemoteEndPoint, out CommandEndCharType ct))
             {
                 ct = this.DefaultEndChar;
@@ -598,8 +578,6 @@ namespace CJF.Net.Telnet
                                             }
                                         }
                                     }
-                                    if (DebugMode.HasFlag(SocketDebugType.Receive))
-                                        Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {e.RemoteEndPoint} - LoginStatus:{tcs.LoginStatus}");
                                     if (tcs.LoginStatus == LoginStatus.LoggedIn)
                                     {
                                         // 密碼正確
@@ -887,8 +865,6 @@ namespace CJF.Net.Telnet
                                             {
                                                 tcs.BinaryTransmission = true;
                                                 back.AddRange(new byte[] { 0xFF, 0xFD, 0x00 });
-                                                if (DebugMode.HasFlag(SocketDebugType.Receive))
-                                                    Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {ac.RemoteEndPoint} - Request Binary Transmission ON");
                                             }
                                             break;
                                         case 0x01:  // ECHO(1)
@@ -896,8 +872,6 @@ namespace CJF.Net.Telnet
                                             {
                                                 tcs.Echo = true;
                                                 back.AddRange(new byte[] { 0xFF, 0xFD, 0x01 });
-                                                if (DebugMode.HasFlag(SocketDebugType.Receive))
-                                                    Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {ac.RemoteEndPoint} - Request ECHO ON");
                                             }
                                             break;
                                         case 0x03:  // Will Suppress Go Ahead(3)
@@ -938,8 +912,6 @@ namespace CJF.Net.Telnet
                                             {
                                                 tcs.BinaryTransmission = false;
                                                 back.AddRange(new byte[] { 0xFF, 0xFE, 0x00 });
-                                                if (DebugMode.HasFlag(SocketDebugType.Receive))
-                                                    Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {ac.RemoteEndPoint} - Request Binary Transmission OFF");
                                             }
                                             break;
                                         case 0x01:  // ECHO(1)
@@ -947,8 +919,6 @@ namespace CJF.Net.Telnet
                                             {
                                                 tcs.Echo = false;
                                                 back.AddRange(new byte[] { 0xFF, 0xFE, 0x01 });
-                                                if (DebugMode.HasFlag(SocketDebugType.Receive))
-                                                    Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {ac.RemoteEndPoint} - Request ECHO OFF");
                                             }
                                             break;
                                         case 0x12:  // LOGOUT(18)
@@ -972,8 +942,6 @@ namespace CJF.Net.Telnet
                                             {
                                                 tcs.BinaryTransmission = true;
                                                 back.AddRange(new byte[] { 0xFF, 0xFB, 0x00 });
-                                                if (DebugMode.HasFlag(SocketDebugType.Receive))
-                                                    Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {ac.RemoteEndPoint} - Request Binary Transmission ON");
                                             }
                                             break;
                                         case 0x01:  // ECHO(1)
@@ -981,8 +949,6 @@ namespace CJF.Net.Telnet
                                             {
                                                 tcs.Echo = true;
                                                 back.AddRange(new byte[] { 0xFF, 0xFB, 0x01 });
-                                                if (DebugMode.HasFlag(SocketDebugType.Receive))
-                                                    Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {ac.RemoteEndPoint} - Request ECHO ON");
                                             }
                                             break;
                                     }
@@ -1005,8 +971,6 @@ namespace CJF.Net.Telnet
                                             {
                                                 tcs.BinaryTransmission = false;
                                                 back.AddRange(new byte[] { 0xFF, 0xFC, 0x00 });
-                                                if (DebugMode.HasFlag(SocketDebugType.Receive))
-                                                    Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {ac.RemoteEndPoint} - Request Binary Transmission OFF");
                                             }
                                             break;
                                         case 0x01:  // ECHO(1)
@@ -1014,8 +978,6 @@ namespace CJF.Net.Telnet
                                             {
                                                 tcs.Echo = false;
                                                 back.AddRange(new byte[] { 0xFF, 0xFC, 0x01 });
-                                                if (DebugMode.HasFlag(SocketDebugType.Receive))
-                                                    Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {ac.RemoteEndPoint} - Request ECHO OFF");
                                             }
                                             break;
                                         case 0x18:  // TERMTYPE(24)
@@ -1044,8 +1006,6 @@ namespace CJF.Net.Telnet
             {
                 OnSettingsChanged(ac.RemoteEndPoint, orig, tcs);
                 m_ClientSettings.AddOrUpdate(ac.RemoteEndPoint, tcs, (k, v) => v = tcs);
-                if (DebugMode.HasFlag(SocketDebugType.Receive))
-                    Debug.Print($"[{DateTime.Now.ToString("HH:mm:ss.fff")}] {ac.RemoteEndPoint} - New Setting:{tcs}");
             }
             return cmd.ToArray();
         }

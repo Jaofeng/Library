@@ -313,30 +313,23 @@ namespace CJF.Utility.Ansi
 	/// <summary>AnsiString 類別用的控制碼結構</summary>
 	struct AnsiData
 	{
-		#region Public Properties
-		string _Code;
-		public string Code { get { return _Code; } }
+        #region Public Readonly Properties
+        public string Code { get; }
+        public string Key { get; }
+        public string Memo { get; }
+        public CodeType CodeType { get; }
+        #endregion
 
-		string _Key;
-		public string Key { get { return _Key; } }
-
-		string _Memo;
-		public string Memo { get { return _Memo; } }
-
-		CodeType _CodeType;
-		public CodeType CodeType { get { return _CodeType; } }
-		#endregion
-
-		public AnsiData(string key, CodeType ct, string code, string definition)
+        public AnsiData(string key, CodeType ct, string code, string definition)
 		{
-			_Key = key;
-			_Code = code;
-			_Memo = definition;
-			_CodeType = ct;
+			Key = key;
+			Code = code;
+			Memo = definition;
+			CodeType = ct;
 		}
 
 		public static AnsiData Empty { get { return new AnsiData(); } }
-		public bool IsEmpty { get { return string.IsNullOrEmpty(_Key); } }
+		public bool IsEmpty { get { return string.IsNullOrEmpty(Key); } }
 		public bool Equals(AnsiData item)
 		{
 			return item.Key.Equals(this.Key);

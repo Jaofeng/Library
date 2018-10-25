@@ -208,7 +208,6 @@ namespace Tester
                 {
                     Authentication = txtAuth.Text,
                     AutoCloseTime = 0,
-                    DebugMode = SocketDebugType.Receive | SocketDebugType.Send,
                     DefaultEndChar = TelnetServer.CommandEndCharType.None
                 };
                 _Server.Started += new EventHandler(Server_OnStarted);

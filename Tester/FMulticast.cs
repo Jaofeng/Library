@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Windows.Forms;
 using CJF.Net;
 using CJF.Net.Multicast;
@@ -13,15 +14,15 @@ namespace Tester
 	public partial class FMulticast : Form
 	{
 		CastReceiver _Receiver = null;
-		CastSender _Sender = null;
+		//CastSender _Sender = null;
 		public FMulticast()
 		{
 			InitializeComponent();
 			cbIP.Items.AddRange(TcpManager.GetHostIP());
-			string[] ip = txtSendIP.Text.Split(':');
-			IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip[0]), int.Parse(ip[1]));
-			_Sender = new CastSender(ep, int.Parse(ip[2]));
-			_Sender.DataSended += new EventHandler<AsyncUdpEventArgs>(Client_DataSended);
+			//string[] ip = txtSendIP.Text.Split(':');
+			//IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip[0]), int.Parse(ip[1]));
+			//_Sender = new CastSender(ep, int.Parse(ip[2]));
+			//_Sender.DataSended += new EventHandler<AsyncUdpEventArgs>(Client_DataSended);
 		}
 
 		#region WriteLog
@@ -58,7 +59,11 @@ namespace Tester
 
 		void Server_Started(object sender, AsyncUdpEventArgs e)
 		{
-			WriteLog("伺服器已於 {0} 啟動", _Receiver.Socket.LocalEndPoint);
+            CastReceiver cr = sender as CastReceiver;
+            WriteLog($"伺服器已於 {cr.LocalEndPort} 啟動");
+            WriteLog("已加入監聽的群組:");
+            foreach (System.Net.Sockets.MulticastOption mo in cr.JoinedGroups)
+                WriteLog($"-> {mo.Group}");
 		}
 		#endregion
 
@@ -102,21 +107,27 @@ namespace Tester
 			if (e.KeyCode != Keys.Enter)
 				return;
 			string[] ip = txtSendIP.Text.Split(':');
-			IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip[0]), int.Parse(ip[1]));
-			if (_Sender == null || (_Sender != null && !_Sender.RemoteEndPoint.Equals(ep)))
-			{
-				if (_Sender != null)
-					_Sender.Dispose();
-				_Sender = new CastSender(ep, int.Parse(ip[2]));
-				_Sender.DataSended += new EventHandler<AsyncUdpEventArgs>(Client_DataSended);
-			}
-			byte[] buf = null;
-			if (chkHexString.Checked)
-				buf = txtSendMsg.Text.ToByteArray();
-			else
-				buf = Encoding.Default.GetBytes(txtSendMsg.Text);
-			_Sender.SendData(buf);
-			txtSendMsg.SelectAll();
+            byte[] buf = null;
+            if (chkHexString.Checked)
+                buf = txtSendMsg.Text.ToByteArray();
+            else
+                buf = Encoding.Default.GetBytes(txtSendMsg.Text);
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip[0]), int.Parse(ip[1]));
+            bool sended = false;
+            using (CastSender ser = new CastSender(ep, int.Parse(ip[2])))
+            {
+                ser.DataSended += (s, se) =>
+                {
+                    WriteLog("發送資料 {0} Bytes", se.Data.Length);
+                    WriteLog(" < : {0}", Encoding.Default.GetString(se.Data));
+                    WriteLog("Hex: {0}", se.Data.ToHexString());
+                    sended = true;
+                };
+                ser.SendData(buf);
+                SpinWait.SpinUntil(() => sended, 1000);
+            }
+            //CastSender.SendData(ep, buf);
+            txtSendMsg.SelectAll();
 			e.SuppressKeyPress = true;
 		}
 

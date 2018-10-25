@@ -407,13 +407,25 @@ namespace CJF.Net
 			}
 			return ipAddr.ToArray();
 		}
-		#endregion
-	}
-	#endregion
+        #endregion
 
-	#region Public Sealed Class : SocketInfo
-	/// <summary>TCP 連線資訊</summary>
-	public sealed class SocketInfo : IEquatable<SocketInfo>, IEqualityComparer<SocketInfo>
+        #region Public Static Method : bool CheckPortIsOccupied(int port)
+        /// <summary>檢查通訊埠是否被非本身程序給佔用。</summary>
+        /// <param name="port">欲檢查的通訊埠。</param>
+        /// <returns></returns>
+        public static bool CheckPortIsOccupied(int port)
+        {
+            SocketInfo[] sis = TcpManager.GetTable();
+            int pid = Process.GetCurrentProcess().Id;
+            return Array.Exists<SocketInfo>(sis, si => si.LocalEndPoint.Port.Equals(port) && !si.OwnerProcess.Id.Equals(pid));
+        }
+        #endregion
+    }
+    #endregion
+
+    #region Public Sealed Class : SocketInfo
+    /// <summary>TCP 連線資訊</summary>
+    public sealed class SocketInfo : IEquatable<SocketInfo>, IEqualityComparer<SocketInfo>
 	{
 		private readonly IPEndPoint _LocalEndPoint;
 		private readonly IPEndPoint _RemoteEndPoint;
@@ -502,7 +514,7 @@ namespace CJF.Net
 	}
     #endregion
 
-
+    #region Public Class : SocketMonitor
     /*
      * 封包解析程式碼來源取自: Raison D'etre Blog(https://dotblogs.com.tw/ireullin/1) 的文章：
      * * 攔截網路卡封包並且對封包內容進行分析 Part 1(https://dotblogs.com.tw/ireullin/2010/07/08/16464) 與
@@ -588,6 +600,7 @@ namespace CJF.Net
         public int PackageCount { get => _qPackage.Count; }
         #endregion
     }
+    #endregion
 
     #region Public Class : AnalyzePackage
     /// <summary>CJF.Net.AnalyzePackage 類別，用以解析封包檔頭內容。</summary>
