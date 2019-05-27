@@ -208,7 +208,7 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Public Virtual Method : void ProcessRequest()
+        #region Public Virtual Method : void ProcessRequest(HttpListenerContext context)
         /// <summary>[覆寫] 接收到 Http Request 時的處理流程</summary>
         public virtual void ProcessRequest(HttpListenerContext context)
         {
@@ -272,7 +272,7 @@ namespace CJF.Net.Http
                 HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Head, page, queryString);
                 try
                 {
-                    ReceivedHead?.Invoke(this, args);
+                    ReceivedHead?.BeginInvoke(this, args, null, null);
                 }
                 catch { throw; }
                 if (!args.Cancel)
@@ -293,7 +293,7 @@ namespace CJF.Net.Http
             HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Get, page, queryString);
             try
             {
-                ReceivedGet?.Invoke(this, args);
+                ReceivedGet?.BeginInvoke(this, args, null, null);
             }
             catch { throw; }
             if (!args.Cancel)
@@ -317,7 +317,7 @@ namespace CJF.Net.Http
             HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Post, page, keyValues);
             try
             {
-                ReceivedPost?.Invoke(this, args);
+                ReceivedPost?.BeginInvoke(this, args, null, null);
             }
             catch { throw; }
             if (!args.Cancel)
@@ -342,7 +342,7 @@ namespace CJF.Net.Http
             HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.File, page, keyValues, files);
             try
             {
-                ReceivedFiles?.Invoke(this, args);
+                ReceivedFiles?.BeginInvoke(this, args, null, null);
             }
             catch { throw; }
             if (!args.Cancel)
@@ -383,7 +383,7 @@ namespace CJF.Net.Http
                 HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Soap, page, keyValues, null);
                 try
                 {
-                    ReceivedSoap?.Invoke(this, args);
+                    ReceivedSoap.BeginInvoke(this, args, null, null);
                 }
                 catch { throw; }
                 if (args.Cancel)
@@ -412,7 +412,7 @@ namespace CJF.Net.Http
                 HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Put, page, queryString);
                 try
                 {
-                    ReceivedPut.Invoke(this, args);
+                    ReceivedPut.BeginInvoke(this, args, null, null);
                 }
                 catch { throw; }
                 if (!args.Cancel)
@@ -445,7 +445,7 @@ namespace CJF.Net.Http
                 HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Delete, page, queryString);
                 try
                 {
-                    ReceivedDelete.Invoke(this, args);
+                    ReceivedDelete.BeginInvoke(this, args, null, null);
                 }
                 catch { throw; }
                 if (!args.Cancel)
@@ -478,7 +478,7 @@ namespace CJF.Net.Http
                 HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Patch, page, queryString);
                 try
                 {
-                    ReceivedPatch.Invoke(this, args);
+                    ReceivedPatch.BeginInvoke(this, args, null, null);
                 }
                 catch { throw; }
                 if (!args.Cancel)

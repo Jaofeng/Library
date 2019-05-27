@@ -35,6 +35,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
@@ -43,6 +44,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="AnsiLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ExtTreeView.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="MessageBox.cs">
@@ -57,5 +61,6 @@
       <Name>Utility</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

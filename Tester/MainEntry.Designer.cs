@@ -161,6 +161,7 @@
             this.button14 = new System.Windows.Forms.Button();
             this.txtAnsi = new System.Windows.Forms.TextBox();
             this.tabPage9 = new System.Windows.Forms.TabPage();
+            this.ctvTest = new CJF.Utility.WinKits.ExtTreeView();
             this.tabPage10 = new System.Windows.Forms.TabPage();
             this.btnAttach = new System.Windows.Forms.Button();
             this.cbEncoding = new System.Windows.Forms.ComboBox();
@@ -680,7 +681,7 @@
             this.groupBox4.Controls.Add(this.btnSaveLog);
             this.groupBox4.Location = new System.Drawing.Point(15, 13);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(625, 83);
+            this.groupBox4.Size = new System.Drawing.Size(408, 83);
             this.groupBox4.TabIndex = 21;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Log4Net Test";
@@ -691,7 +692,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtLog.Location = new System.Drawing.Point(8, 21);
             this.txtLog.Name = "txtLog";
-            this.txtLog.Size = new System.Drawing.Size(610, 22);
+            this.txtLog.Size = new System.Drawing.Size(393, 22);
             this.txtLog.TabIndex = 1;
             // 
             // cbLogLevel
@@ -712,7 +713,7 @@
             // btnSaveLog
             // 
             this.btnSaveLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSaveLog.Location = new System.Drawing.Point(538, 49);
+            this.btnSaveLog.Location = new System.Drawing.Point(321, 49);
             this.btnSaveLog.Name = "btnSaveLog";
             this.btnSaveLog.Size = new System.Drawing.Size(80, 23);
             this.btnSaveLog.TabIndex = 11;
@@ -1683,6 +1684,7 @@
             // 
             // tabPage9
             // 
+            this.tabPage9.Controls.Add(this.ctvTest);
             this.tabPage9.Controls.Add(this.groupBox4);
             this.tabPage9.Controls.Add(this.button6);
             this.tabPage9.Location = new System.Drawing.Point(4, 28);
@@ -1692,6 +1694,13 @@
             this.tabPage9.TabIndex = 7;
             this.tabPage9.Text = "Other";
             this.tabPage9.UseVisualStyleBackColor = true;
+            // 
+            // ctvTest
+            // 
+            this.ctvTest.Location = new System.Drawing.Point(436, 12);
+            this.ctvTest.Name = "ctvTest";
+            this.ctvTest.Size = new System.Drawing.Size(203, 231);
+            this.ctvTest.TabIndex = 22;
             // 
             // tabPage10
             // 
@@ -2109,5 +2118,6 @@
         private System.Windows.Forms.Label label33;
         private System.Windows.Forms.TextBox txtBitConv;
         private System.Windows.Forms.Button button19;
+        private CJF.Utility.WinKits.ExtTreeView ctvTest;
     }
 }

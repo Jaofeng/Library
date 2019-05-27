@@ -114,7 +114,10 @@ namespace Tester
                 buf = Encoding.Default.GetBytes(txtSendMsg.Text);
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip[0]), int.Parse(ip[1]));
             bool sended = false;
-            using (CastSender ser = new CastSender(ep, int.Parse(ip[2])))
+            int ttl = 100;
+            if (ip.Length >= 3)
+                ttl = int.Parse(ip[2]);
+            using (CastSender ser = new CastSender(ep, ttl))
             {
                 ser.DataSended += (s, se) =>
                 {

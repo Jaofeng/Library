@@ -976,15 +976,31 @@ namespace CJF.Utility
 					}
 			}
 		}
-		#endregion
+        #endregion
 
-		#region Public Static Method : Encoding GetFileEncoding(string fileName)
-		/// <summary>取得文字檔的編碼方式，僅會判斷 Unicode, UTF8, Default</summary>
-		/// <param name="fileName">檔案名稱</param>
-		/// <returns></returns>
-		public static Encoding GetFileEncoding(string fileName)
+        #region Public Static Method : Encoding GetFileEncoding(string fileName)
+        /// <summary>取得文字檔的編碼方式，僅會判斷 Unicode, UTF8, Default</summary>
+        /// <param name="fileName">檔案名稱</param>
+        /// <returns>傳回字元編碼類別。</returns>
+        public static Encoding GetFileEncoding(string fileName)
 		{
-			Encoding encoder = null;
+            // 可參考維基百科 : 位元組順序記號
+            // https://zh.wikipedia.org/wiki/位元組順序記號
+            /*
+            編碼	            表示（十六進位）	    表示（十進位）
+            UTF-8	            EF BB BF	            239 187 191
+            UTF-16（大端序）	FE FF	                254 255
+            UTF-16（小端序）	FF FE	                255 254
+            UTF-32（大端序）	00 00 FE FF	            0 0 254 255
+            UTF-32（小端序）	FF FE 00 00	            255 254 0 0
+            UTF-7	            2B 2F 76 [38|39|2B|2F]  43 47 118 [56|57|43|47]
+            UTF-1	            F7 64 4C	            247 100 76
+            UTF-EBCDIC	        DD 73 66 73	            221 115 102 115
+            Unicode標準壓縮方案 0E FE FF	            14 254 255
+            BOCU-1	            FB EE 28 及可能跟隨著FF	251 238 40 及可能跟隨著255
+            GB-18030	        84 31 95 33	            132 49 149 51
+            */
+            Encoding encoder = null;
 			byte[] header = new byte[4];
 			using (FileStream reader = File.OpenRead(fileName))
 			{
@@ -992,10 +1008,10 @@ namespace CJF.Utility
 				reader.Close();
 			}
 			if (header[0] == 0xFF && header[1] == 0xFE)
-				encoder = Encoding.Unicode;				// UniCode File
-			else if (header[0] == 0xFE && header[1] == 0xFF)
-				encoder = Encoding.BigEndianUnicode;	// UniCode BigEndian
-			else if (header[0] == 0xEF && header[1] == 0xBB && header[2] == 0xBF)
+				encoder = Encoding.Unicode;             // UniCode(UTF-16) File
+            else if (header[0] == 0xFE && header[1] == 0xFF)
+				encoder = Encoding.BigEndianUnicode;    // UniCode(UTF-16) BigEndian
+            else if (header[0] == 0xEF && header[1] == 0xBB && header[2] == 0xBF)
 				encoder = Encoding.UTF8;				// UTF-8
 			else
 				encoder = Encoding.Default;				// Default

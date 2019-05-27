@@ -233,7 +233,7 @@
       <Name>Logger</Name>
     </ProjectReference>
     <ProjectReference Include="..\Modbus\Modbus.csproj">
-      <Project>{2311285D-3524-4899-A366-69E8BC7E4769}</Project>
+      <Project>{2311285d-3524-4899-a366-69e8bc7e4769}</Project>
       <Name>Modbus</Name>
     </ProjectReference>
     <ProjectReference Include="..\Net\Net.csproj">
@@ -259,6 +259,9 @@
     <Content Include="Web\Test.htm">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="lib\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
