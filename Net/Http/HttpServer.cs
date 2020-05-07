@@ -39,6 +39,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -48,9 +49,9 @@ using System.Xml;
 #pragma warning disable IDE1006
 namespace CJF.Net.Http
 {
-    #region Public Enum : HttpServiceActions
+    #region Public Enum : HttpActions
     /// <summary>Http 呼叫模式列舉清單。</summary>
-    public enum HttpServiceActions
+    public enum HttpActions
     {
         /// <summary>無</summary>
         None = 0,
@@ -73,37 +74,39 @@ namespace CJF.Net.Http
     }
     #endregion
 
-    #region Public Class : HttpServiceArgs(EventArgs)
+    #region Public Class : HttpServerArgs(EventArgs)
     /// <summary>提供 CJF.Net.Http.HttpService 類別事件傳遞用。</summary>
-    public class HttpServiceArgs : EventArgs
+    public class HttpServerArgs : EventArgs
     {
         /// <summary>設定或取得收到事件後是否取消後續流程。</summary>
         public bool Cancel { get; set; } = false;
         /// <summary>取得 HTTP 行為模式列舉值。</summary>
-        public HttpServiceActions Action { get; private set; } = HttpServiceActions.None;
+        public HttpActions Action { get; private set; } = HttpActions.None;
         /// <summary>取得遠端呼叫的網頁；或設定返還遠端的網頁檔案位置。</summary>
         public string PageUrl { get; set; } = string.Empty;
         /// <summary>取得包含 QurtyString 以及表單內容的 NameValueCollection。</summary>
         public NameValueCollection KeyValues { get; private set; } = null;
         /// <summary>取得已接收的檔案清單資料結構陣列。</summary>
         public ReceivedFileInfo[] ReceivedFiles { get; private set; } = null;
+        /// <summary>取得 Session ID。</summary>
+        public string SessionID { get; private set; } = null;
         /// <summary>設定返還至遠端的內容。</summary>
         public object Result { get; set; } = null;
         /// <summary>初始化 CJF.Net.Http.HttpServiceArgs 類別的新執行個體。</summary>
         /// <param name="action">HTTP 呼叫行為列舉值。</param>
         /// <param name="page">使用者端呼叫的網頁網址。</param>
-        internal HttpServiceArgs(HttpServiceActions action, string page) : this(action, page, null, null) { }
+        internal HttpServerArgs(HttpActions action, string page) : this(action, page, null, null) { }
         /// <summary>初始化 CJF.Net.Http.HttpServiceArgs 類別的新執行個體。</summary>
         /// <param name="action">HTTP 呼叫行為列舉值。</param>
         /// <param name="page">使用者端呼叫的網頁網址。</param>
         /// <param name="keyValues">包含 QurtyString 與 Form 的資料內容。</param>
-        internal HttpServiceArgs(HttpServiceActions action, string page, NameValueCollection keyValues) : this(action, page, keyValues, null) { }
+        internal HttpServerArgs(HttpActions action, string page, NameValueCollection keyValues) : this(action, page, keyValues, null) { }
         /// <summary>初始化 CJF.Net.Http.HttpServiceArgs 類別的新執行個體。</summary>
         /// <param name="action">HTTP 呼叫行為列舉值。</param>
         /// <param name="page">使用者端呼叫的網頁網址。</param>
         /// <param name="keyValues">包含 QurtyString 與 Form 的資料內容。</param>
         /// <param name="files">已接收的檔案清單。</param>
-        internal HttpServiceArgs(HttpServiceActions action, string page, NameValueCollection keyValues, ReceivedFileInfo[] files)
+        internal HttpServerArgs(HttpActions action, string page, NameValueCollection keyValues, ReceivedFileInfo[] files)
         {
             Cancel = false;
             Action = action;
@@ -112,37 +115,84 @@ namespace CJF.Net.Http
             ReceivedFiles = files;
             Result = null;
         }
+        internal HttpServerArgs(HttpServiceContext context)
+        {
+            Cancel = false;
+            HttpListenerRequest request = context.Request;
+            switch (request.HttpMethod.ToUpper())
+            {
+                case "HEAD": Action = HttpActions.Head; break;
+                case "GET": Action = HttpActions.Get; break;
+                case "POST": Action = HttpActions.Post; break;
+                case "PUT": Action = HttpActions.Put; break;
+                case "DELETE": Action = HttpActions.Delete; break;
+                case "PATCH": Action = HttpActions.Patch; break;
+                default: Action = HttpActions.None; break;
+            }
+            string rawUrl = request.RawUrl;
+            string pageUrl = rawUrl.Split('?')[0].Trim('/');
+            PageUrl = pageUrl;
+            SessionID = context.Session.ID;
+            if (Action == HttpActions.Get)
+                KeyValues = request.QueryString;
+            else
+            {
+                KeyValues = HttpUtility.ParseQueryString(new StreamReader(request.InputStream).ReadToEnd());
+                NameValueCollection queryString = request.QueryString;
+                if (queryString != null && queryString.Count != 0)
+                {
+                    foreach (KeyValuePair<string, string> kv in queryString)
+                    {
+                        if (KeyValues.AllKeys.Contains<string>(kv.Key))
+                            KeyValues[kv.Key] += ";" + kv.Value;
+                        else
+                            KeyValues.Add(kv.Key, kv.Value);
+                    }
+                }
+            }
+            ReceivedFiles = null;
+            Result = null;
+        }
+        internal HttpServerArgs(HttpServiceContext context, NameValueCollection keyValues, ReceivedFileInfo[] files) : this(context)
+        {
+            Action = HttpActions.File;
+            KeyValues = keyValues;
+            ReceivedFiles = files;
+        }
     }
     #endregion
 
-    #region Public Class : HttpService
+    #region Public Class : HttpServer
     /// <summary>HTTP 連線服務類別</summary>
     [Obsolete("未完整測試，建議盡量不要使用。", false)]
-    public class HttpService : IDisposable
+    public class HttpServer : IDisposable
     {
         /// <summary>網頁預設根目錄</summary>
         const string ROOT_PATH = "Web";
 
-        bool isDisposed = false;
-        HttpListener _HttpListener = null;
+        private bool isDisposed = false;
+        private HttpListener _HttpListener = null;
+        private HttpSession _HttpSession = null;
 
         #region Events
         /// <summary>收到 HTTP GET 請求時發生。</summary>
-        public event EventHandler<HttpServiceArgs> ReceivedGet;
+        public event EventHandler<HttpServerArgs> ReceivedGet;
         /// <summary>收到 HTTP POST 請求時發生。</summary>
-        public event EventHandler<HttpServiceArgs> ReceivedPost;
+        public event EventHandler<HttpServerArgs> ReceivedPost;
         /// <summary>收到 HTTP HEAD 請求時發生。</summary>
-        public event EventHandler<HttpServiceArgs> ReceivedHead;
+        public event EventHandler<HttpServerArgs> ReceivedHead;
         /// <summary>收到 HTTP PUT 請求時發生。</summary>
-        public event EventHandler<HttpServiceArgs> ReceivedPut;
+        public event EventHandler<HttpServerArgs> ReceivedPut;
         /// <summary>收到 HTTP DELETE 請求時發生。</summary>
-        public event EventHandler<HttpServiceArgs> ReceivedDelete;
+        public event EventHandler<HttpServerArgs> ReceivedDelete;
         /// <summary>收到 HTTP PATCH 請求時發生。</summary>
-        public event EventHandler<HttpServiceArgs> ReceivedPatch;
+        public event EventHandler<HttpServerArgs> ReceivedPatch;
         /// <summary>收到使用者端以 POST 方式上傳檔案時發生。</summary>
-        public event EventHandler<HttpServiceArgs> ReceivedFiles;
+        public event EventHandler<HttpServerArgs> ReceivedFiles;
         /// <summary>收到 HTTP SOAP 請求時發生。</summary>
-        private event EventHandler<HttpServiceArgs> ReceivedSoap;
+        private event EventHandler<HttpServerArgs> ReceivedSoap;
+        private event EventHandler<HttpServerArgs> SessionStart;
+        private event EventHandler<HttpServerArgs> SessionEnded;
         #endregion
 
         #region Public Properties
@@ -157,16 +207,16 @@ namespace CJF.Net.Http
 
         #region Construct Method : HttpService(string[] prefixes)
         /// <summary></summary>
-        protected HttpService() { }
+        protected HttpServer() { }
         /// <summary></summary>
         /// <param name="prefixes"></param>
-        public HttpService(string[] prefixes)
+        public HttpServer(string[] prefixes)
         {
             Prefixes = new string[prefixes.Length];
             Array.Copy(prefixes, Prefixes, prefixes.Length);
         }
         /// <summary></summary>
-        ~HttpService()
+        ~HttpServer()
         {
             Dispose(false);
         }
@@ -177,6 +227,9 @@ namespace CJF.Net.Http
         public void Start()
         {
             string prefix = string.Empty;
+            _HttpSession = new HttpSession();
+            _HttpSession.SessionStart += HttpSession_SessionStart;
+            _HttpSession.SessionEnd += HttpSession_SessionEnd;
             _HttpListener = new HttpListener();
             foreach (string p in Prefixes)
                 _HttpListener.Prefixes.Add(p);
@@ -199,18 +252,20 @@ namespace CJF.Net.Http
             if (_HttpListener == null) return;
             try
             {
-                HttpListenerContext ctx = null;
-                ctx = _HttpListener.EndGetContext(ar);
+                HttpListenerContext ctx = _HttpListener.EndGetContext(ar);
                 _HttpListener.BeginGetContext(new AsyncCallback(WebRequestCallback), _HttpListener);
-                ProcessRequest(ctx);
+                if (ctx == null) return;
+                HttpServiceContext hsc = new HttpServiceContext(ctx);
+                if (_HttpSession.GetOrCreate(hsc, out _))
+                    ProcessRequest(hsc);
             }
             catch (Exception ex) { Debug.Print(ex.Message); }
         }
         #endregion
 
-        #region Public Virtual Method : void ProcessRequest(HttpListenerContext context)
+        #region Public Virtual Method : void ProcessRequest(HttpServiceContext context)
         /// <summary>[覆寫] 接收到 Http Request 時的處理流程</summary>
-        public virtual void ProcessRequest(HttpListenerContext context)
+        public virtual void ProcessRequest(HttpServiceContext context)
         {
             HttpListenerRequest request = context.Request;
             string rawUrl = request.RawUrl;
@@ -254,12 +309,26 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Protected Virtual Method : void OnReceivedHead(HttpListenerContext context, string page, NameValueCollection queryString)
+        #region Private Method : void HttpSession_SessionStart(object sender, HttpServiceContext context)
+        private void HttpSession_SessionStart(object sender, HttpServiceContext context)
+        {
+            Debug.Print($"Session Started: {context.Session.ID}");
+        }
+        #endregion
+
+        #region Private Method : void HttpSession_SessionEnd(object sender, string sessionId)
+        private void HttpSession_SessionEnd(object sender, string sessionId)
+        {
+            Debug.Print($"Session Ended: {sessionId}");
+        }
+        #endregion
+
+        #region Protected Virtual Method : void OnReceivedHead(HttpServiceContext context, string page, NameValueCollection queryString)
         /// <summary>[覆寫]產生 ReceivedHead 事件。</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="page">網址路徑</param>
         /// <param name="queryString">要求中所包含的查詢字串。</param>
-        protected virtual void OnReceivedHead(HttpListenerContext context, string page, NameValueCollection queryString)
+        protected virtual void OnReceivedHead(HttpServiceContext context, string page, NameValueCollection queryString)
         {
             if (ReceivedHead == null)
             {
@@ -269,7 +338,7 @@ namespace CJF.Net.Http
             }
             else
             {
-                HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Head, page, queryString);
+                HttpServerArgs args = new HttpServerArgs(HttpActions.Head, page, queryString);
                 try
                 {
                     ReceivedHead?.BeginInvoke(this, args, null, null);
@@ -283,14 +352,14 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Protected Virtual Method : void OnReceivedGet(HttpListenerContext context, string page, NameValueCollection queryString)
+        #region Protected Virtual Method : void OnReceivedGet(HttpServiceContext context, string page, NameValueCollection queryString)
         /// <summary>[覆寫]產生 ReceivedGet 事件。</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="page">網址路徑</param>
         /// <param name="queryString">要求中所包含的查詢字串。</param>
-        protected virtual void OnReceivedGet(HttpListenerContext context, string page, NameValueCollection queryString)
+        protected virtual void OnReceivedGet(HttpServiceContext context, string page, NameValueCollection queryString)
         {
-            HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Get, page, queryString);
+            HttpServerArgs args = new HttpServerArgs(HttpActions.Get, page, queryString);
             try
             {
                 ReceivedGet?.BeginInvoke(this, args, null, null);
@@ -307,14 +376,14 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Protected Virtual Method : void OnReceivedPost(HttpListenerContext context, string page, NameValueCollection keyValues)
+        #region Protected Virtual Method : void OnReceivedPost(HttpServiceContext context, string page, NameValueCollection keyValues)
         /// <summary>[覆寫]產生 ReceivedPost事件。</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="page">網址路徑</param>
         /// <param name="keyValues">網址中的查詢字串與表單傳遞過來的資料內容。</param>
-        protected virtual void OnReceivedPost(HttpListenerContext context, string page, NameValueCollection keyValues)
+        protected virtual void OnReceivedPost(HttpServiceContext context, string page, NameValueCollection keyValues)
         {
-            HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Post, page, keyValues);
+            HttpServerArgs args = new HttpServerArgs(HttpActions.Post, page, keyValues);
             try
             {
                 ReceivedPost?.BeginInvoke(this, args, null, null);
@@ -331,15 +400,15 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Protected Virtual Method : void OnReceivedFiles(HttpListenerContext context, string page, NameValueCollection keyValues, ReceivedFileInfo[] files)
+        #region Protected Virtual Method : void OnReceivedFiles(HttpServiceContext context, string page, NameValueCollection keyValues, ReceivedFileInfo[] files)
         /// <summary>[複寫]產生 ReceivedFiles 事件。</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="page">網址路徑</param>
         /// <param name="keyValues">網址中的查詢字串與表單傳遞過來的資料內容。</param>
         /// <param name="files">已接收的檔案清單。</param>
-        protected virtual void OnReceivedFiles(HttpListenerContext context, string page, NameValueCollection keyValues, ReceivedFileInfo[] files)
+        protected virtual void OnReceivedFiles(HttpServiceContext context, string page, NameValueCollection keyValues, ReceivedFileInfo[] files)
         {
-            HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.File, page, keyValues, files);
+            HttpServerArgs args = new HttpServerArgs(HttpActions.File, page, keyValues, files);
             try
             {
                 ReceivedFiles?.BeginInvoke(this, args, null, null);
@@ -365,12 +434,12 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Protected Virtual Method : void OnReceivedSoap(HttpListenerContext context, string page, NameValueCollection keyValues)
+        #region Protected Virtual Method : void OnReceivedSoap(HttpServiceContext context, string page, NameValueCollection keyValues)
         /// <summary>[覆寫]產生 ReceivedSoap 事件。</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="page">網址路徑</param>
         /// <param name="keyValues">網址中的查詢字串與表單傳遞過來的資料內容。</param>
-        protected virtual void OnReceivedSoap(HttpListenerContext context, string page, NameValueCollection keyValues)
+        protected virtual void OnReceivedSoap(HttpServiceContext context, string page, NameValueCollection keyValues)
         {
             if (ReceivedSoap == null)
             {
@@ -380,7 +449,7 @@ namespace CJF.Net.Http
             }
             else
             {
-                HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Soap, page, keyValues, null);
+                HttpServerArgs args = new HttpServerArgs(HttpActions.Soap, page, keyValues, null);
                 try
                 {
                     ReceivedSoap.BeginInvoke(this, args, null, null);
@@ -394,12 +463,12 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Protected Virtual Method : void OnReceivedPut(HttpListenerContext context, string page, NameValueCollection queryString)
+        #region Protected Virtual Method : void OnReceivedPut(HttpServiceContext context, string page, NameValueCollection queryString)
         /// <summary>[覆寫]產生 ReceivedPut 事件。</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="page">網址路徑</param>
         /// <param name="queryString">要求中所包含的查詢字串。</param>
-        protected virtual void OnReceivedPut(HttpListenerContext context, string page, NameValueCollection queryString)
+        protected virtual void OnReceivedPut(HttpServiceContext context, string page, NameValueCollection queryString)
         {
             if (ReceivedPut == null)
             {
@@ -409,7 +478,7 @@ namespace CJF.Net.Http
             }
             else
             {
-                HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Put, page, queryString);
+                HttpServerArgs args = new HttpServerArgs(HttpActions.Put, page, queryString);
                 try
                 {
                     ReceivedPut.BeginInvoke(this, args, null, null);
@@ -427,12 +496,12 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Protected Virtual Method : void OnReceivedDelete(HttpListenerContext context, string page, NameValueCollection queryString)
+        #region Protected Virtual Method : void OnReceivedDelete(HttpServiceContext context, string page, NameValueCollection queryString)
         /// <summary>[覆寫]產生 ReceivedDelete 事件。</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="page">網址路徑</param>
         /// <param name="queryString">要求中所包含的查詢字串。</param>
-        protected virtual void OnReceivedDelete(HttpListenerContext context, string page, NameValueCollection queryString)
+        protected virtual void OnReceivedDelete(HttpServiceContext context, string page, NameValueCollection queryString)
         {
             if (ReceivedPut == null)
             {
@@ -442,7 +511,7 @@ namespace CJF.Net.Http
             }
             else
             {
-                HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Delete, page, queryString);
+                HttpServerArgs args = new HttpServerArgs(HttpActions.Delete, page, queryString);
                 try
                 {
                     ReceivedDelete.BeginInvoke(this, args, null, null);
@@ -460,12 +529,12 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Protected Virtual Method : void OnReceivedPatch(HttpListenerContext context, string page, NameValueCollection queryString)
+        #region Protected Virtual Method : void OnReceivedPatch(HttpServiceContext context, string page, NameValueCollection queryString)
         /// <summary>[覆寫]產生 ReceivedPatch 事件。</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="page">網址路徑</param>
         /// <param name="queryString">要求中所包含的查詢字串。</param>
-        protected virtual void OnReceivedPatch(HttpListenerContext context, string page, NameValueCollection queryString)
+        protected virtual void OnReceivedPatch(HttpServiceContext context, string page, NameValueCollection queryString)
         {
             if (ReceivedPut == null)
             {
@@ -475,7 +544,7 @@ namespace CJF.Net.Http
             }
             else
             {
-                HttpServiceArgs args = new HttpServiceArgs(HttpServiceActions.Patch, page, queryString);
+                HttpServerArgs args = new HttpServerArgs(HttpActions.Patch, page, queryString);
                 try
                 {
                     ReceivedPatch.BeginInvoke(this, args, null, null);
@@ -490,12 +559,12 @@ namespace CJF.Net.Http
         #endregion
 
         #region Response Methods
-        #region Public Virtual Method : bool ResponseHead(HttpListenerContext context, string fileName)
+        #region Public Virtual Method : bool ResponseHead(HttpServiceContext context, string fileName)
         /// <summary>傳送檔案資訊至終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="fileName">檔案路徑</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseHead(HttpListenerContext context, string fileName)
+        public virtual bool ResponseHead(HttpServiceContext context, string fileName)
         {
             bool result = false;
             if (!File.Exists(fileName))
@@ -549,37 +618,37 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseFile(HttpListenerContext context, string fileName)
+        #region Public Virtual Method : bool ResponseFile(HttpServiceContext context, string fileName)
         /// <summary>傳送檔案至終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="fileName">檔案路徑</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseFile(HttpListenerContext context, string fileName)
+        public virtual bool ResponseFile(HttpServiceContext context, string fileName)
         {
             return ResponseFile(context, fileName, 0, 8192);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseFile(HttpListenerContext context, string fileName, int pause)
+        #region Public Virtual Method : bool ResponseFile(HttpServiceContext context, string fileName, int pause)
         /// <summary>傳送檔案至終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="fileName">檔案路徑</param>
         /// <param name="pause">傳輸暫停時間，單位豪秒。數值越小，傳輸速度越快，但負載也越大。最小值為 10ms。</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseFile(HttpListenerContext context, string fileName, int pause)
+        public virtual bool ResponseFile(HttpServiceContext context, string fileName, int pause)
         {
             return ResponseFile(context, fileName, pause, 8192);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseFile(HttpListenerContext context, string fileName, int pause, int packageSize)
+        #region Public Virtual Method : bool ResponseFile(HttpServiceContext context, string fileName, int pause, int packageSize)
         /// <summary>傳送檔案至終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="fileName">檔案路徑</param>
         /// <param name="pause">傳輸暫停時間，單位豪秒。數值越小，傳輸速度越快，但負載也越大。最小值為 10ms。</param>
         /// <param name="packageSize">傳輸的封包大小，單位Bytes</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseFile(HttpListenerContext context, string fileName, int pause, int packageSize)
+        public virtual bool ResponseFile(HttpServiceContext context, string fileName, int pause, int packageSize)
         {
             bool result = false;
             if (!File.Exists(fileName))
@@ -639,32 +708,32 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseFile(HttpListenerContext context, MemoryStream stream, string fileName)
+        #region Public Virtual Method : bool ResponseFile(HttpServiceContext context, MemoryStream stream, string fileName)
         /// <summary>傳送檔案至終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="stream">檔案串流</param>
         /// <param name="fileName">檔案路徑</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseFile(HttpListenerContext context, MemoryStream stream, string fileName)
+        public virtual bool ResponseFile(HttpServiceContext context, MemoryStream stream, string fileName)
         {
             return ResponseFile(context, stream, fileName, 10, 8192);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseFile(HttpListenerContext context, MemoryStream stream, string fileName, int speed)
+        #region Public Virtual Method : bool ResponseFile(HttpServiceContext context, MemoryStream stream, string fileName, int speed)
         /// <summary>傳送檔案至終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="stream">檔案串流</param>
         /// <param name="fileName">檔案路徑</param>
         /// <param name="speed">傳輸暫停時間，單位豪秒。數值越小，傳輸速度越快，但負載也越大。最小值為 10ms。</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseFile(HttpListenerContext context, MemoryStream stream, string fileName, int speed)
+        public virtual bool ResponseFile(HttpServiceContext context, MemoryStream stream, string fileName, int speed)
         {
             return ResponseFile(context, stream, fileName, speed, 8192);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseFile(HttpListenerContext context, MemoryStream stream, string fileName, int pause, int packageSize)
+        #region Public Virtual Method : bool ResponseFile(HttpServiceContext context, MemoryStream stream, string fileName, int pause, int packageSize)
         /// <summary>傳送檔案至終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="stream">檔案串流</param>
@@ -672,7 +741,7 @@ namespace CJF.Net.Http
         /// <param name="pause">傳輸暫停時間，單位豪秒。數值越小，傳輸速度越快，但負載也越大。最小值為 10ms。</param>
         /// <param name="packageSize">傳輸的封包大小，單位Bytes，預設為8192</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseFile(HttpListenerContext context, MemoryStream stream, string fileName, int pause, int packageSize)
+        public virtual bool ResponseFile(HttpServiceContext context, MemoryStream stream, string fileName, int pause, int packageSize)
         {
             bool result = false;
             if (stream == null || stream.Length == 0)
@@ -728,62 +797,62 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseString(HttpListenerContext context, string msg, int statusCode)
+        #region Public Virtual Method : bool ResponseString(HttpServiceContext context, string msg, int statusCode)
         /// <summary>傳送文字訊息給終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="msg">訊息內容</param>
         /// <param name="statusCode">HTTP 狀態碼</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseString(HttpListenerContext context, string msg, int statusCode)
+        public virtual bool ResponseString(HttpServiceContext context, string msg, int statusCode)
         {
             context.Response.ContentEncoding = Encoding.UTF8;
             return ResponseBinary(context, Encoding.UTF8.GetBytes(msg), statusCode);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseString(HttpListenerContext context, string msg)
+        #region Public Virtual Method : bool ResponseString(HttpServiceContext context, string msg)
         /// <summary>傳送文字訊息給終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="msg">訊息內容</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseString(HttpListenerContext context, string msg)
+        public virtual bool ResponseString(HttpServiceContext context, string msg)
         {
             context.Response.ContentEncoding = Encoding.UTF8;
             return ResponseBinary(context, Encoding.UTF8.GetBytes(msg), (int)System.Net.HttpStatusCode.OK);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseString(HttpListenerContext context, string msg, Encoding encoding)
+        #region Public Virtual Method : bool ResponseString(HttpServiceContext context, string msg, Encoding encoding)
         /// <summary>傳送文字訊息給終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="msg">訊息內容</param>
         /// <param name="encoding">字元編碼方式</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseString(HttpListenerContext context, string msg, Encoding encoding)
+        public virtual bool ResponseString(HttpServiceContext context, string msg, Encoding encoding)
         {
             context.Response.ContentEncoding = encoding;
             return ResponseBinary(context, encoding.GetBytes(msg), (int)System.Net.HttpStatusCode.OK);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseBitmap(HttpListenerContext context, Bitmap bitmap)
+        #region Public Virtual Method : bool ResponseBitmap(HttpServiceContext context, Bitmap bitmap)
         /// <summary>繪製 Bitmap 資料至終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="bitmap">Bitmap 圖像資料</param>
         /// <returns></returns>
-        public virtual bool ResponseBitmap(HttpListenerContext context, Bitmap bitmap)
+        public virtual bool ResponseBitmap(HttpServiceContext context, Bitmap bitmap)
         {
             return ResponseBitmap(context, bitmap, ImageFormat.Jpeg);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseBitmap(HttpListenerContext context, Bitmap bitmap, ImageFormat format)
+        #region Public Virtual Method : bool ResponseBitmap(HttpServiceContext context, Bitmap bitmap, ImageFormat format)
         /// <summary>繪製 Bitmap 資料至終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="bitmap">Bitmap 圖像資料</param>
         /// <param name="format">圖檔格式</param>
         /// <returns></returns>
-        public virtual bool ResponseBitmap(HttpListenerContext context, Bitmap bitmap, ImageFormat format)
+        public virtual bool ResponseBitmap(HttpServiceContext context, Bitmap bitmap, ImageFormat format)
         {
             bool result = false;
             try
@@ -835,40 +904,40 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseBitmap(HttpListenerContext context, Bitmap bitmap, string fileName, ImageFormat format)
+        #region Public Virtual Method : bool ResponseBitmap(HttpServiceContext context, Bitmap bitmap, string fileName, ImageFormat format)
         /// <summary>繪製 Bitmap 資料至終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="bitmap">Bitmap 圖像資料</param>
         /// <param name="fileName">檔案名稱</param>
         /// <param name="format">圖檔格式</param>
         /// <returns></returns>
-        public virtual bool ResponseBitmap(HttpListenerContext context, Bitmap bitmap, string fileName, ImageFormat format)
+        public virtual bool ResponseBitmap(HttpServiceContext context, Bitmap bitmap, string fileName, ImageFormat format)
         {
             context.Response.AddHeader("content-disposition", "attachment;filename=" + System.Web.HttpUtility.UrlEncode(fileName));
             return ResponseBitmap(context, bitmap, format);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseBinary(HttpListenerContext context, byte[] buffer, int statusCode)
+        #region Public Virtual Method : bool ResponseBinary(HttpServiceContext context, byte[] buffer, int statusCode)
         /// <summary>傳送位元組資料給終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="buffer">位元組陣列資料內容</param>
         /// <param name="statusCode">HTTP 狀態碼</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseBinary(HttpListenerContext context, byte[] buffer, int statusCode)
+        public virtual bool ResponseBinary(HttpServiceContext context, byte[] buffer, int statusCode)
         {
             return ResponseBinary(context, buffer, statusCode, null);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseBinary(HttpListenerContext context, byte[] buffer, int statusCode, string description)
+        #region Public Virtual Method : bool ResponseBinary(HttpServiceContext context, byte[] buffer, int statusCode, string description)
         /// <summary>傳送位元組資料給終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="buffer">位元組陣列資料內容</param>
         /// <param name="statusCode">HTTP 狀態碼</param>
         /// <param name="description">狀態碼說明</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseBinary(HttpListenerContext context, byte[] buffer, int statusCode, string description)
+        public virtual bool ResponseBinary(HttpServiceContext context, byte[] buffer, int statusCode, string description)
         {
             bool result = false;
             try
@@ -916,12 +985,12 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseException(HttpListenerContext context, Exception ex)
+        #region Public Virtual Method : bool ResponseException(HttpServiceContext context, Exception ex)
         /// <summary>將錯誤訊息送給終端</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="ex">例外處理類別</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseException(HttpListenerContext context, Exception ex)
+        public virtual bool ResponseException(HttpServiceContext context, Exception ex)
         {
             StringBuilder sb = new StringBuilder(ex.Message.Replace("\r", "").Replace("\n", "<br />"));
             sb.AppendFormat("<br />{0}<br />", "=".PadLeft(40, '='));
@@ -949,12 +1018,12 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseXML(HttpListenerContext context, XmlDocument xml)
+        #region Public Virtual Method : bool ResponseXML(HttpServiceContext context, XmlDocument xml)
         /// <summary>傳送 XML 內容給終端，如ContentType未設定，則將會指定為application/xhtml+xml</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="xml">XML 資料內容</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseXML(HttpListenerContext context, XmlDocument xml)
+        public virtual bool ResponseXML(HttpServiceContext context, XmlDocument xml)
         {
             try
             {
@@ -973,77 +1042,77 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseNotFound(HttpListenerContext context)
+        #region Public Virtual Method : bool ResponseNotFound(HttpServiceContext context)
         /// <summary>傳送「頁面不存在訊息」給終端, HTTP Error Code:404</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseNotFound(HttpListenerContext context)
+        public virtual bool ResponseNotFound(HttpServiceContext context)
         {
             return ResponseString(context, "File Not Found !", (int)System.Net.HttpStatusCode.NotFound);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseServiceNotSupport(HttpListenerContext context)
+        #region Public Virtual Method : bool ResponseServiceNotSupport(HttpServiceContext context)
         /// <summary>傳送「不支援此服務」給終端, HTTP Error Code:501</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseServiceNotSupport(HttpListenerContext context)
+        public virtual bool ResponseServiceNotSupport(HttpServiceContext context)
         {
             byte[] buffer = context.Request.ContentEncoding.GetBytes("Service Not Support!!");
             return ResponseBinary(context, buffer, (int)System.Net.HttpStatusCode.NotImplemented, "Service Not Support!!");
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseMethodNotAllowed(HttpListenerContext context)
+        #region Public Virtual Method : bool ResponseMethodNotAllowed(HttpServiceContext context)
         /// <summary>傳送「不支援此 Method」給終端, HTTP Error Code:405</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseMethodNotAllowed(HttpListenerContext context)
+        public virtual bool ResponseMethodNotAllowed(HttpServiceContext context)
         {
             return ResponseBinary(context, null, (int)HttpStatusCode.MethodNotAllowed);
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseUnauthorized(HttpListenerContext context)
+        #region Public Virtual Method : bool ResponseUnauthorized(HttpServiceContext context)
         /// <summary>傳送「未獲得授權或未認證」給終端, HTTP Error Code:401</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseUnauthorized(HttpListenerContext context)
+        public virtual bool ResponseUnauthorized(HttpServiceContext context)
         {
             byte[] buffer = context.Request.ContentEncoding.GetBytes("Unauthorized!!");
             return ResponseBinary(context, buffer, (int)System.Net.HttpStatusCode.Unauthorized, "Unauthorized!!");
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseNotAllowIP(HttpListenerContext context)
+        #region Public Virtual Method : bool ResponseNotAllowIP(HttpServiceContext context)
         /// <summary>傳送「不允許的 IP 位址連線」給終端, HTTP Error Code:403</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseNotAllowIP(HttpListenerContext context)
+        public virtual bool ResponseNotAllowIP(HttpServiceContext context)
         {
             byte[] buffer = context.Request.ContentEncoding.GetBytes("Not Allow IP!!");
             return ResponseBinary(context, buffer, (int)System.Net.HttpStatusCode.Forbidden, "Not Allow IP!!");
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseAPIError(HttpListenerContext context)
+        #region Public Virtual Method : bool ResponseAPIError(HttpServiceContext context)
         /// <summary>傳送「API錯誤」給終端, HTTP Error Code:400</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseAPIError(HttpListenerContext context)
+        public virtual bool ResponseAPIError(HttpServiceContext context)
         {
             return ResponseAPIError(context, "API Error!!");
         }
         #endregion
 
-        #region Public Virtual Method : bool ResponseAPIError(HttpListenerContext context, string msg)
+        #region Public Virtual Method : bool ResponseAPIError(HttpServiceContext context, string msg)
         /// <summary>傳送「API錯誤」給終端, HTTP Error Code:400</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="msg">錯誤訊息</param>
         /// <returns>是否正確傳送</returns>
-        public virtual bool ResponseAPIError(HttpListenerContext context, string msg)
+        public virtual bool ResponseAPIError(HttpServiceContext context, string msg)
         {
-            return ResponseBinary(context, Encoding.UTF8.GetBytes(msg), (int)System.Net.HttpStatusCode.BadRequest, "API Error!!");
+            return ResponseBinary(context, Encoding.UTF8.GetBytes(msg), (int)HttpStatusCode.BadRequest, "API Error!!");
         }
         #endregion
         #endregion
@@ -1069,11 +1138,11 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Public Virtual Method : void RedirectURL(HttpListenerContext context, string url)
+        #region Public Virtual Method : void RedirectURL(HttpServiceContext context, string url)
         /// <summary>[覆寫]將回應設定為重新導向用戶端至指定的 URL。</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="url">用戶端應用來尋找所要求之資源的 URL</param>
-        public virtual void RedirectURL(HttpListenerContext context, string url)
+        public virtual void RedirectURL(HttpServiceContext context, string url)
         {
             try
             {
@@ -1301,12 +1370,12 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Private Method : void HttpPostMethod(HttpListenerContext context, string path, NameValueCollection queryString)
+        #region Private Method : void HttpPostMethod(HttpServiceContext context, string path, NameValueCollection queryString)
         /// <summary>[覆寫]POST 模式</summary>
         /// <param name="context">要求存取的遠端連線內容。</param>
         /// <param name="page">網址路徑</param>
         /// <param name="queryString">要求中所包含的查詢字串。</param>
-        private void HttpPostMethod(HttpListenerContext context, string page, NameValueCollection queryString)
+        private void HttpPostMethod(HttpServiceContext context, string page, NameValueCollection queryString)
         {
             try
             {
@@ -1398,8 +1467,8 @@ namespace CJF.Net.Http
         }
         #endregion
 
-        #region Private Method : void ResponseCallbackResult(HttpListenerContext context, object result)
-        private void ResponseCallbackResult(HttpListenerContext context, object result)
+        #region Private Method : void ResponseCallbackResult(HttpServiceContext context, object result)
+        private void ResponseCallbackResult(HttpServiceContext context, object result)
         {
             switch (result)
             {
@@ -1416,6 +1485,60 @@ namespace CJF.Net.Http
                 default:
                     break;
             }
+        }
+        #endregion
+
+        #region Public Method : bool SetupSsl(int port)
+        /// <summary></summary>
+        /// <param name="port"></param>
+        /// <returns></returns>
+        [Obsolete("功能未完成")]
+        public bool SetupSsl(int port)
+        {
+            X509Store store = new X509Store(StoreLocation.LocalMachine);
+            //Use the first cert to configure Ssl
+            store.Open(OpenFlags.ReadOnly);
+            //Assumption is we have certs. If not then this call will fail :(
+            try
+            {
+                bool found = false;
+                foreach (X509Certificate2 cert in store.Certificates)
+                {
+                    String certHash = cert.GetCertHashString();
+                    //Only install certs issued for the machine and has the name as the machine name
+                    if (cert.Subject.ToUpper().IndexOf(Environment.MachineName.ToUpper()) >= 0)
+                    {
+                        try
+                        {
+                            found = true;
+                            //ExecuteHttpcfgCommand(String.Format("set ssl -i 0.0.0.0:{1} -c \"MY\" -h {0}", certHash, port));
+                        }
+                        catch (Exception e)
+                        {
+                            return false;
+                        }
+                    }
+                }
+
+                if (!found)
+                {
+                    return false;
+                }
+
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+            finally
+            {
+                if (store != null)
+                {
+                    store.Close();
+                }
+            }
+
+            return true;
         }
         #endregion
     }

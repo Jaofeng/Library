@@ -64,7 +64,8 @@
     <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Http\HttpService.cs" />
+    <Compile Include="Http\HttpServer.cs" />
+    <Compile Include="Http\HttpSession.cs" />
     <Compile Include="Routing.cs" />
     <Compile Include="Ssl\SslTcpServer.cs" />
     <Compile Include="Ssl\SslTcpClient.cs" />
