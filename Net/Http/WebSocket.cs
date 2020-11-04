@@ -199,29 +199,6 @@ namespace CJF.Net.Http
 		}
 		#endregion
 
-		#region Public Override Method : void Start(IPEndPoint localEndPoint)
-		/// <summary>開始伺服器並等待連線請求, 如需引入效能監視器(PerformanceCounter)，請先執行LoadCounterDictionary函示</summary>
-		/// <param name="localEndPoint">本地傾聽通訊埠</param>
-		public override void Start(IPEndPoint localEndPoint)
-		{
-			m_LocalEndPort = localEndPoint;
-			m_ListenSocket = new Socket(localEndPoint.AddressFamily, SocketType.Stream, ProtocolType.IP);
-			m_ListenSocket.ReceiveBufferSize = BUFFER_SIZE;
-			m_ListenSocket.SendBufferSize = BUFFER_SIZE;
-			m_ListenSocket.SetSocketOption(SocketOptionLevel.Tcp, SocketOptionName.NoDelay, true);
-			m_ListenSocket.NoDelay = true;
-			m_ListenSocket.Bind(localEndPoint);
-			m_ListenSocket.Listen(m_Pool.Count);
-			m_IsShutdown = false;
-			m_CleanClientTimer = new Timer(CleanInvalidClients, null, 10000, 10000);
-
-			base.OnStarted();
-
-			this.StartAccept(null);
-			m_Mutex.WaitOne();
-		}
-		#endregion
-
 		#region Public Method : void AppendService(string svc)
 		/// <summary>新增服務</summary>
 		/// <param name="svc">服務代碼</param>
@@ -594,31 +571,26 @@ namespace CJF.Net.Http
                 }
             }
 			catch (Exception ex) { Debug.Print(ex.Message); }
-            base.OnSendedFail((WebSocketClient)sender, e.Data, e.ExtraInfo);
+            base.OnSendedFail(sender as WebSocketClient, e.Data, e.ExtraInfo);
 		}
 		#endregion
 
 		#region Private Method : void ac_OnClosing(object sender, AsyncClientEventArgs e)
 		private void ac_OnClosing(object sender, AsyncClientEventArgs e)
 		{
-			WebSocketClient ac = (WebSocketClient)sender;
+			WebSocketClient ac = sender as WebSocketClient;
 			if (ac != null)
-			{
 				m_Clients.TryRemove(ac.RemoteEndPoint.ToString(), out AsyncClient acc);
-			}
-			base.OnClientClosing(ac, e.ExtraInfo);
+			base.OnClientClosing(ac, e.ClosedByIdle, e.ExtraInfo);
 		}
 		#endregion
 
 		#region Private Method : void ac_OnClosed(object sender, AsyncClientEventArgs e)
 		private void ac_OnClosed(object sender, AsyncClientEventArgs e)
 		{
-			WebSocketClient ac = (WebSocketClient)sender;
-
+			WebSocketClient ac = sender as WebSocketClient;
 			if (ac != null)
-			{
 				m_Clients.TryRemove(ac.RemoteEndPoint.ToString(), out AsyncClient acc);
-			}
 			base.OnClientClosed(ac, e.ClosedByIdle, e.ExtraInfo);
 		}
 		#endregion
