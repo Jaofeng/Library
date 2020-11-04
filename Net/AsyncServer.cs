@@ -413,6 +413,7 @@ namespace CJF.Net
         /// <param name="extraInfo">額外資訊</param>
         protected virtual void OnDataSended(AsyncClient ac, byte[] buffer, object extraInfo = null)
         {
+            if (ac != null) ac.ResetIdleTime();
             if (this.DataSended != null)
             {
                 SocketServerEventArgs asea = new SocketServerEventArgs(ac, buffer);
@@ -467,6 +468,7 @@ namespace CJF.Net
         /// <param name="buffer">資料內容</param>
         protected virtual void OnDataReceived(AsyncClient ac, byte[] buffer)
         {
+            if (ac != null) ac.ResetIdleTime();
             if (buffer.Length != 0 && this.DataReceived != null)
             {
                 SocketServerEventArgs asea = new SocketServerEventArgs(ac, buffer);
@@ -519,6 +521,7 @@ namespace CJF.Net
         /// <param name="ac">已連線的 AsyncClient 類別</param>
         protected virtual void OnClientConnected(AsyncClient ac)
         {
+            if (ac != null) ac.ResetIdleTime();
             if (this.ClientConnected != null)
             {
                 SocketServerEventArgs asea = new SocketServerEventArgs(ac);
@@ -569,12 +572,15 @@ namespace CJF.Net
         #region Protected Virtual Method : void OnClientClosing(AsyncClient ac, object extraInfo = null)
         /// <summary>產生 ClientClosing 事件</summary>
         /// <param name="ac">斷線的 AsyncClient 類別</param>
+        /// <param name="byIdle">是否因閒置而斷線</param>
         /// <param name="extraInfo">額外資訊</param>
-        protected virtual void OnClientClosing(AsyncClient ac, object extraInfo = null)
+        protected virtual void OnClientClosing(AsyncClient ac, bool byIdle = false, object extraInfo = null)
         {
+            if (ac != null) ac.ResetIdleTime();
             if (this.ClientClosing != null)
             {
                 SocketServerEventArgs asea = new SocketServerEventArgs(ac);
+                asea.ClosedByIdle = byIdle;
                 asea.SetExtraInfo(extraInfo);
                 switch (this.UseAsyncCallback)
                 {
@@ -1552,10 +1558,8 @@ namespace CJF.Net
         {
             AsyncClient ac = (AsyncClient)sender;
             if (ac != null)
-            {
-                m_Clients.TryRemove(ac.RemoteEndPoint.ToString(), out AsyncClient acc);
-            }
-            this.OnClientClosing(ac, e.ExtraInfo);
+                m_Clients.TryRemove(ac.RemoteEndPoint.ToString(), out _);
+            this.OnClientClosing(ac, e.ClosedByIdle, e.ExtraInfo);
         }
         #endregion
 
@@ -1563,12 +1567,8 @@ namespace CJF.Net
         private void ac_OnClosed(object sender, AsyncClientEventArgs e)
         {
             AsyncClient ac = (AsyncClient)sender;
-
             if (ac != null)
-            {
-                m_Clients.TryRemove(ac.RemoteEndPoint.ToString(), out AsyncClient acc);
-            }
-
+                m_Clients.TryRemove(ac.RemoteEndPoint.ToString(), out _);
             this.OnClientClosed(ac, e.ClosedByIdle, e.ExtraInfo);
         }
         #endregion
