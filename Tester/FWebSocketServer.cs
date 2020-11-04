@@ -1,20 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Security.Cryptography;
-using System.Text;
-using System.Windows.Forms;
-using CJF.Net;
+﻿using CJF.Net;
 using CJF.Net.Http;
 using CJF.Utility;
 using CJF.Utility.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Net;
+using System.Security.Cryptography;
+using System.Text;
+using System.Windows.Forms;
 
 namespace Tester
 {
-	public partial class FWebSocketServer : Form
+    public partial class FWebSocketServer : Form
 	{
 		WebSocketServer _Server = null;
 
