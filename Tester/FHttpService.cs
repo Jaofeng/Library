@@ -496,7 +496,7 @@ namespace Tester
         #region Construct Method : HttpService(HttpListenerContext context, string allowSvc)
         public CustHttpSvc(HttpListenerContext context, string allowSvc)
         {
-            this.Context = context;
+            this.Context = new HttpServiceContext(context);
             _AllowSvcNames = allowSvc.Split(';');
         }
         ~CustHttpSvc() { Dispose(false); }
