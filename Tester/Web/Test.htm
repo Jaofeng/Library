@@ -20,7 +20,8 @@
 	<div id="MsgCell" class="load" />
 	</body>
 	<script type="text/javascript">
-	var ws = null;
+		var ws = null;
+		var wid = -1;
 
 	$(document).ready(function () {
 		$('input[type="submit"], button').button();
@@ -63,6 +64,11 @@
 			ws.onopen = function() {
 				// Web Socket is connected, send data using send()
 				writeLog("# Connection is opened");
+				function keepAlive() {
+					if (ws.readyState == WebSocket.OPEN)
+						ws.send('');
+				}
+				wid = setTimeout(keepAlive, 10000);
 			};
 
 			ws.onmessage = function (evt) { 
@@ -72,7 +78,11 @@
 
 			ws.onclose = function(evt) { 
 				// websocket is closed.
-				writeLog("# Connection is closed, Code : " + evt.code); 
+				writeLog("# Connection is closed, Code : " + evt.code);
+				if (wid != -1) {
+					clearTimeout(wid);
+					wid = -1;
+				}
 			};
 			ws.onerror = function(evt) {
 				writeLog('# Error! See CloseCode...');
