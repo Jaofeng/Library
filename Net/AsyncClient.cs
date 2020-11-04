@@ -974,7 +974,6 @@ namespace CJF.Net
                     m_AsyncArg.Dispose();
                     m_AsyncArg = null;
                 }
-                m_ResetEvent.Close();
                 try
                 {
                     m_Socket.Shutdown(SocketShutdown.Both);
@@ -995,8 +994,10 @@ namespace CJF.Net
                     catch { }
                     try { m_ResetEvent.Dispose(); }
                     finally { }
-                    m_ResetEvent = null;
                 }
+                if (m_ResetEvent != null)
+                    m_ResetEvent.Close();
+                m_ResetEvent = null;
                 m_Handle = IntPtr.Zero;
             }
             _IsDisposed = true;
