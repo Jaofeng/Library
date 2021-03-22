@@ -212,6 +212,13 @@ namespace CJF.Net.Http
         }
         #endregion
 
+        #region Public Method : bool Contains(string sessionId)
+        /// <summary>檢查 Session ID 是否存在。</summary>
+        /// <param name="sessionId">欲查詢的 Session ID。</param>
+        /// <returns></returns>
+        public bool Contains(string sessionId) => _sessions.Keys.Contains(sessionId);
+        #endregion
+
         #region Public Method : bool GetOrCreate(HttpServiceContext context, out Session session)
         /// <summary>取得舊有或建立新的 CJF.Net.Http.Session 執行個體。</summary>
         /// <param name="context">傳入包裝著 System.Net.HttpListenerContext 殼的執行個體。</param>
