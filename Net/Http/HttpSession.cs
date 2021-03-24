@@ -66,18 +66,12 @@ namespace CJF.Net.Http
 
         /// <summary>刪除指名的物件。</summary>
         /// <param name="name">物件鍵名。</param>
-        public void Remove(string name)
-        {
-            items.TryRemove(name, out _);
-        }
+        public void Remove(string name) => items.TryRemove(name, out _);
 
         #region Private Method : string GenerateSessionId()
         /// <summary>建立新的 Session ID。</summary>
         /// <returns></returns>
-        private string GenerateSessionId()
-        {
-            return Guid.NewGuid().ToString();
-        }
+        private string GenerateSessionId() => Guid.NewGuid().ToString();
         #endregion
 
         #region IDisposable Support
@@ -219,6 +213,18 @@ namespace CJF.Net.Http
         public bool Contains(string sessionId) => _sessions.Keys.Contains(sessionId);
         #endregion
 
+        #region Public Method : bool Kick(string sessionId)
+        /// <summary>更新 Session 最後取用時間。</summary>
+        /// <param name="sessionId">欲變更的 Session 的 Session ID。</param>
+        /// <returns>是否變更成功。</returns>
+        public bool Kick(string sessionId)
+        {
+            if (!Contains(sessionId)) return false;
+            _sessions[sessionId].LastRequest = DateTime.Now;
+            return true;
+        }
+        #endregion
+
         #region Public Method : bool GetOrCreate(HttpServiceContext context, out Session session)
         /// <summary>取得舊有或建立新的 CJF.Net.Http.Session 執行個體。</summary>
         /// <param name="context">傳入包裝著 System.Net.HttpListenerContext 殼的執行個體。</param>
@@ -295,7 +301,7 @@ namespace CJF.Net.Http
             _waitHandles[0] = new ManualResetEvent(false);  // For Stop()
             while (self._running)
             {
-                int waitres = WaitHandle.WaitAny(_waitHandles, 500);
+                int waitres = WaitHandle.WaitAny(_waitHandles, 10000);
                 switch (waitres)
                 {
                     case 0:
