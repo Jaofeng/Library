@@ -72,10 +72,9 @@ namespace CJF.Net
 				int rowSize = Marshal.SizeOf(typeof(MIB_TCPROW_OWNER_PID));
 				for (int i = 0; i < tab.dwNumEntries; i++)
 				{
-					MIB_TCPROW_OWNER_PID tcpRow =
-						(MIB_TCPROW_OWNER_PID)Marshal.PtrToStructure(rowPtr, typeof(MIB_TCPROW_OWNER_PID));
+					MIB_TCPROW_OWNER_PID tcpRow = (MIB_TCPROW_OWNER_PID)Marshal.PtrToStructure(rowPtr, typeof(MIB_TCPROW_OWNER_PID));
 					tTable[i] = tcpRow;
-					rowPtr = (IntPtr)((int)rowPtr + rowSize);
+					rowPtr = (IntPtr)((long)rowPtr + rowSize);
 				}
 			}
 			catch { }
