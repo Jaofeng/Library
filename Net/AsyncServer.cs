@@ -1071,12 +1071,12 @@ namespace CJF.Net
                 return;
             IntPtr origHandle = IntPtr.Zero;
             Socket s = token.Client;
-            AsyncClient ac = null;
-            EndPoint remote = null;
+            AsyncClient ac;
+            EndPoint remote;
             IPEndPoint remote4Callback = null;
-            string rep = "Unknow";
-            if (e.RemoteEndPoint != null)
-                rep = e.RemoteEndPoint.ToString();
+            //string rep;
+            //if (e.RemoteEndPoint != null)
+            //    rep = e.RemoteEndPoint.ToString();
             try
             {
                 origHandle = new IntPtr(s.Handle.ToInt32());
